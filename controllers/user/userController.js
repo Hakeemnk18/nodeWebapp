@@ -22,9 +22,21 @@ const loadHomepage = async (req,res)=>{
 }
 
 
+const loadLogin= async (req,res)=>{
+
+    try{
+        return res.render("login")
+    }catch{
+        console.log("home page not found")
+        res.status(500).send("Server error")
+    }
+}
+
+
 
 
 module.exports={
     loadHomepage,
     pageNotfound,
+    loadLogin,
 }

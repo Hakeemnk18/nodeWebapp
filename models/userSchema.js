@@ -26,9 +26,11 @@ const userSchema=new Schema({
         type:Boolean,
         default:false
     },
-    isAdmin:{
-        type:Boolean,
-        default:false
+    role:{
+        type:String,
+        enum:["admin","user"],
+        required:true,
+        default:"user"
     },
     address:{
         type:Schema.Types.ObjectId,
