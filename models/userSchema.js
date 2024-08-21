@@ -4,10 +4,15 @@ const{Schema}=mongoose
 const userSchema=new Schema({
     firstName:{
         type:String,
-        required:true,
+        
     },
     lastName:{
         type:String,
+    },
+    username:{
+        type:String,
+        required:true,
+        unique:true,
     },
     email:{
         type:String,
@@ -17,6 +22,8 @@ const userSchema=new Schema({
     },
     phoneNumber:{
         type:String,
+        required:true,
+        unique:true,
     },
     password:{
         type:String,
@@ -24,7 +31,7 @@ const userSchema=new Schema({
     },
     isActive:{
         type:Boolean,
-        default:false
+        default:true
     },
     role:{
         type:String,
@@ -32,13 +39,13 @@ const userSchema=new Schema({
         required:true,
         default:"user"
     },
-    address:{
+    address:[{
         type:Schema.Types.ObjectId,
         ref:"address"
-    },
+    }],
     profile: {
         type: String, 
-        required: false 
+       
     },
     createdAt: {
         type: Date,
