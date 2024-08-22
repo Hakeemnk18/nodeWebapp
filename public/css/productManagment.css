@@ -1,0 +1,81 @@
+.product-add-body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.product-form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.product-form-title, .product-variant-title {
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+}
+
+.product-form-group {
+    margin-bottom: 15px;
+}
+
+.product-form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.product-form-input, .product-form-textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.product-form-textarea {
+    height: 100px;
+    resize: none;
+}
+
+.product-variant-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product-variant-group .product-form-group {
+    flex: 1;
+}
+
+.product-submit-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.product-submit-button:hover {
+    background-color: #218838;
+}
+
+/* Responsive Styles */
+@media (min-width: 600px) {
+    .product-variant-group {
+        flex-direction: row;
+    }
+}
