@@ -52,4 +52,8 @@
 .signup-container button:hover {
     background-color: #4cae4c;
 }
+.error-message{
+    color: red;
+    font-size: 0.75rem;
+}
 

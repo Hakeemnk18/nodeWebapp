@@ -5,21 +5,23 @@
     <div class="login-container">
         <div class="signup-container">
         <h2>Signup</h2>
-        <form action="/signup" method="post">
+        <form id="sign-form" action="/signup" method="post">
             <label for="user">userName:</label>
             <input type="text" id="name" name="username" required>
-            
+            <div id="error1" class="error-message"></div> 
+
             <label for="email">Email:</label>
             <input type="email" id="email" name="email" required>
+            <div id="error2" class="error-message"></div>
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-
+            <div id="error3" class="error-message"></div>
 
 
             <label for="phone">Phone:</label>
             <input type="tel" id="phone" name="phone" required>
-
+            <div id="error4" class="error-message"></div>
             
 
             <button type="submit">Sign Up</button>
@@ -28,4 +30,104 @@
 
     </div>
 </body>
+
+<script>
+    const nameId=document.getElementById("name");
+    const emilId=document.getElementById("email");
+    const passwordId=document.getElementById("password")
+    const phoneId=document.getElementById("phone")
+
+    const error1=document.getElementById("error1")
+    const error2=document.getElementById("error2")
+    const error3=document.getElementById("error3")
+    const error4=document.getElementById("error4")
+
+    const signform =document.getElementById("sign-form")
+
+//name validation
+    function nameValidateChecking(e){
+
+        const nameVal=nameId.value 
+        const namepattern=/^[a-zA-z\s]+$/
+
+        if(nameVal.trim()===""){
+            error1.style.display="block";
+            error1.innerHTML="please enter a valid name"
+        }else if(!namepattern.test(nameVal)){
+            error1.style.display="block";
+            error1.innerHTML="name can oly contain alphabeat and space"
+        }else{
+            error1.style.display="none"
+            error1.innerHTML=""
+        }
+    }
+
+//email validation
+    function emailValidateChecking(e){
+
+        const emailVal=emilId.value 
+        const emailPattern=/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
+
+        if(!emailPattern.test(emailVal)){
+            error2.style.display="block";
+            error2.innerHTML="invalid email adress"
+        }else{
+            error2.style.display="none"
+            error2.innerHTML=""
+        }
+
+    }
+//password validation
+    function passwordValidation(e){
+
+        const passwordVal=passwordId.value;
+        const passwordPattern=/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
+
+
+        if(!passwordPattern.test(passwordVal)){
+            error3.style.display="block"
+            error3.innerHTML="password not strong enogh"
+        }
+        else{
+            error3.style.display="none"
+            error3.innerHTML=""
+        }
+
+    
+    } 
+
+//phone validation
+    function phoneValidation(e){
+
+        const phoneVal=phoneId.value;
+        if(phoneVal.trim()===""){
+            error4.style.display="block";
+            error4.innerHTML="please enter the phone number"
+        }else if(phoneVal.length !== 10){
+            error4.style.display="block";
+            error4.innerHTML="phone number should be 10 digits"
+        }else{
+            error4.style.display="none";
+            error4.innerHTML=""
+        }
+    }    
+
+    document.addEventListener("DOMContentLoaded",function(){
+        signform.addEventListener("submit",function(e){
+
+            nameValidateChecking();
+            emailValidateChecking();
+            passwordValidation()
+            phoneValidation()
+
+            if(!nameId||!emilId||!phoneId||!passwordId||!error1||!error2||!error3||!error4||!signform){
+                console.log("one ore more elements not found")
+            }
+
+            if(error1.innerHTML ||error2.innerHTML||error3.innerHTML||error4.innerHTML){
+                e.preventDefault()
+            }
+        })
+    })   //
+</script>
 <%- include('../partials/user/footer') %>
