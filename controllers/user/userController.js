@@ -1,6 +1,8 @@
 const user = require('../../models/userSchema')
-const bcrypt = require('bcrypt')
-
+const bcrypt = require('bcrypt');
+const { CommandSucceededEvent } = require('mongodb');
+const nodemail=require('nodemailer')
+const env=require("dotenv").config();
 
 const securePassword = async (password) => {
     try {
@@ -44,6 +46,8 @@ const loadLogin = async (req, res) => {
         res.status(500).send("Server error")
     }
 }
+
+// render the signup page get 
 const loadSignup = async (req, res) => {
 
     try {
@@ -54,28 +58,117 @@ const loadSignup = async (req, res) => {
     }
 }
 
-//register new user
-const signup = async (req, res) => {
-    const sPassword = await securePassword(req.body.password)
 
-    const { username, email, phone } = req.body
+
+//otp genarotore
+function genareteOtp(){
+    return Math.floor(100000 + Math.random()*90000).toString()
+}
+
+//send otp to email
+async function sendVerificationEmail(email,otp){
+
     try {
+        console.log(otp)
+        const transport= nodemail.createTransport({
 
-        const newUser = new user({
-            username: username,
-            email: email,
-            phoneNumber: phone,
-            password: sPassword
+            service:"gmail",
+            port:587,
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:process.env.NODEMAILER_EMAIL,
+                pass:process.env.NODEMAILER_PASSWORD
+            }
         })
 
-        await newUser.save()
-        res.send("succesfully signed")
+        const info= await transport.sendMail({
+            from:process.env.NODEMAILER_EMAIL,
+            to:email,
+            subject:"verify your account",
+            text:`your otp is ${otp}`,
+            html:`<b>your OTP : ${otp}</b>`
+        })
 
-    } catch (err) {
-        console.log("err in signup page" + err)
-        res.send("server error")
+        return info.accepted.length > 0
+        
+    } catch (error) {
+        
+        console.log("sending email "+error)
+        return false
+    }
+
+}
+
+//register new user
+const signup = async (req, res) => {
+    
+    
+    try{
+        const {username,email,password,phone}=req.body
+        const userData=await user.findOne({email:email})
+        if(userData){
+            return res.render('signup', { message: "User with this email already exists" });
+        }
+        
+        const otp=genareteOtp()
+        console.log("after genarationg otp "+otp)
+        const emailSend=await sendVerificationEmail(email,otp)
+        if(!emailSend){
+            return res.json("email.error")
+        }
+        
+        req.session.userOtp=otp;
+        req.session.userData={email,password,phone,username};
+
+        res.render("verify-otp")
+
+
+    }catch(error){
+        console.log("error when the register new user "+error.message)
     }
 }
+
+//verify the user otp
+
+const otpverification=async (req,res)=>{
+
+    try {
+        const {otp}=req.body
+        console.log(otp)
+        console.log("otp matched otp : "+otp+" with session otp "+req.session.otp)
+        if(otp===req.session.userOtp){
+            console.log("otp matched otp : "+otp+" with session otp "+req.session.otp)
+            const User=req.session.userData;
+            const passwordHash=await securePassword(User.password)
+            const newUser=new user({
+                username:User.username,
+                password:passwordHash,
+                email:User.email,
+                phoneNumber:User.phone
+            })
+
+            const userData= await newUser.save()
+            req.session.user=userData._id
+            console.log(userData)
+
+            res.json({
+                success:true,
+                redirectUrl:'/'
+            })
+        }else{
+            console.log("otp doesn't match")
+            res.status(400).json({success:false,message:"invalid OTP , please try again"})
+        }
+        
+    } catch (error) {
+        console.log("otp catch block "+error.message)
+        res.status(400).json({success:false,message:"an error occured"})
+    }
+    
+}
+
+
 
 // verify the user
 const login = async (req, res) => {
@@ -88,7 +181,7 @@ const login = async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, userData.password)
         if (passwordMatch) {
             if (userData.role === "admin") {
-                return res.send("admin")
+                return res.redirect("/admin/productManagment")
             }
             res.send("home")
         }
@@ -106,4 +199,5 @@ module.exports = {
     loadSignup,
     signup,
     login,
+    otpverification,
 }

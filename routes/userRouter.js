@@ -8,5 +8,6 @@ router.get('/login',userController.loadLogin)
 router.get('/signup',userController.loadSignup)
 router.post('/signup',userController.signup)
 router.post('/login',userController.login)
+router.post('/verify-otp',userController.otpverification)
 
 module.exports = router

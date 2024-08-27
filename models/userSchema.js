@@ -20,6 +20,10 @@ const userSchema=new Schema({
         unique:true,
 
     },
+    googleId: {
+        type: String,
+        unique: true
+    },
     phoneNumber:{
         type:String,
         required:true,
@@ -47,14 +51,16 @@ const userSchema=new Schema({
         type: String, 
        
     },
-    createdAt: {
-        type: Date,
-        default: Date.now 
-    },
-    updatedAt:{
-        type: Date,
-        default: Date.now   
-    }
+    // createdAt: {
+    //     type: Date,
+    //     default: Date.now   
+    // },
+    // updatedAt:{
+    //     type: Date,
+    //     default: Date.now   
+    // }
+},{
+    timestamps:true
 })
 
 const user=mongoose.model("user",userSchema);

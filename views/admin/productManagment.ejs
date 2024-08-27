@@ -1,58 +1,79 @@
-
-
 <%- include('../partials/admin/header') %>
 
-    <div class="login-container">
-        <div class="product-form-container">
-            <h2 class="product-form-title">Add New Product</h2>
-            <form class="product-form" action="/submit-product" method="POST" enctype="multipart/form-data">
-                <!-- Product Name -->
-                <div class="product-form-group">
-                    <label class="product-form-label" for="name">Product Name</label>
-                    <input class="product-form-input" type="text" id="name" name="name" required>
-                </div>
-                
-                <!-- Description -->
-                <div class="product-form-group">
-                    <label class="product-form-label" for="description">Description</label>
-                    <textarea class="product-form-textarea" id="description" name="description" required></textarea>
-                </div>
-                
-                <!-- Price -->
-                <div class="product-form-group">
-                    <label class="product-form-label" for="price">Price</label>
-                    <input class="product-form-input" type="number" id="price" name="price" step="0.01" required>
-                </div>
-                
-                <!-- Image -->
-                <div class="product-form-group">
-                    <label class="product-form-label" for="image">Product Image</label>
-                    <input class="product-form-input" type="file" id="image" name="image" accept="image/*" required>
-                </div>
-                
-                <!-- Variants -->
-                <h3 class="product-variant-title">Variants</h3>
-                <div class="product-variant-group">
-                    <div class="product-form-group">
-                        <label class="product-form-label" for="size">Size</label>
-                        <input class="product-form-input" type="text" id="size" name="variant[size]" required>
-                    </div>
-                    
-                    <div class="product-form-group">
-                        <label class="product-form-label" for="stock">Stock</label>
-                        <input class="product-form-input" type="number" id="stock" name="variant[stock]" required>
-                    </div>
-                    
-                    <div class="product-form-group">
-                        <label class="product-form-label" for="color">Color</label>
-                        <input class="product-form-input" type="text" id="color" name="variant[color]" required>
-                    </div>
-                </div>
-                
-                <!-- Submit Button -->
-                <button class="product-submit-button" type="submit">Add Product</button>
-            </form>
-        </div>
+<div id="page-wrapper">
+    <div class="header">
+      <h1 class="page-header">
+        Add New Product
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Forms</a></li>
+        <li class="active">Data</li>
+      </ol>
+
     </div>
-    
-    <%- include('../partials/admin/footer') %>
+
+    <div id="page-inner">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            
+            <div class="card-content">
+                <form class="col s12">
+                    <div class="row">
+                      <div class="input-field col s12">
+                        <input placeholder="Product Name" id="first_name" type="text" class="validate">
+                      </div>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="input-field col s12">
+                        <input placeholder="Description" id="disabled" type="text" class="validate">
+                      </div>
+                    </div>
+                  
+                    <div class="row">
+                      <div class="input-field col s12">
+                        <input placeholder="Price" id="price" type="number" class="validate">
+                      </div>
+                    </div>
+                  
+                    <div class="row">
+                      <div class="input-field col s12">
+                        <input placeholder="Category" id="category" type="text" class="validate">
+                      </div>
+                    </div>
+                  
+                    <div class="row">
+                      <div class="input-field col s12">
+                        <input placeholder="Product Image URL" id="product_image" type="text" class="validate">
+                      </div>
+                    </div>
+                  
+                    <div class="row">
+                      <div class="col s12">
+                        <div class="input-field inline">
+                          <input placeholder="Size" id="size" type="text" class="validate">
+                        </div>
+                        <div class="input-field inline">
+                          <input placeholder="Color" id="color" type="text" class="validate">
+                        </div>
+                        <div class="input-field inline">
+                          <input placeholder="Stock" id="stock" type="number" class="validate">
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  
+              <div class="clearBoth"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+        
+       
+        <!-- /.panel-body -->
+      </div>
+      <!-- /.col-lg-12 -->
+      <%- include('../partials/admin/footer') %>

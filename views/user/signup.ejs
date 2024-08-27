@@ -18,11 +18,16 @@
             <input type="password" id="password" name="password" required>
             <div id="error3" class="error-message"></div>
 
+            <label for="password">ConfirmPassword:</label>
+            <input type="password" id="connfirm-password" name="connfirm-password" required>
+            <div id="error4" class="error-message"></div>
 
             <label for="phone">Phone:</label>
             <input type="tel" id="phone" name="phone" required>
-            <div id="error4" class="error-message"></div>
-            
+            <div id="error5" class="error-message"></div>
+            <% if (typeof message !== 'undefined') { %>
+                <p><%= message %></p>
+            <% } %>
 
             <button type="submit">Sign Up</button>
         </form>
@@ -35,12 +40,14 @@
     const nameId=document.getElementById("name");
     const emilId=document.getElementById("email");
     const passwordId=document.getElementById("password")
+    const cPasswordId=document.getElementById("connfirm-password")
     const phoneId=document.getElementById("phone")
 
     const error1=document.getElementById("error1")
     const error2=document.getElementById("error2")
     const error3=document.getElementById("error3")
     const error4=document.getElementById("error4")
+    const error5=document.getElementById("error5")
 
     const signform =document.getElementById("sign-form")
 
@@ -96,19 +103,31 @@
     
     } 
 
+//confirm password
+    function confirmPasswordValidation(){
+
+        const cPasswordVal=cPasswordId.value
+        const passwordVal=passwordId.value;
+        if(cPasswordVal !== passwordVal){
+            error4.style.display="block"
+            error4.innerHTML="password does'not match"
+        }
+    }    
+
+
 //phone validation
     function phoneValidation(e){
 
         const phoneVal=phoneId.value;
         if(phoneVal.trim()===""){
-            error4.style.display="block";
-            error4.innerHTML="please enter the phone number"
+            error5.style.display="block";
+            error5.innerHTML="please enter the phone number"
         }else if(phoneVal.length !== 10){
-            error4.style.display="block";
-            error4.innerHTML="phone number should be 10 digits"
+            error5.style.display="block";
+            error5.innerHTML="phone number should be 10 digits"
         }else{
-            error4.style.display="none";
-            error4.innerHTML=""
+            error5.style.display="none";
+            error5.innerHTML=""
         }
     }    
 
@@ -118,13 +137,14 @@
             nameValidateChecking();
             emailValidateChecking();
             passwordValidation()
+            confirmPasswordValidation()
             phoneValidation()
 
-            if(!nameId||!emilId||!phoneId||!passwordId||!error1||!error2||!error3||!error4||!signform){
+            if(!nameId||!emilId||!phoneId||!passwordId||!error1||!error2||!error3||!error4||!signform||!cPasswordId || !error5){
                 console.log("one ore more elements not found")
             }
 
-            if(error1.innerHTML ||error2.innerHTML||error3.innerHTML||error4.innerHTML){
+            if(error1.innerHTML ||error2.innerHTML||error3.innerHTML||error4.innerHTML||error5.innerHTML){
                 e.preventDefault()
             }
         })
