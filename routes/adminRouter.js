@@ -8,3 +8,5 @@ const adminController=require("../controllers/admin/adminController")
 router.get("/productManagment",adminController.productManagment)
 
 module.exports=router;
+
+

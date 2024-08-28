@@ -26,12 +26,14 @@ const userSchema=new Schema({
     },
     phoneNumber:{
         type:String,
-        required:true,
+        required:false,
         unique:true,
+        sparse:true,
+        default:null
     },
     password:{
         type:String,
-        required:true
+        required:false
     },
     isActive:{
         type:Boolean,

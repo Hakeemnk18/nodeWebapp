@@ -48,6 +48,13 @@
           resendLink.classList.remove("disabled");
           resendLink.classList.add("active");
           resendLink.onclick = function () {
+
+
+            // $.ajax({
+            //   type:"get",
+            //   url:"resend-otp",
+
+            // })
             // Here, you could implement the logic to resend the OTP via AJAX or by navigating to a route.
             window.location.href = '/resend-otp'; // Example action
           };

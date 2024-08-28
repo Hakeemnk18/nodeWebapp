@@ -112,7 +112,7 @@ const signup = async (req, res) => {
         }
         
         const otp=genareteOtp()
-        console.log("after genarationg otp "+otp)
+        //console.log("after genarationg otp "+otp)
         const emailSend=await sendVerificationEmail(email,otp)
         if(!emailSend){
             return res.json("email.error")
@@ -168,6 +168,25 @@ const otpverification=async (req,res)=>{
     
 }
 
+//resend otp 
+const resendOtp=async (req,res)=>{
+
+    try {
+        
+        const otp=genareteOtp()
+        const email=req.session.userData.email
+        const emailSend=await sendVerificationEmail(email,otp)
+        if(!emailSend){
+            return res.json("email.error")
+        }
+        req.session.userOtp=otp;
+        res.render("verify-otp")
+
+    } catch (error) {
+        console.log("error in resend otp "+error.message)
+    }
+}
+
 
 
 // verify the user
@@ -200,4 +219,5 @@ module.exports = {
     signup,
     login,
     otpverification,
+    resendOtp,
 }
