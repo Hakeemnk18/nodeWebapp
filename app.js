@@ -11,7 +11,8 @@ db()
 
 app.use(express.json())
 app.use(express.urlencoded({extends:true}))
-//session handling
+
+//session
 app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
@@ -29,8 +30,9 @@ app.use(express.static(path.join(__dirname,"public")))
 
 
 
-app.use("/",userRouter)
+
 app.use("/admin",adminRouter)
+app.use("/",userRouter)
 app.use(passport.initialize())
 app.use(passport.session());
 
@@ -43,9 +45,4 @@ app.listen(PORT,()=> console.log("server started"))
 
 module.exports=app;
 
-// const express=require("express")
-// const app=express()
 
-// app.get("/",(req,res)=>{
-//     res.send("hello world")
-// }).listen(4000,()=> console.log("server started"))

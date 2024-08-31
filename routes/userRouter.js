@@ -12,6 +12,9 @@ router.post('/login',userController.login)
 router.post('/verify-otp',userController.otpverification)
 router.get('/resend-otp',userController.resendOtp)
 
+//product details
+router.get('/productDetails',userController.productDetails)
+
 router.get("/auth/google",passport.authenticate('google',{scope:['profile','email']}));
 router.get("/google/callback",passport.authenticate('google',{failureRedirect:'/signup'}),(req,res)=>{
     res.redirect('/')

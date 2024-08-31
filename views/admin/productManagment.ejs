@@ -19,47 +19,50 @@
           <div class="card">
             
             <div class="card-content">
-                <form class="col s12">
+                <form class="col s12" action="/admin/productManagment" method="post" enctype="multipart/form-data">
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Product Name" id="first_name" type="text" class="validate">
+                        <input placeholder="Product Name" id="first_name" type="text" class="validate" name="productName">
                       </div>
                     </div>
                     
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Description" id="disabled" type="text" class="validate">
+                        <input placeholder="Description" id="disabled" type="text" class="validate" name="productDiscription">
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Price" id="price" type="number" class="validate">
+                        <input placeholder="Price" id="price" type="number" class="validate" name="productPrice">
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Category" id="category" type="text" class="validate">
+                        <input placeholder="Category" id="category" type="text" class="validate" name="productCategory">
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Product Image URL" id="product_image" type="text" class="validate">
+                        <input placeholder="Product Image URL" id="product_image" type="file" class="validate" name="productImage">
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="col s12">
                         <div class="input-field inline">
-                          <input placeholder="Size" id="size" type="text" class="validate">
+                          <input placeholder="Size" id="size" type="text" class="validate" name="productSize">
                         </div>
                         <div class="input-field inline">
-                          <input placeholder="Color" id="color" type="text" class="validate">
+                          <input placeholder="Color" id="color" type="text" class="validate" name="productColor">
                         </div>
                         <div class="input-field inline">
-                          <input placeholder="Stock" id="stock" type="number" class="validate">
+                          <input placeholder="Stock" id="stock" type="number" class="validate" name="productStock">
+                        </div>
+                        <div>
+                          <button type="submit" class="btn btn-success">add product</button>
                         </div>
                       </div>
                     </div>

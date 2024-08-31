@@ -209,6 +209,16 @@ const login = async (req, res) => {
     }
 }
 
+//product details
+const productDetails=async (req,res)=>{
+    try {
+        res.render('productDetails')
+    } catch (error) {
+       console.log("error in product details page "+error.message) 
+    }
+}
+
+
 
 
 module.exports = {
@@ -220,4 +230,5 @@ module.exports = {
     login,
     otpverification,
     resendOtp,
+    productDetails,
 }

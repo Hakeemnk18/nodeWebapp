@@ -26,14 +26,18 @@ const productSchema=new Schema({
         type:String,
         required:true
     },
-    productImage:{
-        type:String,
-        required:true
-    },
-    price:{
-        type:Number,
-        required:true
-    },
+    productImage: [
+        {
+            path: {
+                type: String,
+                required: true
+            },
+            filename: {
+                type: String,
+                required: true
+            }
+        }
+    ],
     offerId:{
         type:Schema.Types.ObjectId,
         ref:"offers"
@@ -44,23 +48,13 @@ const productSchema=new Schema({
     },
     rating:{
         type:Schema.Types.ObjectId,
-    },
-    updatedAt:{
-        type:Date,
-        default:Date.now
-    },
-    createdAt:{
-        type:Date,
-        default:Date.now
+        ref:"rating"
     },
     price:{
         type:Number,
         required:true
     }
-
-
-
-})
+},{timestamps:true})
 
 const product=mongoose.model("product",productSchema)
 
