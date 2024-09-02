@@ -546,7 +546,8 @@ ul.dropdown-menu.dropdown-messages li a div {
 	text-transform:uppercase;
 }
 .collection .collection-item{
-	padding: 16px 20px;
+	
+padding: 16px 20px;
 }
 /*----------------------------------------------
     UI ELEMENTS STYLES     
@@ -562,6 +563,7 @@ text-align: center;
 font-size: 12px;
 line-height: 1.428571429;
 }
+
 
 /*----------------------------------------------
     MEDIA QUERIES     
@@ -685,9 +687,12 @@ font-size: 19px;
 	color: #f44336;
 }
 .dropdown-content li{
-	padding: 15px;
-	color: #233342;
-	font-size: 13px;
+	
+padding: 15px;
+	
+color: #233342;
+	
+font-size: 13px;
 }
 .taskList li{padding: 20px 15px 5px;background: #fff;font-size: 12px;}
 .taskList > div{

@@ -13,6 +13,9 @@ const upload=require('../config/multerHelpper')
 
 router.get("/productManagment",adminController.productManagment)
 router.post("/productManagment",upload.array("productImage",3),adminController.addProduct)
+router.get('/userManagement',adminController.userManagement)
+router.get('/userManagement/block',adminController.userBlock)
+router.get("/userManagement/unblock",adminController.userUnblock)
 
 module.exports=router;
 
