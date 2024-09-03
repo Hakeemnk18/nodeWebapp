@@ -2,10 +2,23 @@ const {processImage}=require("../../helpers/imageHelper")
 const Product=require('../../models/productSchema')
 const path=require('path')
 const User=require('../../models/userSchema')
+const Category=require('../../models/category')
+
+
+
+//admin dashboard
+const dashBoard=async(req,res)=>{
+    try {
+        res.render('adminDashboard')
+    } catch (error) {
+        console.log("error in dashboard "+error.message)
+    }
+}
 
 
 
 
+// add product get method
 
 const productManagment=async (req,res)=>{
 
@@ -17,6 +30,8 @@ const productManagment=async (req,res)=>{
     }
 }
 
+
+// add product post
 
 
 const addProduct=async(req,res)=>{
@@ -67,6 +82,7 @@ const addProduct=async(req,res)=>{
     }
 }
 
+
 //user management 
 const userManagement=async(req,res)=>{
     try {
@@ -112,11 +128,114 @@ const userUnblock=async(req,res)=>{
     
 }
 
+//load category
+const loadCategory=async(req,res)=>{
+
+    try {
+    
+        res.render("addCategory")
+    } catch (error) {
+        console.log("error in category load "+error.message)
+    }
+
+}
+
+
+const addCategory=async(req,res)=>{
+
+    try {
+
+        
+        const{categoryName,categoryDiscription}=req.body
+        const newCategory=new Category({
+            categoryName:categoryName,
+            description:categoryDiscription
+        })
+
+        await newCategory.save();
+        console.log("category saved")
+        res.send('category saved')
+        
+    } catch (error) {
+        
+        console.log('error in add category '+error.message)
+    }
+}
+
+//all categories
+
+const allCategories=async(req,res)=>{
+
+    try {
+
+        const data=await Category.find()
+        res.render('allCategories',{data})
+        
+    } catch (error) {
+        console.log("error in all categories "+error.message)   
+    }
+}
+
+//delete category
+
+const deleteCategory=async(req,res)=>{
+
+    try {
+
+        
+        const{id}=req.params
+        
+        await Category.deleteOne({_id:id})
+        
+        res.redirect('/admin/category')
+    } catch (error) {
+        console.log("error in delete product "+error.message)
+    }
+}
+
+//edit category load page
+const editCategoryLoad=async (req,res)=>{
+    try {
+
+        const {id}=req.params
+
+        const category = await Category.findOne({ _id: id });
+        const { categoryName, description } = category;
+
+        
+        res.render('editCategory',{categoryName,description,id})
+    } catch (error) {
+        console.log("error in edit load page "+error.message)
+    }
+}
+
+//edit category 
+const editCategory=async (req,res)=>{
+    try {
+        
+        const {id}=req.params
+        const{categoryName,description}=req.body
+        await Category.updateOne({_id:id},{$set:{categoryName:categoryName,description:description}})
+        res.redirect('/admin/category')
+    } catch (error) {
+        console.log("error in edit category "+error.message)
+    }
+}
+
+
+
 
 module.exports={
     productManagment,
     addProduct,
     userManagement,
     userBlock,
-    userUnblock
+    userUnblock,
+    dashBoard,
+    loadCategory,
+    addCategory,
+    allCategories,
+    deleteCategory,
+    editCategoryLoad,
+    editCategory
 }

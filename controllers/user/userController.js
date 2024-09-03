@@ -37,15 +37,7 @@ const loadHomepage = async (req, res) => {
 }
 
 
-const loadLogin = async (req, res) => {
 
-    try {
-        return res.render("login")
-    } catch (err) {
-        console.log("err in load login page " + err)
-        res.status(500).send("Server error")
-    }
-}
 
 // render the signup page get 
 const loadSignup = async (req, res) => {
@@ -187,7 +179,17 @@ const resendOtp=async (req,res)=>{
     }
 }
 
+//  load login page
 
+const loadLogin = async (req, res) => {
+
+    try {
+        return res.render("login")
+    } catch (err) {
+        console.log("err in load login page " + err)
+        res.status(500).send("Server error")
+    }
+}
 
 // verify the user
 const login = async (req, res) => {
@@ -200,7 +202,7 @@ const login = async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, userData.password)
         if (passwordMatch) {
             if (userData.role === "admin") {
-                return res.redirect("/admin/productManagment")
+                return res.redirect("/admin")
             }
             res.send("home")
         }
