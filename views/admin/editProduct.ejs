@@ -3,7 +3,7 @@
 <div id="page-wrapper">
     <div class="header">
       <h1 class="page-header">
-        Add New Product
+        Edit Product
       </h1>
       <ol class="breadcrumb">
         <li><a href="#">Home</a></li>
@@ -19,22 +19,22 @@
           <div class="card">
             
             <div class="card-content">
-                <form class="col s12" action="/admin/product/addProduct" method="post" enctype="multipart/form-data">
+                <form class="col s12" action="/admin/product/editProduct/<%= id %>" method="post" >
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Product Name" id="first_name" type="text" class="validate" name="productName">
+                        <input placeholder="Product Name" id="first_name" type="text" class="validate" name="productName" value="<%= name %>">
                       </div>
                     </div>
                     
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Description" id="disabled" type="text" class="validate" name="productDiscription">
+                        <input placeholder="Description" id="disabled" type="text" class="validate" name="productDiscription" value="<%= description %>">
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Price" id="price" type="number" class="validate" name="productPrice">
+                        <input placeholder="Price" id="price" type="number" class="validate" name="productPrice" value="<%= price %>">
                       </div>
                     </div>
                   
@@ -46,23 +46,23 @@
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Product Image URL" id="product_image" type="file" class="validate" name="productImage" multiple>
+                        <input placeholder="Product Image URL" id="product_image" type="file" class="validate" name="productImage">
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="col s12">
                         <div class="input-field inline">
-                          <input placeholder="Size" id="size" type="text" class="validate" name="productSize">
+                          <input placeholder="Size" id="size" type="text" class="validate" name="productSize" value="<%= size %>">
                         </div>
                         <div class="input-field inline">
-                          <input placeholder="Color" id="color" type="text" class="validate" name="productColor">
+                          <input placeholder="Color" id="color" type="text" class="validate" name="productColor" value="<%= color %>">
                         </div>
                         <div class="input-field inline">
-                          <input placeholder="Stock" id="stock" type="number" class="validate" name="productStock">
+                          <input placeholder="Stock" id="stock" type="number" class="validate" name="productStock" value="<%= stock %>">
                         </div>
                         <div>
-                          <button type="submit" class="btn btn-success">add product</button>
+                          <button type="submit" class="btn btn-success">edit product</button>
                         </div>
                       </div>
                     </div>
@@ -80,7 +80,3 @@
       </div>
       <!-- /.col-lg-12 -->
       <%- include('../partials/admin/footer') %>
-
-
-
-    

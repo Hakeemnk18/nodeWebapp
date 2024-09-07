@@ -1,4 +1,5 @@
 const user = require('../../models/userSchema')
+const Product=require('../../models/productSchema')
 const bcrypt = require('bcrypt');
 const { CommandSucceededEvent } = require('mongodb');
 const nodemail=require('nodemailer')
@@ -24,14 +25,23 @@ const pageNotfound = async (req, res) => {
 }
 
 
-
-
 const loadHomepage = async (req, res) => {
 
     try {
-        return res.render("home")
+        let logout;
+        const product=await Product.find()
+        if(req.session.passport){
+            
+            req.session.user_id=req.session.passport.user
+            
+        }
+        if(req.session.user_id){
+            logout="logout"
+        }
+        //console.log(product[0].productImage[0].path)
+        return res.render("home",{logout,product})
     } catch (error) {
-        console.log("err in load Home page")
+        console.log("err in load Home page "+error.message)
         res.status(500).send("Server error")
     }
 }
@@ -104,7 +114,7 @@ const signup = async (req, res) => {
         }
         
         const otp=genareteOtp()
-        //console.log("after genarationg otp "+otp)
+        console.log("after genarationg otp "+otp)
         const emailSend=await sendVerificationEmail(email,otp)
         if(!emailSend){
             return res.json("email.error")
@@ -112,6 +122,7 @@ const signup = async (req, res) => {
         
         req.session.userOtp=otp;
         req.session.userData={email,password,phone,username};
+        console.log(req.session)
 
         res.render("verify-otp")
 
@@ -127,10 +138,9 @@ const otpverification=async (req,res)=>{
 
     try {
         const {otp}=req.body
-        console.log(otp)
-        console.log("otp matched otp : "+otp+" with session otp "+req.session.otp)
+        
         if(otp===req.session.userOtp){
-            console.log("otp matched otp : "+otp+" with session otp "+req.session.otp)
+            console.log(" otp verification succesful : "+otp+" with session otp "+req.session.otp)
             const User=req.session.userData;
             const passwordHash=await securePassword(User.password)
             const newUser=new user({
@@ -141,8 +151,9 @@ const otpverification=async (req,res)=>{
             })
 
             const userData= await newUser.save()
-            req.session.user=userData._id
-            console.log(userData)
+            req.session.user_id=userData._id
+            //console.log(userData)
+            //console.log(req.session.user_id)
 
             res.json({
                 success:true,
@@ -150,12 +161,12 @@ const otpverification=async (req,res)=>{
             })
         }else{
             console.log("otp doesn't match")
-            res.status(400).json({success:false,message:"invalid OTP , please try again"})
+            return res.status(400).json({success:false,message:"invalid OTP , please try again"})
         }
         
     } catch (error) {
         console.log("otp catch block "+error.message)
-        res.status(400).json({success:false,message:"an error occured"})
+        return res.status(400).json({success:false,message:"an error occured"})
     }
     
 }
@@ -197,14 +208,18 @@ const login = async (req, res) => {
     const { username, password } = req.body
 
     const userData = await user.findOne({ username: username, isActive: true })
-    console.log(userData)
+    
     if (userData) {
         const passwordMatch = await bcrypt.compare(password, userData.password)
         if (passwordMatch) {
             if (userData.role === "admin") {
+                req.session.admin_id=userData._id
+                
                 return res.redirect("/admin")
             }
-            res.send("home")
+            req.session.user_id=userData._id
+            
+            return  res.redirect("/")
         }
     } else {
         res.send("invalid usename")

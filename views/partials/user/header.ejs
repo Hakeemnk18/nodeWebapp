@@ -38,7 +38,11 @@
                     <li><a href="">About</a></li>
                     <li><a href="">Contact</a></li>
                     <li><a href="account.html">Account</a></li>
-                    <li><button ><a href="/login" >Login</a></button></li>
+                    <% if(typeof logout === 'undefined') { %>
+                        <li><a href="/login" >Login</a></li>
+                    <% } else { %>
+                        <li><a href="/login" >Logout</a></li>
+                    <% } %>
                 </ul>
             </nav>
         </div>

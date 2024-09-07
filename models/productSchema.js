@@ -22,7 +22,7 @@ const productSchema=new Schema({
         type:String,
         required:true
     },
-    discription:{
+    description:{
         type:String,
         required:true
     },
@@ -32,7 +32,7 @@ const productSchema=new Schema({
                 type: String,
                 required: true
             },
-            filename: {
+            filename: {                            
                 type: String,
                 required: true
             }
@@ -53,6 +53,10 @@ const productSchema=new Schema({
     price:{
         type:Number,
         required:true
+    },
+    category:{
+        type: Schema.Types.ObjectId, 
+        ref: 'Category'
     }
 },{timestamps:true})
 

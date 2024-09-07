@@ -15,16 +15,42 @@ const dashBoard=async(req,res)=>{
     }
 }
 
+//all product
+const allProduct=async (req,res)=>{
+    try {
+        
+        const data=await Product.find({})
+        res.render('allProduct',{data})
+    } catch (error) {
+        console.log("error in all product list "+error.message)
+    }
+}
 
+//search product
+const searchProduct=async(req,res)=>{
+    try {
+        
+        const query = req.query.search || ''; 
+        const regex = new RegExp(`^${query}`, 'i');
+        const data= await Product.find({name: { $regex: regex } })
+        console.log(data)
+        
+        
+        res.render('allProduct',{data})
+    } catch (error) {
+        console.log("error in search product "+error.message)
+    }
+}
 
 
 // add product get method
 
 const productManagment=async (req,res)=>{
 
-    console.log("controller")
+    
     try{
-        return res.render("productManagment")
+        const category=await Category.find({})
+        return res.render("productManagment",{category})
     }catch(err){
         console.log("product managment "+err.message)
     }
@@ -38,7 +64,7 @@ const addProduct=async(req,res)=>{
 
     try {
 
-        console.log(req.body)
+        
         const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
         if (req.files.length > 3) {
             return res.status(400).send('Only up to 3 images are allowed.');
@@ -58,7 +84,7 @@ const addProduct=async(req,res)=>{
 
         const newProduct= new Product({
             name:productName,
-            discription:productDiscription,
+            description:productDiscription,
             price:productPrice,
             productImage:processedImages,
             varient:[
@@ -74,7 +100,7 @@ const addProduct=async(req,res)=>{
 
         const productData=await newProduct.save()
         console.log("product saved")
-        return res.send("product saved")
+        return res.redirect('/admin/product')
         
     } catch (error) {
         
@@ -82,6 +108,70 @@ const addProduct=async(req,res)=>{
     }
 }
 
+// delete product
+const deleteProduct=async(req,res)=>{
+
+    try {
+        
+        const{id}=req.params
+        
+        await Product.deleteOne({_id:id})
+        res.redirect('/admin/product')
+    } catch (error) {
+        console.log("error in delete group "+error.message)
+    }
+}
+
+
+// load edit product
+
+const loadEditProduct=async(req,res)=>{
+    
+    try {
+        
+        
+        const {id}=req.params
+        const data=await Product.findOne({_id:id})
+        const {name,description,price,varient}=data
+        const {size,stock,color}=varient[0]
+        //console.log(name,discription,price,size,stock,color)
+        res.render('editProduct',{name,description,price,size,stock,color,id})
+
+
+    } catch (error) {
+        console.log("error in load edit product "+error.message)
+    }
+}
+
+//edit product
+const editProduct=async(req,res)=>{
+    try {
+        const {id}=req.params
+        const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
+        console.log(req.body)
+
+        await Product.updateOne(
+            {_id:id},
+            {
+                name:productName,
+                description:productDiscription,
+                price:productPrice,
+                varient:[
+                    {
+                        size:productSize,
+                        color:productColor,
+                        stock:productStock,
+
+                    }
+                ]
+
+            }
+        )
+        res.redirect('/admin/product')
+    } catch (error) {
+        console.log("error in edit product "+error.message)
+    }
+}
 
 //user management 
 const userManagement=async(req,res)=>{
@@ -127,6 +217,7 @@ const userUnblock=async(req,res)=>{
     }
     
 }
+//////////////////////////////////////////////////////////////
 
 //load category
 const loadCategory=async(req,res)=>{
@@ -154,7 +245,7 @@ const addCategory=async(req,res)=>{
 
         await newCategory.save();
         console.log("category saved")
-        res.send('category saved')
+        res.redirect('/admin/category')
         
     } catch (error) {
         
@@ -237,5 +328,10 @@ module.exports={
     allCategories,
     deleteCategory,
     editCategoryLoad,
-    editCategory
+    editCategory,
+    allProduct,
+    deleteProduct,
+    loadEditProduct,
+    editProduct,
+    searchProduct
 }

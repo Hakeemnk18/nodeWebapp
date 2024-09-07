@@ -7,10 +7,12 @@ const passport=require('./config/passport')
 const db=require('./config/db')
 const userRouter=require('./routes/userRouter')
 const adminRouter=require("./routes/adminRouter")
+const nocache=require('nocache')
 db()
 
 app.use(express.json())
 app.use(express.urlencoded({extends:true}))
+app.use(nocache())
 
 //session
 app.use(session({
