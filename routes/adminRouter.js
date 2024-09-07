@@ -34,7 +34,7 @@ router.get('/category/addCategory',auth.isLogin,adminController.loadCategory)
 router.post('/category/addCategory',adminController.addCategory)
 router.get('/category/deleteCategory/:id',auth.isLogin,adminController.deleteCategory)
 router.get('/category/editCategory/:id',auth.isLogin,adminController.editCategoryLoad)
-router.post('/category/editCategory/:id',auth.isLogin,adminController.editCategory)
+router.post('/category/editCategory/:id',auth.isLogin, adminController.editCategory)
 
 
 

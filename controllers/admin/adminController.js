@@ -82,6 +82,8 @@ const addProduct=async(req,res)=>{
             };
         }));
 
+        console.log(processedImages)
+
         const newProduct= new Product({
             name:productName,
             description:productDiscription,

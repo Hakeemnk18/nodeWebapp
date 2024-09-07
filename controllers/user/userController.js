@@ -38,7 +38,8 @@ const loadHomepage = async (req, res) => {
         if(req.session.user_id){
             logout="logout"
         }
-        //console.log(product[0].productImage[0].path)
+        
+        console.log(product[0].productImage[0].filename)
         return res.render("home",{logout,product})
     } catch (error) {
         console.log("err in load Home page "+error.message)
