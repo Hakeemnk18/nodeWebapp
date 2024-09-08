@@ -14,6 +14,9 @@ router.post('/login',userController.login)
 router.post('/verify-otp',userController.otpverification)
 router.get('/resend-otp',userController.resendOtp)
 
+//logout
+router.get('/logout',userController.logout)
+
 //product details
 router.get('/productDetails',userController.productDetails)
 

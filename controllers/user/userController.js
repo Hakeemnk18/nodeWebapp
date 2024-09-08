@@ -237,6 +237,28 @@ const productDetails=async (req,res)=>{
 }
 
 
+//logut
+const logout=async(req,res)=>{
+    try {
+        
+        req.session.destroy((err)=>{
+            if(err){
+                console.log("error when distroy session cb "+err.message)
+            }
+            else{
+                console.log("session destroy successfully")
+                res.redirect('/')
+            }
+        })
+
+            
+    } catch (error) {
+        
+        console.log("error destroy session "+error.message)
+    }
+}
+
+
 
 
 module.exports = {
@@ -249,4 +271,5 @@ module.exports = {
     otpverification,
     resendOtp,
     productDetails,
+    logout
 }
