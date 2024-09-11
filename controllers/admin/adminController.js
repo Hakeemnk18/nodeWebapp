@@ -175,145 +175,20 @@ const editProduct=async(req,res)=>{
     }
 }
 
-//user management 
-const userManagement=async(req,res)=>{
-    try {
 
 
-        const data=await User.find({},{_id:1,username:1,email:1,isActive:1})
-        
-        
-        
-        res.render("userManagement",{data})
-    } catch (error) {
-        console.log("error in user management "+error.message)
-    }
-}
-
-//user management block
-const userBlock=async(req,res)=>{
-
-    try{
-        const {id}=req.query
-        
-        await User.updateOne({_id:id},{$set:{isActive:false}})
-        console.log("after block the user")
-
-        res.redirect("/admin/userManagement")
-    }catch(err){
-        console.log("error in user block "+err.message)
-    }
-    
-}
-
-//user unblock
-const userUnblock=async(req,res)=>{
-
-    try{
-        const {id}=req.query
-        await User.updateOne({_id:id},{$set:{isActive:true}})
-        console.log("after unblock the user ")
-        res.redirect("/admin/userManagement")
-    }catch(err){
-        console.log("error in user unblock "+err.message)
-    }
-    
-}
-//////////////////////////////////////////////////////////////
-
-//load category
-const loadCategory=async(req,res)=>{
-
-    try {
-    
-        res.render("addCategory")
-    } catch (error) {
-        console.log("error in category load "+error.message)
-    }
-
-}
 
 
-const addCategory=async(req,res)=>{
 
-    try {
 
-        
-        const{categoryName,categoryDiscription}=req.body
-        const newCategory=new Category({
-            categoryName:categoryName,
-            description:categoryDiscription
-        })
 
-        await newCategory.save();
-        console.log("category saved")
-        res.redirect('/admin/category')
-        
-    } catch (error) {
-        
-        console.log('error in add category '+error.message)
-    }
-}
 
-//all categories
 
-const allCategories=async(req,res)=>{
 
-    try {
 
-        const data=await Category.find()
-        res.render('allCategories',{data})
-        
-    } catch (error) {
-        console.log("error in all categories "+error.message)   
-    }
-}
 
-//delete category
 
-const deleteCategory=async(req,res)=>{
 
-    try {
-
-        
-        const{id}=req.params
-        
-        await Category.deleteOne({_id:id})
-        
-        res.redirect('/admin/category')
-    } catch (error) {
-        console.log("error in delete product "+error.message)
-    }
-}
-
-//edit category load page
-const editCategoryLoad=async (req,res)=>{
-    try {
-
-        const {id}=req.params
-
-        const category = await Category.findOne({ _id: id });
-        const { categoryName, description } = category;
-
-        
-        res.render('editCategory',{categoryName,description,id})
-    } catch (error) {
-        console.log("error in edit load page "+error.message)
-    }
-}
-
-//edit category 
-const editCategory=async (req,res)=>{
-    try {
-        
-        const {id}=req.params
-        const{categoryName,description}=req.body
-        await Category.updateOne({_id:id},{$set:{categoryName:categoryName,description:description}})
-        res.redirect('/admin/category')
-    } catch (error) {
-        console.log("error in edit category "+error.message)
-    }
-}
 
 
 
@@ -321,19 +196,11 @@ const editCategory=async (req,res)=>{
 module.exports={
     productManagment,
     addProduct,
-    userManagement,
-    userBlock,
-    userUnblock,
     dashBoard,
-    loadCategory,
-    addCategory,
-    allCategories,
-    deleteCategory,
-    editCategoryLoad,
-    editCategory,
     allProduct,
     deleteProduct,
     loadEditProduct,
     editProduct,
-    searchProduct
+    searchProduct,
+    
 }

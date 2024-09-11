@@ -17,7 +17,7 @@
                   <div class="table-responsive">
                      <div class="row">
                         <div class="col-sm-6">
-                           <div id="dataTables-example_filter" class="dataTables_filter">
+                           <div id="dataTables-example_filte" class="dataTables_filter">
                               <form action="/admin/product/search" method="get">
                                  <label for="s">Search:      </label><input
                                     type="search"
@@ -60,13 +60,41 @@
                              <% } %>  
                           </tbody>
                      </table>
+                     <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                      </ul>
                   </div>
+                   
                </div>
             </div>
             <!--End Advanced Tables -->
          </div>
       </div>
+      
       <%- include("../partials/admin/footer.ejs")%>
    </div>
 </div>
+<script>
+   document.addEventListener('DOMContentLoaded', (event) => {
+   const element = document.getElementById('dataTables-example_filter');
+   const emptyElements = document.getElementsByClassName('dataTables_empty');
+   const removePginat=document.getElementById('dataTables-example_paginate')
+   const dataTablesLength=document.getElementById("dataTables-example_length")
+   const dataTablesInfo=document.getElementById("dataTables-example_info")
+    while (emptyElements.length > 0) {
+        emptyElements[0].remove();
+    }
+    
+    if (element || removePginat || dataTablesLength || dataTablesInfo) {
+                element.remove();
+                removePginat.remove()
+                dataTablesLength.remove()
+                dataTablesInfo.remove()
+            }
+   });
+</script>
            

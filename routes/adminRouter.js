@@ -4,6 +4,8 @@ const path=require('path')
 const adminController=require("../controllers/admin/adminController")
 const upload=require('../config/multerHelpper')
 const auth=require('../middlewares/adminAuth')
+const costumerController=require('../controllers/admin/customerController')
+const categoryController=require('../controllers/admin/categoryController')
 
 
 
@@ -24,17 +26,18 @@ router.get('/product/editProduct/:id',auth.isLogin,adminController.loadEditProdu
 router.post('/product/editProduct/:id',adminController.editProduct)
 
 //usermanagement
-router.get('/userManagement',auth.isLogin,adminController.userManagement)
-router.get('/userManagement/block',auth.isLogin,adminController.userBlock)
-router.get("/userManagement/unblock",auth.isLogin,adminController.userUnblock)
+router.get('/userManagement',auth.isLogin,costumerController.customerInfo)
+router.get('/userManagement/block',auth.isLogin,costumerController.userBlock)
+router.get("/userManagement/unblock",auth.isLogin,costumerController.userUnblock)
 
 //category
-router.get('/category',auth.isLogin,adminController.allCategories)
-router.get('/category/addCategory',auth.isLogin,adminController.loadCategory)
-router.post('/category/addCategory',adminController.addCategory)
-router.get('/category/deleteCategory/:id',auth.isLogin,adminController.deleteCategory)
-router.get('/category/editCategory/:id',auth.isLogin,adminController.editCategoryLoad)
-router.post('/category/editCategory/:id',auth.isLogin, adminController.editCategory)
+router.get('/category',auth.isLogin,categoryController.allCategories)
+router.get('/category/addCategory',auth.isLogin,categoryController.loadCategory)
+router.post('/category/addCategory',categoryController.addCategory)
+router.get('/category/deleteCategory',auth.isLogin,categoryController.deleteCategory)
+router.get('/category/unblockCategory',auth.isLogin,categoryController.unblockCategory)
+router.get('/category/editCategory/:id',auth.isLogin,categoryController.editCategoryLoad)
+router.post('/category/editCategory/:id',auth.isLogin, categoryController.editCategory)
 
 
 

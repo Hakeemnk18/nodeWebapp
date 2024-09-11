@@ -17,7 +17,7 @@
                   <div class="table-responsive">
                      <div class="row">
                         <div class="col-sm-6">
-                           <div id="dataTables-example_filter" class="dataTables_filter">
+                           <div id="dataTables-example_filte" class="dataTables_filter">
                               <form action="" method="get">
                                  <label for="s">Search:      </label><input
                                     type="search"
@@ -40,7 +40,7 @@
                                 <th>Category name</th>
                                 <th></th>
                                 <th></th>
-                                <th></th>
+                                
                             </tr>
                         </thead>
                         <tbody>
@@ -49,21 +49,72 @@
                                  <% for (let i = 0; i < data.length; i++) { %>
                                      <tr class="odd gradeX">
                                          <td><%= data[i].categoryName %></td>
-                                         <td><a href="/admin/category/deleteCategory/<%= data[i]._id %>" data-method="delete"><i class="fa-solid fa-trash"></i></a></td>
                                          <td><a href="/admin/category/editCategory/<%= data[i]._id %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
-                                         <td><a href="/admin/category/addCategory"><i class="fa-solid fa-plus"></i></a></td>
+                                         <% if(data[i].isActive === true) { %>
+                                          <td><a href="/admin/category/deleteCategory/?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock"></i></a></td>
+                                         <% } else {%>
+                                          <td><a href="/admin/category/unblockCategory/?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock-open"></i></a></td>
+                                          <% } %>
+                                         
                                      </tr>
                                  <% } %>
                              <% } %>  
                           </tbody>
                      </table>
+                     <ul class="pagination">
+                        <% if(hasPrevPage) { %>
+                           <li class="page-item"><a class="page-link" href="/admin/category/?page=<%= currentPage - 1 %>&limit=9">Previous</a></li>
+                        <% } else { %>
+                           <li class="disabled"><span>Previous</span></li>
+                        <% } %>
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                           <li class="<%= currentPage === i ? 'active' : '' %>">
+                               <a href="/admin/category/?page=<%= i %>&limit=9"><%= i %></a>
+                           </li>
+                       <% } %>
+                       <% if (hasNextPage) { %>
+                        <li><a href="/admin/category/?page=<%= currentPage + 1 %>&limit=9">Next</a></li>
+                       <% } else { %>
+                              <li class="disabled"><span>Next</span></li>
+                       <% } %>    
+
+
+                        
+                  
+                      </ul>
                   </div>
                </div>
             </div>
             <!--End Advanced Tables -->
          </div>
       </div>
+      <% if(message && message.length>0 ) { %>
+         <script>
+            alert("<%= message %>")
+         </script>
+      <% } %>
       <%- include("../partials/admin/footer.ejs")%>
+      
+      <script>
+         document.addEventListener('DOMContentLoaded', (event) => {
+         const element = document.getElementById('dataTables-example_filter');
+         const emptyElements = document.getElementsByClassName('dataTables_empty');
+         const removePginat=document.getElementById('dataTables-example_paginate')
+         const dataTablesLength=document.getElementById("dataTables-example_length")
+         const dataTablesInfo=document.getElementById("dataTables-example_info")
+          while (emptyElements.length > 0) {
+              emptyElements[0].remove();
+          }
+          
+          if (element || removePginat || dataTablesLength || dataTablesInfo) {
+                      element.remove();
+                      removePginat.remove()
+                      dataTablesLength.remove()
+                      dataTablesInfo.remove()
+                  }
+         });
+      </script>
+      
    </div>
 </div>
            

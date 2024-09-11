@@ -19,19 +19,21 @@
                     <div class="card">
 
                         <div class="card-content">
-                            <form class="col s12" action="/admin/category/editCategory/<%= id %>" method="post"
+                            <form id="categoryForm" class="col s12" action="/admin/category/editCategory/<%= id %>" method="post"
                                 >
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input placeholder="Category Name" id="first_name" type="text" class="validate"
+                                        <input placeholder="Category Name" id="CategoryName" type="text" class="validate"
                                             name="categoryName" value="<%= categoryName %>">
+                                            <div id="error1"></div> 
                                     </div>
                                 </div>
 
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input placeholder="Description" id="disabled" type="text" class="validate"
+                                        <input placeholder="Description" id="CategoryDescription" type="text" class="validate"
                                             name="description" value="<%= description %>">
+                                            <div id="error2"></div>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -52,4 +54,50 @@
             <!-- /.panel-body -->
         </div>
         <!-- /.col-lg-12 -->
+        <script>
+            const description=document.getElementById('CategoryDescription')
+            const categoryName=document.getElementById('CategoryName')
+            const error1=document.getElementById('error1')
+            const error2=document.getElementById('error2')
+            const categoryForm=document.getElementById('categoryForm')
+
+
+            function nameValidation(){
+                const nameValue=categoryName.value
+                const namePattern=/^[A-Za-z\s&]+$/
+                
+                
+                if(!namePattern.test(nameValue)){
+                    error1.innerHTML="name only contain letters"
+                    console.log("failed validation")
+                    return false
+                }else{
+                    error1.innerHTML=""
+                    return true
+                }
+            }
+            function descriptionValidation(){
+                const descrptionVal=description.value 
+                
+                if(descrptionVal>60){
+                    error2.innerHTML="discription only allowed 60 caracters"
+                    return false
+                }else{
+                    error2.innerHTML=""
+                    return true
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded",function(){
+                categoryForm.addEventListener('submit',function(e){
+                    const isValid=nameValidation()
+                    const isDescription=descriptionValidation()
+
+                    if(! isValid || ! isDescription){
+                        e.preventDefault()
+                    }
+                })
+            })
+        </script>
         <%- include('../partials/admin/footer') %>
+       

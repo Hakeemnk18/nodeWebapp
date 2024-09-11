@@ -17,8 +17,8 @@
                   <div class="table-responsive">
                      <div class="row">
                         <div class="col-sm-6">
-                           <div id="dataTables-example_filter" class="dataTables_filter">
-                              <form action="" method="get">
+                           <div id="dataTables-example_filte" class="dataTables_filter">
+                              <form action="#" method="get">
                                  <label for="s">Search:      </label><input
                                     type="search"
                                     class="form-control input-sm"
@@ -26,7 +26,7 @@
                                     name="search"
                                     id="search"
                                     />
-                                 <input type="submit" value="Search">
+                                 <input type="submit">
                               </form>
                            </div>
                         </div>
@@ -54,11 +54,11 @@
                                              
                                              <% if (data[i].isActive === false) { %>
                                                  <button class="btn">
-                                                     <a style="text-decoration: none; color: rgb(255, 255, 255);" href="/admin/userManagement/unblock?id=<%= data[i]._id %>">UNBLOCK</a>
+                                                     <a style="text-decoration: none; color: rgb(255, 255, 255);" href="/admin/userManagement/unblock?id=<%= data[i]._id%>&page=<%= currentPage %>">UNBLOCK</a>
                                                  </button>
                                              <% } else { %>
                                                  <button class="btn-danger">
-                                                     <a style="text-decoration: none; color: rgb(255, 255, 255);" href="/admin/userManagement/block?id=<%= data[i]._id %>">BLOCK</a>
+                                                     <a style="text-decoration: none; color: rgb(255, 255, 255);" href="/admin/userManagement/block?id=<%= data[i]._id %>&page=<%= currentPage %>">BLOCK</a>
                                                  </button>
                                              <% } %>
                                          </td>
@@ -67,6 +67,28 @@
                              <% } %>  
                           </tbody>
                      </table>
+                     <ul class="pagination">
+
+                        <% if (hasPrevPage) { %>
+                           <li><a href="?page=<%= currentPage - 1 %>">Previous</a></li>
+                       <% } else { %>
+                           <li class="disabled"><span>Previous</span></li>
+                       <% } %>
+
+                        <% for(let i=1; i<=totalPage ; i++){ %>
+                           <li class="page-item  <%= currentPage === i ? 'active' : '' %>">
+                              <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                          </li>
+                        <% } %>
+
+                        <% if (hasNextPage) { %>
+                           <li><a href="?page=<%= currentPage + 1 %>">Next</a></li>
+                       <% } else { %>
+                           <li class="disabled"><span>Previous</span></li>
+                       <% } %>
+                        
+                        
+                      </ul>
                   </div>
                </div>
             </div>
@@ -76,4 +98,24 @@
       <%- include("../partials/admin/footer.ejs")%>
    </div>
 </div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', (event) => {
+   const element = document.getElementById('dataTables-example_filter');
+   const emptyElements = document.getElementsByClassName('dataTables_empty');
+   const removePginat=document.getElementById('dataTables-example_paginate')
+   const dataTablesLength=document.getElementById("dataTables-example_length")
+   const dataTablesInfo=document.getElementById("dataTables-example_info")
+    while (emptyElements.length > 0) {
+        emptyElements[0].remove();
+    }
+    
+    if (element || removePginat || dataTablesLength || dataTablesInfo) {
+                element.remove();
+                removePginat.remove()
+                dataTablesLength.remove()
+                dataTablesInfo.remove()
+            }
+   });
+</script>
            

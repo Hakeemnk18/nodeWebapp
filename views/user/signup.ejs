@@ -91,16 +91,15 @@
         const passwordPattern=/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
 
 
-        // if(!passwordPattern.test(passwordVal)){
-        //     error3.style.display="block"
-        //     error3.innerHTML="password not strong enogh"
-        // }
-        // else{
-        //     error3.style.display="none"
-        //     error3.innerHTML=""
-        // }
-        error3.style.display="none"
-        error3.innerHTML=""
+        if(!passwordPattern.test(passwordVal)){
+            error3.style.display="block"
+            error3.innerHTML="password not strong enogh"
+        }
+        else{
+            error3.style.display="none"
+            error3.innerHTML=""
+        }
+        
 
     
     } 
@@ -113,6 +112,9 @@
         if(cPasswordVal !== passwordVal){
             error4.style.display="block"
             error4.innerHTML="password does'not match"
+        }else{
+            error4.style.display="none"
+            error4.innerHTML=''
         }
     }    
 
