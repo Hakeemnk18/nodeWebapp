@@ -29,7 +29,7 @@ const loadHomepage = async (req, res) => {
 
     try {
         let logout;
-        const product=await Product.find()
+        const product=await Product.find({isActive:true})
         if(req.session.passport){
             
             req.session.user_id=req.session.passport.user
@@ -206,25 +206,43 @@ const loadLogin = async (req, res) => {
 // verify the user
 const login = async (req, res) => {
 
-    const { username, password } = req.body
+    try {
+        const { username, password } = req.body
 
-    const userData = await user.findOne({ username: username, isActive: true })
-    
-    if (userData) {
-        const passwordMatch = await bcrypt.compare(password, userData.password)
-        if (passwordMatch) {
-            if (userData.role === "admin") {
-                req.session.admin_id=userData._id
-                
-                return res.redirect("/admin")
+        const userData = await user.findOne({ username: username})
+        
+        if (userData) {
+            const isActive=await user.findOne({username: userData.username,isActive:true})
+            if(isActive){
+                const passwordMatch = await bcrypt.compare(password, userData.password)
+                if (passwordMatch) {
+                    if (userData.role === "admin") {
+                        req.session.admin_id=userData._id
+                        
+                        return res.redirect("/admin")
+                    }
+                    req.session.user_id=userData._id
+                    
+                    return  res.redirect("/")
+                }else{
+                    console.log("invalid user passsword dont match")
+                    return res.render("login",{message:"username or password dosen't match"})
+                }
+            }else{
+                console.log("blocked user")
+                return res.render("login",{message:"user blocked by admin"})
             }
-            req.session.user_id=userData._id
             
-            return  res.redirect("/")
+        } else {
+            console.log("invalid user")
+            return res.render("login",{message:"username or password dosen't match"})
         }
-    } else {
-        res.send("invalid usename")
+        
+    } catch (error) {
+        console.log("error in login verify "+error.message)
     }
+
+    
 }
 
 //product details
