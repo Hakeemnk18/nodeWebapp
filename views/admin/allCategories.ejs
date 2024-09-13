@@ -1,10 +1,10 @@
 <%- include("../partials/admin/header.ejs")%>
 <div id="page-wrapper">
    <div class="header">
-      <h1 class="page-header">User Management</h1>
+      <h1 class="page-header">Category Management</h1>
       <ol class="breadcrumb">
          <li><a href="/admin/">Dashboard</a></li>
-         <li class="active">User Management</li>
+         <li class="active">Category Management</li>
       </ol>
    </div>
    <div id="page-inner">
@@ -12,13 +12,13 @@
          <div class="col-md-12">
             <!-- Advanced Tables -->
             <div class="card">
-               <div class="card-action">Users List</div>
+               <div class="card-action">Category List</div>
                <div class="card-content">
                   <div class="table-responsive">
                      <div class="row">
                         <div class="col-sm-6">
                            <div id="dataTables-example_filte" class="dataTables_filter">
-                              <form action="" method="get">
+                              <form action="#" method="get">
                                  <label for="s">Search:      </label><input
                                     type="search"
                                     class="form-control input-sm"
@@ -61,33 +61,39 @@
                              <% } %>  
                           </tbody>
                      </table>
-                     <ul class="pagination">
-                        <% if(hasPrevPage) { %>
-                           <li class="page-item"><a class="page-link" href="/admin/category/?page=<%= currentPage - 1 %>&limit=9">Previous</a></li>
-                        <% } else { %>
-                           <li class="disabled"><span>Previous</span></li>
-                        <% } %>
-                        <% for (let i = 1; i <= totalPages; i++) { %>
-                           <li class="<%= currentPage === i ? 'active' : '' %>">
-                               <a href="/admin/category/?page=<%= i %>&limit=9"><%= i %></a>
-                           </li>
-                       <% } %>
-                       <% if (hasNextPage) { %>
-                        <li><a href="/admin/category/?page=<%= currentPage + 1 %>&limit=9">Next</a></li>
-                       <% } else { %>
-                              <li class="disabled"><span>Next</span></li>
-                       <% } %>    
-
-
+                     <div class="col-8">
+                        <ul class="pagination">
+                           <% if(hasPrevPage) { %>
+                              <li class="page-item"><a class="page-link" href="/admin/category/?page=<%= currentPage - 1 %>&limit=9">Previous</a></li>
+                           <% } else { %>
+                              <li class="disabled"><span>Previous</span></li>
+                           <% } %>
+                           <% for (let i = 1; i <= totalPages; i++) { %>
+                              <li class="<%= currentPage === i ? 'active' : '' %>">
+                                  <a href="/admin/category/?page=<%= i %>&limit=9"><%= i %></a>
+                              </li>
+                          <% } %>
+                          <% if (hasNextPage) { %>
+                           <li><a href="/admin/category/?page=<%= currentPage + 1 %>&limit=9">Next</a></li>
+                          <% } else { %>
+                                 <li class="disabled"><span>Next</span></li>
+                          <% } %>    
+                         </ul>
+                     </div>
+                     <div style="margin-bottom: 20px;" class="col">
+                        <button class="btn btn-success"><a href="/admin/category/addCategory" style="color: black;">Add Category</a></button>
+                     </div>
                         
-                  
-                      </ul>
+                     
+                      
                   </div>
+                  
                </div>
             </div>
             <!--End Advanced Tables -->
          </div>
       </div>
+     
       <% if(message && message.length>0 ) { %>
          <script>
             alert("<%= message %>")

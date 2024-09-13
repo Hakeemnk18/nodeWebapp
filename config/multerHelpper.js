@@ -1,4 +1,6 @@
 
+
+
 const multer=require('multer')
 const path=require('path')
 const fs=require('fs')
@@ -23,6 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 module.exports=upload;
+
 
 // const filePath = path.join(__dirname, '../public/uploads');
 

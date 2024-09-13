@@ -79,7 +79,7 @@
             function descriptionValidation(){
                 const descrptionVal=description.value 
                 
-                if(descrptionVal>60){
+                if(descrptionVal.length>60){
                     error2.innerHTML="discription only allowed 60 caracters"
                     return false
                 }else{

@@ -18,9 +18,33 @@ const dashBoard=async(req,res)=>{
 //all product
 const allProduct=async (req,res)=>{
     try {
+        const search=req.query.search || ''; 
+        const regex = new RegExp(`^${search}`, 'i');
+        const page = parseInt(req.query.page)|| 1
+        const limit=2
+        const startIndex=(page-1)*limit
+        const endIndex=page*limit
+
+        const totalProducts=await Product.find({name: { $regex: regex } }).countDocuments()
+        const totalPages=Math.ceil(totalProducts/limit)
+
+        const data= await Product.find({name: { $regex: regex } })
+        .limit(limit)
+        .skip(startIndex)
+        .exec()
+
         
-        const data=await Product.find({})
-        res.render('allProduct',{data})
+        const currentPage=page
+        
+
+        res.render('allProduct',{
+            data,
+            totalPages,
+            hasPrevPage:startIndex>0,
+            hasNextPage:endIndex<totalProducts,
+            currentPage
+
+        })
     } catch (error) {
         console.log("error in all product list "+error.message)
     }
@@ -33,7 +57,7 @@ const searchProduct=async(req,res)=>{
         const query = req.query.search || ''; 
         const regex = new RegExp(`^${query}`, 'i');
         const data= await Product.find({name: { $regex: regex } })
-        console.log(data)
+        
         
         
         res.render('allProduct',{data})
@@ -49,7 +73,8 @@ const productManagment=async (req,res)=>{
 
     
     try{
-        const category=await Category.find({})
+        const category=await Category.find({isActive:true})
+        
         return res.render("productManagment",{category})
     }catch(err){
         console.log("product managment "+err.message)
@@ -64,10 +89,12 @@ const addProduct=async(req,res)=>{
 
     try {
 
-        
+        console.log('inside add product')
         const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
         if (req.files.length > 3) {
+            console.log("not allowed more than 3 image")
             return res.status(400).send('Only up to 3 images are allowed.');
+
         }
 
         const processedImages = await Promise.all(req.files.map(async file => {
@@ -96,7 +123,8 @@ const addProduct=async(req,res)=>{
                     stock:productStock,
 
                 }
-            ]
+            ],
+            category:productCategory
 
         })
 
@@ -106,6 +134,7 @@ const addProduct=async(req,res)=>{
         
     } catch (error) {
         
+        res.status()
         console.log("error add product "+error.message)
     }
 }
@@ -115,12 +144,36 @@ const deleteProduct=async(req,res)=>{
 
     try {
         
-        const{id}=req.params
+        const{id,page}=req.query
         
-        await Product.deleteOne({_id:id})
-        res.redirect('/admin/product')
+        await Product.updateOne({_id:id},{$set:{isActive:false}})
+        
+        res.redirect(`/admin/product?page=${page}`)
     } catch (error) {
-        console.log("error in delete group "+error.message)
+        console.log("error in delete product "+error.message)
+        res.status(500).json({
+            success: false,
+            message: "Error in blocking customer",
+            error: error.message
+          });
+    }
+}
+
+const unBlockProduct=async (req,res)=>{
+    try {
+        const{id,page}=req.query
+        
+        await Product.updateOne({_id:id},{$set:{isActive:true}})
+        res.redirect(`/admin/product?page=${page}`)
+        
+    } catch (error) {
+        console.log("error in unblock product "+error.message)
+        
+        res.status(500).json({
+            success: false,
+            message: "Error in unblocking customer",
+            error: error.message
+          });
     }
 }
 
@@ -131,17 +184,27 @@ const loadEditProduct=async(req,res)=>{
     
     try {
         
-        
+
         const {id}=req.params
         const data=await Product.findOne({_id:id})
-        const {name,description,price,varient}=data
+        const {name,description,price,varient,category}=data
         const {size,stock,color}=varient[0]
-        //console.log(name,discription,price,size,stock,color)
-        res.render('editProduct',{name,description,price,size,stock,color,id})
+        const find=await Category.findOne({_id:category},{categoryName:1})
+        
+        const allCategory=await Category.find({categoryName:{$ne:find.categoryName}})
+        
+        res.render('editProduct',{name,description,price,size,stock,color,id,allCategory,find})
+
+        
 
 
     } catch (error) {
         console.log("error in load edit product "+error.message)
+        res.status(500).json({
+            success: false,
+            message: "Error in edit product customer",
+            error: error.message
+          });
     }
 }
 
@@ -150,9 +213,9 @@ const editProduct=async(req,res)=>{
     try {
         const {id}=req.params
         const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
-        console.log(req.body)
+        
 
-        await Product.updateOne(
+        const data=await Product.updateOne(
             {_id:id},
             {
                 name:productName,
@@ -165,13 +228,20 @@ const editProduct=async(req,res)=>{
                         stock:productStock,
 
                     }
-                ]
+                ],
+                category:productCategory
 
             }
         )
+        
         res.redirect('/admin/product')
     } catch (error) {
         console.log("error in edit product "+error.message)
+        res.status(500).json({
+            success: false,
+            message: "Error in add edit product customer",
+            error: error.message
+          });
     }
 }
 
@@ -202,5 +272,6 @@ module.exports={
     loadEditProduct,
     editProduct,
     searchProduct,
+    unBlockProduct,
     
 }

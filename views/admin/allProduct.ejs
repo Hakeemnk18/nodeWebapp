@@ -18,7 +18,7 @@
                      <div class="row">
                         <div class="col-sm-6">
                            <div id="dataTables-example_filte" class="dataTables_filter">
-                              <form action="/admin/product/search" method="get">
+                              <form action="#" method="get">
                                  <label for="s">Search:      </label><input
                                     type="search"
                                     class="form-control input-sm"
@@ -41,7 +41,7 @@
                                 <th>Price</th>
                                 <th></th>
                                 <th></th>
-                                <th></th>
+                                
                             </tr>
                         </thead>
                         <tbody>
@@ -52,22 +52,52 @@
                                          <td><%= data[i].name %></td>
                                          <td><%= data[i].price %></td>
                                          
-                                         <td><a href="/admin/product/deleteProduct/<%= data[i]._id %>"><i class="fa-solid fa-trash"></i></a></td>
+                                         
+                                         
                                          <td><a href="/admin/product/editProduct/<%= data[i]._id %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
-                                         <td><a href="/admin/product/addProduct"><i class="fa-solid fa-plus"></i></a></td>
+                                         <% if(data[i].isActive === true) { %>
+                                          <td><a href="/admin/product/deleteProduct?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock"></i></a></td>
+                                         <% } else {%>
+                                          <td><a href="/admin/product/unblockProduct/?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock-open"></i></a></td>
+                                          <% } %>
+                                         
                                      </tr>
                                  <% } %>
                              <% } %>  
                           </tbody>
                      </table>
-                     <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                      </ul>
+                     <div class="col-8">
+                        <ul class="pagination">
+
+                           <% if(hasPrevPage){ %>
+                              <li class="page-item"><a class="page-link" href="?page=<%= currentPage-1 %>">Previous</a></li>
+                           <% }else{ %>
+                              <li class="disabled"><span>Previous</span></li>
+                           <% } %>
+                           <% for(let i=1 ;i<=totalPages ; i++){ %>
+                              
+                              <li class="page-item  <%= i === currentPage  ? 'active':'' %> ">
+                                 <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                              </li>
+                           <% } %>
+                           <% if(hasNextPage){ %>
+                              <li class="page-item"><a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a></li>
+                           <% }else{ %>
+                              <li class="disabled"><span>Next</span></li>
+                           <% } %>
+   
+                           
+                           
+                         </ul>
+                     </div>
+                     <div style="margin-bottom: 20px;" class="col">
+                        <button class="btn btn-success"><a href="/admin/product/addProduct" style="color: rgb(244, 241, 241);">Add Product</a></button>
+                     </div>
+                     
+                     
+                      
                   </div>
+                  
                    
                </div>
             </div>

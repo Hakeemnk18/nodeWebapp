@@ -19,36 +19,51 @@
           <div class="card">
             
             <div class="card-content">
-                <form class="col s12" action="/admin/product/addProduct" method="post" enctype="multipart/form-data">
+                <form class="col s12" action="/admin/product/addProduct" method="post" enctype="multipart/form-data" id="productForm">
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Product Name" id="first_name" type="text" class="validate" name="productName">
+                        <input placeholder="Product Name" id="productName" type="text" class="validate" name="productName">
+                        <div id="error1" class="text-danger"></div>
                       </div>
                     </div>
                     
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Description" id="disabled" type="text" class="validate" name="productDiscription">
+                        <input placeholder="Description" id="pDiscription" type="text" class="validate" name="productDiscription">
+                        <div id="error2" class="text-danger"></div>
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Price" id="price" type="number" class="validate" name="productPrice">
+                        <input placeholder="Price" id="productPrice" type="number" class="validate" name="productPrice">
+                        <div id="error3" class="text-danger"></div>
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Category" id="category" type="text" class="validate" name="productCategory">
+                        <select id="category" name="productCategory" style="display: inline-block;">
+                          <option value="" disabled selected>Choose a category</option>
+                          <% if(typeof category !== 'undifined'){ %>
+
+                            <% for(let i=0;i<category.length;i++){ %>
+                              <option value="<%= category[i]._id %>"><%= category[i].categoryName %></option>
+                            <% } %>
+
+                          <% } %>
+                          
+                          
+                        </select>
                       </div>
                     </div>
                   
                     <div class="row">
                       <div class="input-field col s12">
-                        <input placeholder="Product Image URL" id="product_image" type="file" class="validate" name="productImage" multiple>
+                        <input placeholder="Product Image URL" id="productIimage" type="file" class="validate" name="productImage" multiple>
+                        <div id="error4" class="text-danger"></div>
                       </div>
-                    </div>
+                  </div>
                   
                     <div class="row">
                       <div class="col s12">
@@ -73,14 +88,93 @@
           </div>
         </div>
       </div>
-      
+      <script>
         
-       
+        const productName=document.getElementById('productName');
+        const productDiscription=document.getElementById('pDiscription')
+        const productPrice=document.getElementById('productPrice')
+        const productIimage=document.getElementById('productIimage')
+        const error1=document.getElementById('error1')
+        const error2=document.getElementById('error2')
+        const error3=document.getElementById('error3')
+        const error4=document.getElementById('error4')
+        const form=document.getElementById('productForm')
+
+        function nameValidation(){
+          const nameVal=productName.value
+          const namePattern=/^[A-Za-z\s&]+$/
+          
+          if(!namePattern.test(nameVal)){
+            error1.innerHTML="name only contain caracters"
+            return false
+          }else{
+            error1.innerHTML="";
+            return true;
+          }
+          
+
+        }
+
+        function descriptionValidation(){
+                const descrptionVal=productDiscription.value 
+                
+                if(descrptionVal.length>60){
+                    error2.innerHTML="discription only allowed 60 caracters"
+                    return false
+                }else{
+                    error2.innerHTML=""
+                    return true
+                }
+            }
+         
+        function priceValidation(){
+
+          const priceVal=parseFloat(productPrice.value) 
+
+          console.log(typeof priceVal)
+          if(priceVal<1){
+            error3.innerHTML="enter a valid price"
+            return false
+          }else{
+            error3.innerHTML='';
+            return true;
+          }
+        }
+        function imageValidation(){
+          const fileLength=productIimage.files.length
+          const allowedFile=3
+          if(fileLength>allowedFile){
+            error4.innerHTML="only allowed 3 image"
+            return false
+          }else if(fileLength<allowedFile){
+            error4.innerHTML="need three images";
+            return false
+          }else{
+            error4.innerHTML=""
+            return true
+          }
+        }
+
+        document.addEventListener("DOMContentLoaded",()=>{
+          form.addEventListener("submit",(e)=>{
+            const isName=nameValidation()
+            const isDescription=descriptionValidation()
+            const isPrice=priceValidation()
+            const isImage=imageValidation()
+
+            if(!isName || !isDescription || !isPrice || !isImage){
+              e.preventDefault()
+            }
+
+          })
+        })
+
+      </script>
+      
+      
         <!-- /.panel-body -->
       </div>
       <!-- /.col-lg-12 -->
       <%- include('../partials/admin/footer') %>
-
-
 
     
