@@ -23,7 +23,7 @@
   <div class="otp-inputs">
     <input type="text" id="otp1" name="otp1" required>
   </div>
-  <button type="submit">Verify OTP</button>
+  <button type="submit" id="verifybtn" class="active">Verify OTP</button>
 </form>
 
     <p class="timer">Resend OTP in <span id="countdown">30</span> seconds</p>
@@ -38,8 +38,9 @@
     document.addEventListener("DOMContentLoaded", function () {
       const countdownElement = document.getElementById("countdown");
       const resendLink = document.getElementById("resend-link");
+      const verifyBtn=document.getElementById("verifybtn")
 
-      let timeLeft = 30; // 60 seconds countdown
+      let timeLeft = 30; 
 
       const timer = setInterval(function () {
         if (timeLeft <= 0) {
@@ -47,6 +48,7 @@
           countdownElement.innerHTML = "0";
           resendLink.classList.remove("disabled");
           resendLink.classList.add("active");
+          verifyBtn.disabled = true; 
           resendLink.onclick = function () {
 
 
@@ -56,7 +58,27 @@
 
             // })
             // Here, you could implement the logic to resend the OTP via AJAX or by navigating to a route.
-            window.location.href = '/resend-otp'; // Example action
+            //window.location.href = '/resend-otp'; // Example action
+                $.ajax({
+                type: "get",
+                url: "/resend-otp",
+                success: function (response) {
+                  console.log("OTP resend successful");
+                    Swal.fire({
+                        icon: "success",
+                        title: "OTP resent successfully!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                },
+                error: function () {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "Failed to resend OTP. Please try again.",
+                    });
+                }
+            });
           };
         } else {
           countdownElement.innerHTML = timeLeft;

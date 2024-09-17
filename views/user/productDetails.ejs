@@ -3,44 +3,46 @@
     <!-- Single Products -->
     <div class="small-container single-product">
         <div class="row">
+            
             <div class="col-2">
-                <img src="images/gallery-1.jpg" width="100%" id="ProductImg">
+                <% if(productData !== 'undefined'){ %>
+                    <img src="/uploads/processed-<%= productData.productImage[0].filename %> " width="100%" id="ProductImg">
+                    <div class="small-img-row">
 
-                <div class="small-img-row">
-                    <div class="small-img-col">
-                        <img src="images/gallery-1.jpg" width="100%" class="small-img">
+                        <% for(let i=0;i<productData.productImage.length; i++){ %>
+                            <div class="small-img-col">
+                                <img src="/uploads/processed-<%= productData.productImage[i].filename %>" width="100%" class="small-img">
+                            </div>
+                        <% } %>
                     </div>
-                    <div class="small-img-col">
-                        <img src="images/gallery-2.jpg" width="100%" class="small-img">
-                    </div>
-                    <div class="small-img-col">
-                        <img src="images/gallery-3.jpg" width="100%" class="small-img">
-                    </div>
-                    <div class="small-img-col">
-                        <img src="images/gallery-4.jpg" width="100%" class="small-img">
-                    </div>
-                </div>
-
+                <% } %>
             </div>
-            <div class="col-2">
-                <p>Home / T-Shirt</p>
-                <h1>Red Printed T-Shirt by HRX</h1>
-                <h4>$50.00</h4>
-                <select>
-                    <option>Select Size</option>
-                    <option>XXL</option>
-                    <option>XL</option>
-                    <option>L</option>
-                    <option>M</option>
-                    <option>S</option>
-                </select>
-                <input type="number" value="1">
-                <a href="/products.html" class="btn">Add To Cart</a>
 
-                <h3>Product Details <i class="fa fa-indent"></i></h3>
-                <br>
-                <p>Give your summer wardrobe a style upgrade with the HRX Men's Active T-Shirt. Team it with a pair of
-                    shorts for your morning workout or a denims for an evening out with the guys.</p>
+            <div class="col-2">
+                <% if(productData !== 'undefined'){ %>
+                    
+                    <h1><%= productData.name %></h1>
+                    <h4><%= productData.price %></h4>
+                    <select>
+                        <option>Select Size</option>
+                        <option>XXL</option>
+                        <option>XL</option>
+                        <option>L</option>
+                        <option>M</option>
+                        <option>S</option>
+                    </select>
+                    <input type="number" value="1">
+                    <a href="/productDetails/addCart" class="btn">Add To Cart</a>
+                    <a style="margin-left: 10px;" href=""><i class="fa-regular fa-heart fa-2x"></i></a>
+
+                    <h3>Product Details <i class="fa fa-indent"></i></h3>
+                    <br>
+                    <p><%= productData. description %></p>
+                <% } %>
+
+                
+                
+                
             </div>
         </div>
     </div>
@@ -54,54 +56,25 @@
     <!-- Products -->
     <div class="small-container">
         <div class="row">
-            <div class="col-4">
-                <img src="images/product-9.jpg">
-                <h4>Red Printed T-Shirt</h4>
-                <div class="rating">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star-o"></i>
-                </div>
-                <p>$50.00</p>
-            </div>
-            <div class="col-4">
-                <img src="images/product-10.jpg">
-                <h4>Red Printed T-Shirt</h4>
-                <div class="rating">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star-o"></i>
-                </div>
-                <p>$50.00</p>
-            </div>
-            <div class="col-4">
-                <img src="images/product-11.jpg">
-                <h4>Red Printed T-Shirt</h4>
-                <div class="rating">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star-o"></i>
-                </div>
-                <p>$50.00</p>
-            </div>
-            <div class="col-4">
-                <img src="images/product-12.jpg">
-                <h4>Red Printed T-Shirt</h4>
-                <div class="rating">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star-o"></i>
-                </div>
-                <p>$50.00</p>
-            </div>
+            <% if(typeof relatedProduct !== 'undefined') { %>
+                <% for(let i=0;i<relatedProduct.length;i++){ %>
+                    <div class="col-4">
+                        <img src="/uploads/processed-<%= relatedProduct[i].productImage[0].filename %>">
+                        <h4><%= relatedProduct[i].name %></h4>
+                        <div class="rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-o"></i>
+                        </div>
+                        <p><%= relatedProduct[i].price %></p>
+                    </div>
+                <% } %>
+                
+            <% } %>
+            
+            
         </div>
     </div>
 

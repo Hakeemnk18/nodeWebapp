@@ -30,6 +30,10 @@ const loadHomepage = async (req, res) => {
     try {
         let logout;
         const product=await Product.find({isActive:true})
+        const latestProduct=await Product.find({})
+        .sort({createdAt:-1})
+        .limit(8)
+        .exec()
         if(req.session.passport){
             
             req.session.user_id=req.session.passport.user
@@ -40,7 +44,7 @@ const loadHomepage = async (req, res) => {
         }
         
         
-        return res.render("home",{logout,product})
+        return res.render("home",{logout,product,latestProduct})
     } catch (error) {
         console.log("err in load Home page "+error.message)
         res.status(500).send("Server error")
@@ -65,14 +69,15 @@ const loadSignup = async (req, res) => {
 
 //otp genarotore
 function genareteOtp(){
-    return Math.floor(100000 + Math.random()*90000).toString()
+   
+    return Math.floor(1000 + Math.random()*9000).toString()
 }
 
 //send otp to email
 async function sendVerificationEmail(email,otp){
 
     try {
-        console.log(otp)
+        
         const transport= nodemail.createTransport({
 
             service:"gmail",
@@ -84,7 +89,7 @@ async function sendVerificationEmail(email,otp){
                 pass:process.env.NODEMAILER_PASSWORD
             }
         })
-
+        
         const info= await transport.sendMail({
             from:process.env.NODEMAILER_EMAIL,
             to:email,
@@ -92,7 +97,7 @@ async function sendVerificationEmail(email,otp){
             text:`your otp is ${otp}`,
             html:`<b>your OTP : ${otp}</b>`
         })
-
+        
         return info.accepted.length > 0
         
     } catch (error) {
@@ -110,8 +115,12 @@ const signup = async (req, res) => {
     try{
         const {username,email,password,phone}=req.body
         const userData=await user.findOne({email:email})
+        const phonData=await user.findOne({phoneNumber:phone})
         if(userData){
             return res.render('signup', { message: "User with this email already exists" });
+        }
+        if(phonData){
+            return res.render('signup', { message: "User with this phone number already exists" });
         }
         
         const otp=genareteOtp()
@@ -123,12 +132,17 @@ const signup = async (req, res) => {
         
         req.session.userOtp=otp;
         req.session.userData={email,password,phone,username};
-        console.log(req.session)
+        
 
         res.render("verify-otp")
 
 
     }catch(error){
+        res.status(400).json({
+            success: false,
+            message: "Error in signup customer",
+            error: error.message
+          });
         console.log("error when the register new user "+error.message)
     }
 }
@@ -177,14 +191,19 @@ const resendOtp=async (req,res)=>{
 
     try {
         
+        
         const otp=genareteOtp()
+        console.log('resend otp : '+otp)
         const email=req.session.userData.email
         const emailSend=await sendVerificationEmail(email,otp)
+        
         if(!emailSend){
             return res.json("email.error")
         }
         req.session.userOtp=otp;
+
         res.render("verify-otp")
+        
 
     } catch (error) {
         console.log("error in resend otp "+error.message)
@@ -246,13 +265,7 @@ const login = async (req, res) => {
 }
 
 //product details
-const productDetails=async (req,res)=>{
-    try {
-        res.render('productDetails')
-    } catch (error) {
-       console.log("error in product details page "+error.message) 
-    }
-}
+
 
 
 //logut
@@ -288,6 +301,5 @@ module.exports = {
     login,
     otpverification,
     resendOtp,
-    productDetails,
     logout
 }

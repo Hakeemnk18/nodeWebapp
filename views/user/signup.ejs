@@ -123,13 +123,19 @@
     function phoneValidation(e){
 
         const phoneVal=phoneId.value;
+        const phonePattern=/^[1-9]\d{9}$/
+
         if(phoneVal.trim()===""){
             error5.style.display="block";
             error5.innerHTML="please enter the phone number"
         }else if(phoneVal.length !== 10){
             error5.style.display="block";
             error5.innerHTML="phone number should be 10 digits"
-        }else{
+        }else if(! phonePattern.test(phoneVal)){
+            error5.style.display="block";
+            error5.innerHTML="phone numbers only allow numbers"
+        }
+        else{
             error5.style.display="none";
             error5.innerHTML=""
         }
