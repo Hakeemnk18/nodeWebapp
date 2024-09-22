@@ -23,7 +23,7 @@ const pageNotfound = async (req, res) => {
         res.redirect("/pageNotfound")
     }
 }
-
+//////////////////////////////////////////////////////////////////////////
 
 const loadHomepage = async (req, res) => {
 
@@ -51,7 +51,34 @@ const loadHomepage = async (req, res) => {
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
 
+// const loadHomepage = async (req, res) => {
+
+//     try {
+//         let logout;
+//         const product=await Product.find({name:'kitt'})
+//         const allProduct=await Product.find({})
+//         const latestProduct=await Product.findOne({})
+//         .sort({createdAt:-1})
+//         .limit(8)
+//         .exec()
+//         if(req.session.passport){
+            
+//             req.session.user_id=req.session.passport.user
+            
+//         }
+//         if(req.session.user_id){
+//             logout="logout"
+//         }
+        
+//         console.log(allProduct)
+//         return res.render("sampleHome",{logout,product})
+//     } catch (error) {
+//         console.log("err in load Home page "+error.message)
+//         res.status(500).send("Server error")
+//     }
+//  }
 
 
 // render the signup page get 
@@ -193,7 +220,7 @@ const resendOtp=async (req,res)=>{
         
         
         const otp=genareteOtp()
-        console.log('resend otp : '+otp)
+        
         const email=req.session.userData.email
         const emailSend=await sendVerificationEmail(email,otp)
         
@@ -206,6 +233,7 @@ const resendOtp=async (req,res)=>{
         
 
     } catch (error) {
+        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error in resend otp "+error.message)
     }
 }
@@ -258,6 +286,7 @@ const login = async (req, res) => {
         }
         
     } catch (error) {
+        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error in login verify "+error.message)
     }
 
@@ -284,7 +313,7 @@ const logout=async(req,res)=>{
 
             
     } catch (error) {
-        
+        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error destroy session "+error.message)
     }
 }

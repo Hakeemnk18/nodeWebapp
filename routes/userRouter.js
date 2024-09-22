@@ -19,8 +19,9 @@ router.get('/resend-otp',userController.resendOtp)
 router.get('/logout',userController.logout)
 
 //product details
-router.get('/productDetails',productController.productDetails)
-router.get('/productDetails/addCart',productController.addCart)
+router.get('/products',productController.allProduct)
+router.get('/productDetails',userAuth.isLogin,productController.productDetails)
+router.get('/productDetails/addCart',userAuth.isLogin,productController.addCart)
 
 router.get("/auth/google",passport.authenticate('google',{scope:['profile','email']}));
 router.get("/google/callback",passport.authenticate('google',{failureRedirect:'/signup'}),(req,res)=>{

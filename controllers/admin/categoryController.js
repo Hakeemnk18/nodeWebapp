@@ -55,6 +55,7 @@ const deleteCategory=async(req,res)=>{
         res.redirect(`/admin/category?page=${page}`)
     } catch (error) {
         console.log("error in block category "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 // unblockCategory
@@ -66,6 +67,7 @@ const unblockCategory=async(req,res)=>{
         res.redirect(`/admin/category?page=${page}`)
     } catch (error) {
         console.log('error in unblock category '+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
@@ -81,6 +83,7 @@ const editCategoryLoad=async (req,res)=>{
         res.render('editCategory',{categoryName,description,id})
     } catch (error) {
         console.log("error in edit load page "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
@@ -101,6 +104,7 @@ const editCategory=async (req,res)=>{
         
     } catch (error) {
         console.log("error in edit category "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
@@ -113,6 +117,7 @@ const loadCategory=async(req,res)=>{
         res.render("addCategory")
     } catch (error) {
         console.log("error in category load "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 
 }
@@ -148,6 +153,7 @@ const addCategory=async(req,res)=>{
     } catch (error) {
         
         console.log('error in add category '+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 

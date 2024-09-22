@@ -3,6 +3,8 @@ const Product=require('../../models/productSchema')
 const path=require('path')
 const User=require('../../models/userSchema')
 const Category=require('../../models/category')
+const fs=require('fs')
+
 
 
 
@@ -46,6 +48,7 @@ const allProduct=async (req,res)=>{
 
         })
     } catch (error) {
+        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error in all product list "+error.message)
     }
 }
@@ -62,6 +65,7 @@ const searchProduct=async(req,res)=>{
         
         res.render('allProduct',{data})
     } catch (error) {
+        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error in search product "+error.message)
     }
 }
@@ -77,19 +81,50 @@ const productManagment=async (req,res)=>{
         
         return res.render("productManagment",{category})
     }catch(err){
+        return res.status(400).json({success:false,message:"an error occured"})
         console.log("product managment "+err.message)
     }
 }
 
+const uploadsDir = path.join(__dirname, '../../public/uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+
 
 // add product post
-
-
 const addProduct=async(req,res)=>{
 
     try {
 
         console.log('inside add product')
+        
+        const croppedImages = [
+            req.body.croppedImage1,
+            req.body.croppedImage2,
+            req.body.croppedImage3
+        ];
+
+        const savedImagePaths = [];
+        croppedImages.forEach((base64Image, index) => {
+            if (base64Image) {
+                // Extract the base64 data (removing the 'data:image/jpeg;base64,' part)
+                const base64Data = base64Image.replace(/^data:image\/jpeg;base64,/, "");
+                
+                // Generate a unique file name
+                const fileName = `cropped_image_${Date.now()}_${index}.jpg`;
+                const filePath = path.join(uploadsDir, fileName);
+
+                // Save the file to disk
+                fs.writeFileSync(filePath, base64Data, 'base64');
+                savedImagePaths.push(fileName); // Store the file paths to use later
+            }
+        });
+
+
+        console.log(savedImagePaths) 
+
         const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
         if (req.files.length > 3) {
             console.log("not allowed more than 3 image")
@@ -109,13 +144,14 @@ const addProduct=async(req,res)=>{
             };
         }));
 
-        console.log(processedImages)
+        console.log()
 
         const newProduct= new Product({
             name:productName,
             description:productDiscription,
             price:productPrice,
             productImage:processedImages,
+            croppedImage:savedImagePaths,
             varient:[
                 {
                     size:productSize,
@@ -134,7 +170,11 @@ const addProduct=async(req,res)=>{
         
     } catch (error) {
         
-        res.status()
+        res.status(500).json({
+            success: false,
+            message: "Error in add  product ",
+            error: error.message
+        });
         console.log("error add product "+error.message)
     }
 }
@@ -187,13 +227,15 @@ const loadEditProduct=async(req,res)=>{
 
         const {id}=req.params
         const data=await Product.findOne({_id:id})
-        const {name,description,price,varient,category}=data
+        const {name,description,price,varient,category,croppedImage}=data
         const {size,stock,color}=varient[0]
         const find=await Category.findOne({_id:category},{categoryName:1})
         
         const allCategory=await Category.find({categoryName:{$ne:find.categoryName}})
+
+        console.log(croppedImage)
         
-        res.render('editProduct',{name,description,price,size,stock,color,id,allCategory,find})
+        res.render('editProduct',{name,description,price,size,stock,color,id,allCategory,find,croppedImage})
 
         
 

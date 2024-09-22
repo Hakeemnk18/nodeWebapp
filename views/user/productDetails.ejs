@@ -1,4 +1,22 @@
 <%- include('../partials/user/header') %>
+<style>
+    #zoomContainer {
+      position: relative;
+      width: 100%;  /* Container should be flexible */
+      overflow: hidden; /* Hide the overflow for the zoom effect */
+      cursor: zoom-in;
+    }
+  
+    #ProductImg {
+      width: 100%;
+      transition: transform 0.3s ease; /* Smooth zoom transition */
+    }
+  
+    #zoomContainer.zoomed-in {
+      cursor: zoom-out;
+    }
+</style>
+
 
     <!-- Single Products -->
     <div class="small-container single-product">
@@ -6,12 +24,18 @@
             
             <div class="col-2">
                 <% if(productData !== 'undefined'){ %>
-                    <img src="/uploads/processed-<%= productData.productImage[0].filename %> " width="100%" id="ProductImg">
+                    
+                    <div id="zoomContainer">
+                        <img src="/uploads/<%= productData.croppedImage[0] %>" id="ProductImg" alt="Product Image">
+                    </div>
+                        
+                    
+                    
                     <div class="small-img-row">
 
-                        <% for(let i=0;i<productData.productImage.length; i++){ %>
+                        <% for(let i=0;i<productData.croppedImage.length; i++){ %>
                             <div class="small-img-col">
-                                <img src="/uploads/processed-<%= productData.productImage[i].filename %>" width="100%" class="small-img">
+                                <img src="/uploads/<%= productData.croppedImage[i]%>" width="100%" class="small-img" >
                             </div>
                         <% } %>
                     </div>
@@ -23,16 +47,25 @@
                     
                     <h1><%= productData.name %></h1>
                     <h4><%= productData.price %></h4>
-                    <select>
-                        <option>Select Size</option>
-                        <option>XXL</option>
-                        <option>XL</option>
-                        <option>L</option>
-                        <option>M</option>
-                        <option>S</option>
-                    </select>
-                    <input type="number" value="1">
-                    <a href="/productDetails/addCart" class="btn">Add To Cart</a>
+                    <form action="/productDetails/addCart">
+                        <select name="size" required>
+                            <% if(typeof size !== 'undefined'){ %>
+                                <% for(let i = 0;i<size.length;i++){ %>
+                                    <option value="<%= size[i]._id %>"><%= size[i]._id %></option>
+                                <% } %>
+                            <% } %>
+                            
+                            
+                        </select>
+                        <input type="number" name="quantity" value="1" min="1">
+    
+                        <input type="hidden" name="id" value="<%= productData._id %>">
+
+                        <button type="submit" class="btn" style="font-weight: bold;">Add To Cart</button>
+                    </form>
+                    
+                    
+                    
                     <a style="margin-left: 10px;" href=""><i class="fa-regular fa-heart fa-2x"></i></a>
 
                     <h3>Product Details <i class="fa fa-indent"></i></h3>
@@ -59,7 +92,7 @@
             <% if(typeof relatedProduct !== 'undefined') { %>
                 <% for(let i=0;i<relatedProduct.length;i++){ %>
                     <div class="col-4">
-                        <img src="/uploads/processed-<%= relatedProduct[i].productImage[0].filename %>">
+                        <a href="/productDetails?id=<%= relatedProduct[i]._id %>"><img src="/uploads/<%= relatedProduct[i].croppedImage[0] %>"></a>
                         <h4><%= relatedProduct[i].name %></h4>
                         <div class="rating">
                             <i class="fa fa-star"></i>
@@ -99,5 +132,48 @@
             ProductImg.src = SmallImg[3].src;
         }
 
+    </script>
+    <script>
+        const img = document.getElementById("ProductImg");
+        const container = document.getElementById("zoomContainer");
+      
+        let isZoomed = false;
+      
+        container.addEventListener("click", function(e) {
+          if (!isZoomed) {
+            zoomIn(e);
+          } else {
+            zoomOut();
+          }
+        });
+      
+        container.addEventListener("mousemove", function(e) {
+          if (isZoomed) {
+            moveImage(e);
+          }
+        });
+      
+        function zoomIn(event) {
+          isZoomed = true;
+          container.classList.add("zoomed-in");
+          img.style.transform = "scale(2)";  // Zoom level (2x in this case)
+          moveImage(event); // Initial positioning
+        }
+      
+        function zoomOut() {
+          isZoomed = false;
+          container.classList.remove("zoomed-in");
+          img.style.transform = "scale(1)";  // Reset the zoom
+          img.style.transformOrigin = "center center"; // Reset the origin
+        }
+      
+        function moveImage(event) {
+          const rect = container.getBoundingClientRect();
+          const x = event.clientX - rect.left; // X position of the mouse relative to the container
+          const y = event.clientY - rect.top;  // Y position of the mouse relative to the container
+      
+          // Set the origin of the zoom based on the mouse position
+          img.style.transformOrigin = `${x}px ${y}px`;
+        }
     </script>
  <%- include('../partials/user/footer') %>

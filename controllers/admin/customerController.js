@@ -42,6 +42,7 @@ const customerInfo=async(req,res)=>{
 
     } catch (error) {
         console.log("error in customer info "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
@@ -58,6 +59,7 @@ const userBlock=async(req,res)=>{
         res.redirect(`/admin/userManagement?page=${page}`)
     }catch(err){
         console.log("error in user block "+err.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
     
 }
@@ -74,6 +76,7 @@ const userUnblock=async(req,res)=>{
         res.redirect(`/admin/userManagement?page=${page}`)
     }catch(err){
         console.log("error in user unblock "+err.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
     
 }

@@ -38,6 +38,9 @@ const productSchema=new Schema({
             }
         }
     ],
+    
+    croppedImage:[String],
+    
     offerId:{
         type:Schema.Types.ObjectId,
         ref:"offers"
@@ -48,7 +51,7 @@ const productSchema=new Schema({
     },
     rating:{
         type:Schema.Types.ObjectId,
-        ref:"rating"
+        ref:"Rating"
     },
     price:{
         type:Number,

@@ -40,7 +40,14 @@
                         <div id="error3" class="text-danger"></div>
                       </div>
                     </div>
-                  
+                    <% if(typeof croppedImage !== 'undefined'){ %>
+                      <% for(let i=0;i<croppedImage.length;i++){ %>
+                        <div class="row"> 
+                          <div  ><img src="/uploads/<%= croppedImage[i] %>" alt="" style="width: 50px; height: 50px;"></div>
+                        </div>
+                      <% } %>
+                    <% } %>
+                    
                     <div class="row">
                       <div class="input-field col s12">
                         
@@ -59,11 +66,7 @@
                       </div>
                     </div>
                   
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <input placeholder="Product Image URL" id="product_image" type="file" class="validate" name="productImage">
-                      </div>
-                    </div>
+                    
                   
                     <div class="row">
                       <div class="col s12">
