@@ -26,7 +26,7 @@
     <div class="small-container">
         <h2 class="title">Featured Products</h2>
         <div class="row">
-            <% if (typeof product !== 'undifined'){ %>
+            <% if (typeof product !== 'undefined'){ %>
                 <% for (let i=0;i < 4 ; i++){ %>
                     <div class="col-4">
                         <a href="/productDetails?id=<%= product[i]._id %> "><img src="/uploads/<%= product[i].croppedImage[0] %>"></a>

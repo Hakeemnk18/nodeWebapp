@@ -39,7 +39,7 @@ const allProduct=async (req,res)=>{
         const currentPage=page
         
 
-        res.render('allProduct',{
+        res.render('adminAllProduct',{
             data,
             totalPages,
             hasPrevPage:startIndex>0,

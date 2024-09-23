@@ -88,10 +88,59 @@ const allProduct=async (req,res)=>{
 
     try {
 
-        res.render('allProduct')
+        console.log(req.query)
+        const page=parseInt(req.query.page )|| 1
+        
+        const {sort}= req.query
+        const search=(req.query.search || '').trim();
+        const regex=new RegExp(`^${search}`,'i');
+
+
+
+        
+
+        const limit=12
+        const startIndex=(page-1)*limit
+        const endIndex=page*limit
+
+       
+
+        const productCount=await Product.find({isActive:true,name:{$regex : regex}}).countDocuments()
+
+        let sortCriteria={}
+        if(sort === 'lowtohigh'){
+            sortCriteria={price:1}
+        }else if(sort === "hightolow"){
+            sortCriteria={price:-1}
+        }else if(sort === "A to Z"){
+            sortCriteria = {name:1}
+        }else if(sort === "Z to A"){
+            sortCriteria = {name:-1}
+        }else if(sort === "New Arrivals"){
+            sortCriteria = {createdAt :-1}
+        }
+        
+        const allProduct=await Product.find({isActive:true,name:{$regex : regex}})
+        .sort(sortCriteria)
+        .limit(limit)
+        .skip(startIndex)
+        .exec()
+
+        const totalPages=Math.ceil(productCount/limit) 
+        
+
+        res.render('allProduct',{
+            allProduct,
+            currentPage:page,
+            hasNextPage:endIndex < productCount,
+            hasPrevPage:startIndex >0,
+            totalPages,
+            sort,
+            search
+        })
         
     } catch (error) {
-        console.log("error in add cart "+error.message)
+        console.log("error in allproduct "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }

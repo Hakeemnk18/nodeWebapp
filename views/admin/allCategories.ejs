@@ -64,17 +64,17 @@
                      <div class="col-8">
                         <ul class="pagination">
                            <% if(hasPrevPage) { %>
-                              <li class="page-item"><a class="page-link" href="/admin/category/?page=<%= currentPage - 1 %>&limit=9">Previous</a></li>
+                              <li class="page-item"><a class="page-link" href="/admin/category/?page=<%= currentPage - 1 %>&limit=9&search= <%= search %>">Previous</a></li>
                            <% } else { %>
                               <li class="disabled"><span>Previous</span></li>
                            <% } %>
                            <% for (let i = 1; i <= totalPages; i++) { %>
                               <li class="<%= currentPage === i ? 'active' : '' %>">
-                                  <a href="/admin/category/?page=<%= i %>&limit=9"><%= i %></a>
+                                  <a href="/admin/category/?page=<%= i %>&limit=9&search= <%= search %>"><%= i %></a>
                               </li>
                           <% } %>
                           <% if (hasNextPage) { %>
-                           <li><a href="/admin/category/?page=<%= currentPage + 1 %>&limit=9">Next</a></li>
+                           <li><a href="/admin/category/?page=<%= currentPage + 1 %>&limit=9&search= <%= search %>">Next</a></li>
                           <% } else { %>
                                  <li class="disabled"><span>Next</span></li>
                           <% } %>    
@@ -123,4 +123,7 @@
       
    </div>
 </div>
-           
+       
+
+
+<

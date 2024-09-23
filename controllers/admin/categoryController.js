@@ -4,7 +4,7 @@ const allCategories=async(req,res)=>{
 
     try {
 
-        const search=req.query.search || "";
+        const search=(req.query.search || "").trim();
         const regex = new RegExp(`^${search}`, 'i');
         const page= parseInt(req.query.page) || 1
         const limit=3
@@ -34,7 +34,8 @@ const allCategories=async(req,res)=>{
             currentPage:page,
             hasNextPage:endIndex < totalCategory,
             hasPrevPage:startIndex > 0,
-            totalPages
+            totalPages,
+            search
         })
         
     } catch (error) {
