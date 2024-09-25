@@ -1,0 +1,45 @@
+<%- include('../partials/user/header') %>
+<link rel="stylesheet" href="/css/address.css">
+
+<div class="container address-container">
+    <h2>Manage Your Addresses</h2>
+
+    <div class="address-list">
+        <!-- Address Card 1 -->
+         
+        <% if(typeof addressData !== 'undefined'){ %>
+
+            <% for(let i=0;i<addressData.length;i++){ %>
+                <div class="address-card">
+                    <p><strong>HouseNumber:</strong><%= addressData[i].houseNumber %></p>
+                    <p><strong>Street:</strong><%= addressData[i].street %></p>
+                    <p><strong>Village:</strong><%= addressData[i].village%></p>
+                    <p><strong>City:</strong><%= addressData[i].city %></p>
+                    <p><strong>Pincode:</strong> <%= addressData[i].pincode%></p>
+                    <p><strong>Country:</strong> <%= addressData[i].country%></p>
+                    
+                    <!-- Default Address Badge -->
+                    <p class="default-badge">Default Address</p>
+                    
+                    <!-- Set as Default Button (Hidden if already default) -->
+                    <button class="set-default-btn hidden">Set as Default</button>
+                    
+                    <!-- Delete Address Button -->
+                    <button class="delete-btn">Delete Address</button>
+                </div>
+            <% } %>
+            
+        <% } %>
+
+        
+    
+        <!-- Address Card 2 -->
+       
+    </div>
+    
+    <!-- Add New Address Button -->
+    <button class="add-address-btn"><a href="/myAccount/address/addAddress" style="color: aliceblue; font-weight: bold;">Add New Address</a></button>
+</div>
+
+
+<%- include('../partials/user/footer') %>

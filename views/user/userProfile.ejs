@@ -1,0 +1,80 @@
+<%- include('../partials/user/header') %>
+
+<link rel="stylesheet" href="/css/profile.css">
+    
+
+<div class="doby">
+
+
+    <div class="myaccount-page">
+        <div class="myaccount-card">
+            <!-- User Header Section -->
+            <div class="account-header">
+                <h1>My Account</h1>
+                <button class="btn" id="editProfileBtn">Edit Profile</button>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-photo">
+                    <svg class="profile-image-placeholder" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                    <button class="btn-change-photo" id="changePhotoBtn">Change Photo</button>
+                </div>
+
+                <div class="profile-info">
+                    <h2>About</h2>
+                    <% if(typeof userData !== 'undefined'){ %>
+                        <div class="info-group">
+                            <label>User ID</label>
+                            <p><%= userData.username %></p>
+                        </div>
+                        <div class="info-group">
+                            <label>Name</label>
+                            <p>nabeel</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Email</label>
+                            <p><%= userData.email %></p>
+                        </div>
+                        <div class="info-group">
+                            <label>phoneNumber</label>
+                            <p><%= userData.phoneNumber %></p>
+                        </div>
+                    <% } %>
+                    
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <hr>
+
+            <!-- Additional Information Section -->
+            <div class="additional-info">
+                <h3>Additional Information</h3>
+                <ul class="list-group">
+                    <li><a href="#">Your Details</a></li>
+                    <li><a href="/myAccount/address">Addresses</a></li>
+                    <li><a href="#">Orders</a></li>
+                    <li><a href="#">Links</a></li>
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+</div>
+    <script>
+        document.getElementById('editProfileBtn').addEventListener('click', function() {
+            alert('Edit profile functionality would go here');
+        });
+
+        document.getElementById('changePhotoBtn').addEventListener('click', function() {
+            alert('Change photo functionality would go here');
+        });
+    </script>
+
+
+   
+
+<%- include('../partials/user/footer') %>

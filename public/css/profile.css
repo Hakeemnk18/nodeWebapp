@@ -1,0 +1,170 @@
+
+        /* Reset styles */
+        
+
+        .doby {
+            font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container and layout */
+        .myaccount-page {
+            display: flex;
+            justify-content: center;
+            background-color: #fff;
+            align-items: center;
+            padding: 50px 0;
+        }
+
+        .myaccount-card {
+            width: 80%;
+            max-width: 1200px;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-height: 600px;
+        }
+
+        /* User Header Section */
+        .acoount-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .acoount-header .myh1 {
+            font-size: 2rem;
+            font-weight: bold;
+            
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .profile-photo {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .profile-photo img, .profile-image-placeholder {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-change-photo {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-change-photo:hover {
+            background-color: #50575e;
+        }
+
+        .profile-info {
+            flex: 2;
+            padding-left: 40px;
+        }
+
+        .profile-info h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .profile-info .info-group {
+            margin-bottom: 20px;
+        }
+
+        .profile-info label {
+            font-weight: bold;
+            display: block;
+            color: #666;
+        }
+
+        .profile-info p {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        /* Additional Information Section */
+        .additional-info {
+            margin-top: 30px;
+        }
+
+        .additional-info h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .list-group {
+            list-style: none;
+        }
+
+        .list-group li {
+            margin-bottom: 10px;
+        }
+
+        .list-group a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .list-group a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .profile-section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-info {
+                padding-left: 0;
+            }
+
+            .account-card {
+                width: 100%;
+                padding: 20px;
+            }
+        }
+
+    

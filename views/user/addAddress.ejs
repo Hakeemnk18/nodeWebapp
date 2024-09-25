@@ -1,0 +1,181 @@
+
+<%- include('../partials/user/header') %>
+<style>
+    .text-danger{
+        color: red;
+    }
+</style>
+<link rel="stylesheet" href="/css/addAddress.css">
+<div class="container-fluid add-address-form-container" >
+    <form action="/myAccount/address/addAddress" method="POST" class="add-address-form" id="addAddress">
+        <div style="text-align: center;">
+            <h2>Add New Address</h2>
+        </div>
+        
+        <!-- House Number -->
+        <div class="address-form-group">
+            <label for="houseNumber">House Number:</label>
+            <input type="number" id="houseNumber" name="houseNumber"  >
+            <div id="error1" class="text-danger"></div>
+        </div>
+    
+        <!-- Street -->
+        <div class="address-form-group">
+            <label for="street">Street:</label>
+            <input type="text" id="street" name="street" >
+            <div id="error2" class="text-danger"></div>
+        </div>
+    
+        <!-- Village -->
+        <div class="address-form-group">
+            <label for="village">Village:</label>
+            <input type="text" id="village" name="village" >
+            <div id="error3" class="text-danger"></div>
+        </div>
+    
+        <!-- City -->
+        <div class="address-form-group">
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" >
+            <div id="error4" class="text-danger"></div>
+        </div>
+    
+        <!-- Pincode -->
+        <div class="address-form-group">
+            <label for="pincode">Pincode:</label>
+            <input type="number" id="pincode" name="pincode" >
+            <div id="error5" class="text-danger"></div>
+        </div>
+    
+        <!-- Country -->
+        <div class="address-form-group">
+            <label for="country">Country:</label>
+            <input type="text" id="country" name="country" >
+            <div id="error6" class="text-danger"></div>
+        </div>
+    
+        <!-- Submit Button -->
+         <div style="text-align: right;">
+            <button type="submit" class="address-submit-button">Add Address</button>
+        </div>
+        
+    </form>
+</div>
+<script>
+    const addressForm=document.getElementById('addAddress')
+    const street=document.getElementById('street')
+    const houseNumber=document.getElementById('houseNumber')
+    const village=document.getElementById("village")
+    const city=document.getElementById('city')
+    const pincode=document.getElementById("pincode")
+    const country=document.getElementById("country")
+
+    const error1=document.getElementById("error1")
+    const error2=document.getElementById("error2")
+    const error3=document.getElementById("error3")
+    const error4=document.getElementById("error4")
+    const error5=document.getElementById("error5")
+    const error6=document.getElementById("error6")
+    
+    function streetValidation(){
+        const streetVal=street.value
+        const streetPattern=/^[A-Za-z\s&]+$/
+        if(! streetPattern.test(streetVal)){
+            error2.innerHTML="street name only contain letters"
+            return false
+        }else{
+            error2.innerHTML=""
+            return true
+        }
+
+    }
+    function houseNumberValidation(){
+        const houseVal=houseNumber.value 
+        
+        if(houseVal.trim()== ""){
+            error1.innerHTML="house number is required"
+            return false
+        }else if(!/^\d+$/.test(houseVal)){
+            error1.innerHTML="house number only contain number"
+            return false
+        }else{
+            error1.innerHTML=""
+            return true
+        }
+    }
+    function villageValidation(){
+        const villageVal=village.value 
+        const villageRegex = /^[a-zA-Z\s\-']+$/;
+        if(villageVal.trim() === ""){
+            error3.innerHTML="village is required"
+            return false
+        }else if(!villageRegex.test(villageVal)){
+            error3.innerHTML="its not valid name"
+            return false
+        }else{
+            error3.innerHTML=""
+            return true
+        }
+    }
+    function cityValidation(){
+        const cityVal=city.value
+        const cityPattern = /^[a-zA-Z\s\-']+$/;
+        if(cityVal.trim()=== ""){
+            error4.innerHTML="city field is required"
+            return false;
+        }else if(! cityPattern.test(cityVal)){
+            error4.innerHTML="it's not a valid name"
+            return false
+        }else{
+            error4.innerHTML=""
+            return true
+        }
+    }
+    function pincodeValidation(){
+        const pinVal=pincode.value
+
+        if(pinVal.trim()== ""){
+            error5.innerHTML="pincode is required"
+            return false
+        }else if(!/^\d+$/.test(pinVal)){
+            error5.innerHTML="pincode only contain number"
+            return false
+        }else{
+            error5.innerHTML=""
+            return true
+        }
+
+    }
+    function countryValidation(){
+        const countryVal=country.value
+        const countryPattern = /^[a-zA-Z\s\-']+$/;
+        if(countryVal.trim()=== ""){
+            error6.innerHTML="country field is required"
+            return false;
+        }else if(! countryPattern.test(countryVal)){
+            error6.innerHTML="it's not a valid name"
+            return false
+        }else{
+            error6.innerHTML=""
+            return true
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded",()=>{
+        addressForm.addEventListener("submit",(e)=>{
+            const isStreet=streetValidation()
+            const isHouse=houseNumberValidation()
+            const isVillage=villageValidation()
+            const isCity=cityValidation()
+            const isPincode=pincodeValidation()
+            const isCountry=countryValidation()
+
+            if( !isStreet || !isHouse || !isVillage || !isCity || !isPincode || !isCountry){
+                e.preventDefault()
+            }
+        })
+    })
+</script>
+
+
+<%- include('../partials/user/footer') %>

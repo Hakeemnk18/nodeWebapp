@@ -1,0 +1,47 @@
+.add-address-form {
+    max-width: 600px;
+    margin: 20px auto ;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.add-address-form-container {
+    background-image: url('../images/Download\ Abstract\ hexagonal\ molecular\ structures\ background\ with\ copy\ spa\ for\ free.jpeg'); /* Replace with the actual image path */
+    background-size: cover; /* Ensures the image covers the entire container */
+    background-position: center; /* Centers the background image */
+    padding: 40px;
+    border-radius: 10px; /* Optional: Adds rounded corners */
+    
+}
+.address-form-group {
+    margin-bottom: 15px;
+}
+
+.address-form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.address-form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+.address-submit-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.address-submit-button:hover {
+    background-color: #218838;
+}

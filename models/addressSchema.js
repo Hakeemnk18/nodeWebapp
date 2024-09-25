@@ -22,6 +22,14 @@ const addressSchema=new Schema({
     pincode:{
         type:Number,
         required:true
+    },
+    country:{
+        type:String,
+        require:true
+    },
+    isDefault:{
+        type:Boolean,
+        default:false
     }
 })
 

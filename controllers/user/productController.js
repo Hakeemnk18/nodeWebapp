@@ -103,6 +103,10 @@ const allProduct=async (req,res)=>{
         const startIndex=(page-1)*limit
         const endIndex=page*limit
 
+        let logout;
+        if(req.session.user_id){
+            logout="logout"
+        }
        
 
         const productCount=await Product.find({isActive:true,name:{$regex : regex}}).countDocuments()
@@ -136,7 +140,8 @@ const allProduct=async (req,res)=>{
             hasPrevPage:startIndex >0,
             totalPages,
             sort,
-            search
+            search,
+            logout
         })
         
     } catch (error) {
