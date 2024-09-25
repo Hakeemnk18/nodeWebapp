@@ -1,0 +1,78 @@
+.orders-list {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+.order-card {
+    display: flex;
+    flex-direction: row; /* Keep items (image, details, actions) side by side */
+    justify-content: space-between;
+    align-items: flex-start; /* Align content at the top */
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    position: relative; /* Relative position to anchor the buttons at the bottom */
+}
+
+.order-image {
+    flex: 1;
+    margin-right: 20px;
+}
+
+.order-image img {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+}
+
+.order-info {
+    display: flex;
+    flex: 3;
+    justify-content: space-between;
+    margin-right: 20px;
+    margin-bottom: 50px;
+}
+
+.order-details {
+    margin-right: 20px;
+}
+
+.item-details ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.item-details ul li {
+    margin-bottom: 8px;
+}
+
+.order-actions {
+    position: absolute;
+    bottom: 16px; /* Move buttons to bottom */
+    right: 16px; /* Align buttons to the right */
+    display: flex;
+    
+}
+
+.order-actions button {
+    padding: 8px 16px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.track-btn {
+    background-color: #007bff;
+    color: white;
+    
+}
+
+.cancel-btn {
+    background-color: #ff4d4d;
+    color: white;
+}

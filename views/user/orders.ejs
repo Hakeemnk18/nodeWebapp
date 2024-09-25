@@ -1,0 +1,43 @@
+
+<%- include('../partials/user/header') %>
+<link rel="stylesheet" href="/css/orders.css">
+    <div class="orders-list">
+        <h2>Your Orders</h2>
+    
+        <!-- Order Card 1 -->
+        <div class="order-card">
+            <div class="order-image">
+                <img src="https://via.placeholder.com/150" alt="Product Image">
+            </div>
+            <div class="order-info">
+                <div class="order-details">
+                    <h3>Order ID: 123456789</h3>
+                    <p><strong>Date:</strong> 12th September 2024</p>
+                    <p><strong>Status:</strong> Shipped</p>
+                </div>
+    
+                <div class="item-details">
+                    <h4>Items:</h4>
+                    <ul>
+                        <li>
+                            <p><strong>Product:</strong> Zero Gravity Chair</p>
+                            <p><strong>Quantity:</strong> 2</p>
+                            <p><strong>Price:</strong> $200</p>
+                        </li>
+                    </ul>
+                    <p><strong>Total:</strong> $200</p>
+                </div>
+            </div>
+    
+            <!-- Order Actions -->
+            <div class="order-actions">
+                <button class="track-btn">Track Order</button>
+                <button class="cancel-btn">Cancel Order</button>
+            </div>
+        </div>
+    
+        <!-- Repeat for more orders -->
+    </div>
+
+    <%- include('../partials/user/footer') %>
+    

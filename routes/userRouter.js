@@ -25,10 +25,15 @@ router.get('/productDetails',userAuth.isLogin,productController.productDetails)
 router.get('/productDetails/addCart',userAuth.isLogin,productController.addCart)
 
 //my account
-router.get("/myAccount",profileController.myAccount)
-router.get('/myAccount/address',profileController.addressManegment)
-router.get('/myAccount/address/addAddress',profileController.loadAddadress)
+router.get("/myAccount",userAuth.isLogin,profileController.myAccount)
+router.get('/myAccount/address',userAuth.isLogin,profileController.addressManegment)
+router.get('/myAccount/address/addAddress',userAuth.isLogin,profileController.loadAddadress)
 router.post('/myAccount/address/addAddress',profileController.addAddress)
+router.get("/myAccount/address/setDefault",userAuth.isLogin,profileController.setDefault)
+router.get("/myAccount/address/deleteAddress",userAuth.isLogin,profileController.deleteAddress)
+router.get("/myAccount/address/updateAddress",userAuth.isLogin,profileController.updateAddress)
+router.get('/myAccount/orders',userAuth.isLogin,profileController.orders)
+
 
 router.get("/auth/google",passport.authenticate('google',{scope:['profile','email']}));
 router.get("/google/callback",passport.authenticate('google',{failureRedirect:'/signup'}),(req,res)=>{

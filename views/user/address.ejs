@@ -19,13 +19,69 @@
                     <p><strong>Country:</strong> <%= addressData[i].country%></p>
                     
                     <!-- Default Address Badge -->
-                    <p class="default-badge">Default Address</p>
+                     <% if(addressData[i].isDefault === true){ %>
+                        <p class="default-badge">Default Address</p>
+                     <% }else{ %>
+                        <button class="set-default-btn "><a href="/myAccount/address/setDefault?id=<%= addressData[i]._id %>" style="color: inherit;">Set as Default</a></button>
+                     <% } %>
+                    
                     
                     <!-- Set as Default Button (Hidden if already default) -->
-                    <button class="set-default-btn hidden">Set as Default</button>
+                    
+                        
+                    
                     
                     <!-- Delete Address Button -->
-                    <button class="delete-btn">Delete Address</button>
+                    <button class="delete-btn"><a href="/myAccount/address/deleteAddress?id=<%= addressData[i]._id %>" style="color: inherit;">Delete Address</a></button>
+
+                    <button class="addressedit-btn" onclick="toggleEditForm(`<%= i %>`)">Edit Address</button>
+
+                    <div id="edit-form-<%= i %>" class="edit-form" style="display: none;">
+                        <form action="/myAccount/address/updateAddress" id="edit-form-submission-<%= i %>">
+                            <input type="hidden" name="id" value="<%= addressData[i]._id %>">
+                           
+                            <p><strong>House Number:</strong> 
+                                <input type="text" id="houseNumber-<%= i %>" name="houseNumber" value="<%= addressData[i].houseNumber %>" required>
+                            </p>
+                            <span id="error1-<%= i %>" style="color:red;"></span>
+                            
+                            
+                            <p><strong>Street:</strong> 
+                                <input type="text" id="street-<%= i %>" name="street" value="<%= addressData[i].street %>" required>
+                            </p>
+                            <span id="error2-<%= i %>" style="color:red;"></span>
+                            
+                            
+                            <p><strong>Village:</strong> 
+                                <input type="text" id="village-<%= i %>" name="village" value="<%= addressData[i].village %>" required>
+                            </p>
+                            <span id="error3-<%= i %>" style="color:red;"></span>
+                            
+                            
+                            <p><strong>City:</strong> 
+                                <input type="text" id="city-<%= i %>" name="city" value="<%= addressData[i].city %>" required>
+                            </p>
+                            <span id="error4-<%= i %>" style="color:red;"></span>
+                            
+                            
+                            <p><strong>Pincode:</strong> 
+                                <input type="text" id="pincode-<%= i %>" name="pincode" value="<%= addressData[i].pincode %>" required>
+                            </p>
+                            <span id="error5-<%= i %>" style="color:red;"></span>
+                            
+                            
+                            <p><strong>Country:</strong> 
+                                <input type="text" id="country-<%= i %>" name="country" value="<%= addressData[i].country %>" required>
+                            </p>
+                            <span id="error6-<%= i %>" style="color:red;"></span>
+                            
+                            
+                            <button type="button" onclick="formValidation('<%= i %>')">Update Address</button>
+                            <button type="button" onclick="toggleEditForm('<%= i %>')">Cancel</button>
+                        </form>
+                    </div>
+                    
+                    
                 </div>
             <% } %>
             
@@ -40,6 +96,102 @@
     <!-- Add New Address Button -->
     <button class="add-address-btn"><a href="/myAccount/address/addAddress" style="color: aliceblue; font-weight: bold;">Add New Address</a></button>
 </div>
+<script>
+    function toggleEditForm(index) {
+        const editForm = document.getElementById(`edit-form-${index}`);
+        editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function formValidation(index) {
+    // Accessing each input field
+    const houseNumber = document.getElementById(`houseNumber-${index}`).value.trim();
+    const street = document.getElementById(`street-${index}`).value.trim();
+    const village = document.getElementById(`village-${index}`).value.trim();
+    const city = document.getElementById(`city-${index}`).value.trim();
+    const pincode = document.getElementById(`pincode-${index}`).value.trim();
+    const country = document.getElementById(`country-${index}`).value.trim();
+
+    // Accessing error spans
+    const error1 = document.getElementById(`error1-${index}`);
+    const error2 = document.getElementById(`error2-${index}`);
+    const error3 = document.getElementById(`error3-${index}`);
+    const error4 = document.getElementById(`error4-${index}`);
+    const error5 = document.getElementById(`error5-${index}`);
+    const error6 = document.getElementById(`error6-${index}`);
+
+    // Clear previous errors
+    error1.innerHTML = "";
+    error2.innerHTML = "";
+    error3.innerHTML = "";
+    error4.innerHTML = "";
+    error5.innerHTML = "";
+    error6.innerHTML = "";
+
+    let isValid = true;
+
+    // Validation for House Number (only letters, numbers, spaces allowed)
+    if (!houseNumber) {
+        error1.innerHTML = "House Number cannot be empty.";
+        isValid = false;
+    } else if (!/^\d+$/.test(houseNumber)) {
+        error1.innerHTML = "House Number can only contain  numbers";
+        isValid = false;
+    }
+
+    // Validation for Street
+    if (!street) {
+        error2.innerHTML = "Street cannot be empty.";
+        isValid = false;
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(street)) {
+        error2.innerHTML = "Street can only contain letters, numbers, and spaces.";
+        isValid = false;
+    }
+
+    // Validation for Village (only letters, spaces allowed)
+    if (!village) {
+        error3.innerHTML = "Village cannot be empty.";
+        isValid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(village)) {
+        error3.innerHTML = "Village can only contain letters and spaces.";
+        isValid = false;
+    }
+
+    // Validation for City
+    if (!city) {
+        error4.innerHTML = "City cannot be empty.";
+        isValid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(city)) {
+        error4.innerHTML = "City can only contain letters and spaces.";
+        isValid = false;
+    }
+
+    // Validation for Pincode (only numbers allowed)
+    if (!pincode) {
+        error5.innerHTML = "Pincode cannot be empty.";
+        isValid = false;
+    } else if (!/^[0-9]{5,6}$/.test(pincode)) {  // Assumes pincode is 5-6 digits
+        error5.innerHTML = "Pincode must be 5-6 digits.";
+        isValid = false;
+    }
+
+    // Validation for Country
+    if (!country) {
+        error6.innerHTML = "Country cannot be empty.";
+        isValid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(country)) {
+        error6.innerHTML = "Country can only contain letters and spaces.";
+        isValid = false;
+    }
+
+    // Submit form if all fields are valid
+    if (isValid) {
+        document.getElementById(`edit-form-submission-${index}`).submit();
+    }
+}
+
+</script>
+
+
 
 
 <%- include('../partials/user/footer') %>
