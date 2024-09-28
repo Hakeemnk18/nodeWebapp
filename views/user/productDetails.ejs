@@ -15,6 +15,9 @@
     #zoomContainer.zoomed-in {
       cursor: zoom-out;
     }
+    .quantity-input{
+        width: 100px;
+    }
 </style>
 
 
@@ -57,7 +60,7 @@
                             
                             
                         </select>
-                        <input type="number" name="quantity" value="1" min="1">
+                        <input type="number" style="width: 70px;" name="quantity" value="1" min="1" max="<%= productData.varient[0].stock %>">
     
                         <input type="hidden" name="id" value="<%= productData._id %>">
 
@@ -71,6 +74,12 @@
                     <h3>Product Details <i class="fa fa-indent"></i></h3>
                     <br>
                     <p><%= productData. description %></p>
+                    <% if(productData.varient[0].stock<1){%>
+                        <p style="color: red;">out of stock</p>
+                    <% }else{ %>
+                        <p>only <%= productData.varient[0].stock %> left</p>
+                    <% } %>
+                    
                 <% } %>
 
                 

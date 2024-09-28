@@ -23,6 +23,8 @@ router.get('/logout',userController.logout)
 router.get('/products',userAuth.isLogin,productController.allProduct)
 router.get('/productDetails',userAuth.isLogin,productController.productDetails)
 router.get('/productDetails/addCart',userAuth.isLogin,productController.addCart)
+router.get('/productDetails/cart',userAuth.isLogin,productController.cart)
+router.get("/productDetails/addCart/sub",productController.removeCart)
 
 //my account
 router.get("/myAccount",userAuth.isLogin,profileController.myAccount)

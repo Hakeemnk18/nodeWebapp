@@ -1,6 +1,7 @@
 const Product=require('../../models/productSchema')
 const Category=require('../../models/category')
 const Cart=require('../../models/cartSchema')
+const User=require('../../models/userSchema')
 const app = require('../../app')
 
 const productDetails=async (req,res)=>{
@@ -29,11 +30,10 @@ const productDetails=async (req,res)=>{
         }
         
 
-        console.log(color)
-        console.log(size)
+        
         
     
-        res.render('productDetails',{productData,relatedProduct,logout,color,logout,size})
+        res.render('productDetails',{productData,relatedProduct,color,logout,size})
     } catch (error) {
        console.log("error in product details page "+error.message) 
        return res.status(400).json({success:false,message:"an error occured"})
@@ -44,19 +44,57 @@ const addCart=async(req,res)=>{
     try {
         
         let logout;
-        console.log(req.query)
-        const {id}=req.query
+        
+        const {id,quantity}=req.query
         const userId=req.session.user_id
         if(req.session.user_id){
             logout="logout"
         }
 
-        const newCart=new Cart({
-            userId:userId,
-            productId:id
-        }) 
-        const cartData=await newCart.save()
-        const allCart=await Cart.find()
+        for(let i=0;i<quantity;i++){
+            const newCart=new Cart({
+                userId:userId,
+                productId:id
+            }) 
+            const cartData=await newCart.save()
+        }
+        
+        await Product.updateOne({_id:id},{$inc:{"varient.0.stock":-quantity}})
+        res.redirect('/productDetails/cart')
+        
+
+    } catch (error) {
+        console.log("error in addCart "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+const removeCart=async(req,res)=>{
+    try {
+        const {id}=req.query
+        const userId=req.session.user_id
+        if(req.query.qty){
+            await Cart.deleteMany({productId:id,userId:userId})
+            await Product.updateOne({_id:id},{$inc:{"varient.0.stock":req.query.qty}})
+        }else{
+            await Cart.deleteOne({productId:id,userId:userId})
+            await Product.updateOne({_id:id},{$inc:{"varient.0.stock":1}})
+        }
+        res.redirect('/productDetails/cart')
+
+    } catch (error) {
+        console.log("error in remove cart "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+const cart=async(req,res)=>{
+    try {
+
+        const userId=req.session.user_id
+        if(req.session.user_id){
+            logout="logout"
+        }
+        const allCart=await Cart.find({userId:userId})
+       
 
         const productCount=allCart.reduce((acc,cart)=>{
             acc[cart.productId]=(acc[cart.productId]||0)+1
@@ -72,14 +110,12 @@ const addCart=async(req,res)=>{
 
         )
         
+        console.log(cartProduct[0].varient[0].stock )
+
+        res.render('addtoCart',{cartProduct,logout})
         
-
-        res.render('addtoCart',{cartProduct})
-
-        
-
     } catch (error) {
-        console.log("error in addCart "+error.message)
+        console.log("error in cart "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
@@ -141,7 +177,8 @@ const allProduct=async (req,res)=>{
             totalPages,
             sort,
             search,
-            logout
+            logout,
+            cart
         })
         
     } catch (error) {
@@ -153,7 +190,9 @@ const allProduct=async (req,res)=>{
 module.exports={
     productDetails,
     addCart,
-    allProduct
+    allProduct,
+    cart,
+    removeCart
 }
 
 

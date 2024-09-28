@@ -49,7 +49,7 @@
             <% if(typeof allProduct !== 'undefined'){ %>
                 <% for(let i=0;i<allProduct.length;i++){ %>
                     <div class="col-4">
-                        <img src="/uploads/<%= allProduct[i].croppedImage[0] %>">
+                        <a href="/productDetails?id=<%= allProduct[i]._id %> "><img src="/uploads/<%= allProduct[i].croppedImage[0] %>"></a>
                         <h4><%= allProduct[i].name %></h4>
                         <div class="rating">
                             <i class="fa fa-star"></i>

@@ -12,6 +12,32 @@
     .quantity-input::-webkit-inner-spin-button {
       display: none; /* Hide WebKit-based browsers' spin buttons */
     }
+    .quantity-container {
+    display: flex;
+    align-items: center;
+    }
+
+    .quantity-input {
+    width: 50px;
+    text-align: center;
+    }
+
+    .quantity-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px; /* Adjust spacing between input and buttons */
+    }
+
+    .quantity-buttons a {
+    display: block;
+    text-align: center;
+    
+    }
+    .add-product-disabled{
+        pointer-events: none; 
+        opacity: 0.5;
+    }
+
   </style>
 
     <!-- Cart items details -->
@@ -36,11 +62,22 @@
                                 <p><%= cartProduct[i].name %></p>
                                 <small><%= cartProduct[i].price %></small>
                                 <br>
-                                <a href="">Remove</a>
+                                <a href="/productDetails/addCart/sub?qty=<%= cartProduct[i].count %>&id=<%= cartProduct[i]._id %>">Remove</a>
                             </div>
                         </div>
                     </td>
-                    <td><input type="number" value="<%= cartProduct[i].count %>"  class="quantity-input"></td>
+                    <td> 
+                        <div class="quantity-container">
+                        <input type="number" value="<%= cartProduct[i].count %>" class="quantity-input">
+                        <div class="quantity-buttons">
+                           
+                          <a href="/productDetails/addCart?id=<%= cartProduct[i]._id %>&quantity=1" class="<%=cartProduct[i].varient[0].stock > 0 ? '' : 'add-product-disabled' %> " ><i class="fa-solid fa-plus"></i></a>
+
+
+                          <a href="/productDetails/addCart/sub?id=<%= cartProduct[i]._id %>" class="<%= cartProduct[i].count > 1 ? '' : 'add-product-disabled' %> "><i class="fa-solid fa-minus"></i></a>
+                        </div>
+                        </div>
+                    </td>
                     <td><%= cartProduct[i].price*cartProduct[i].count %></td>
                     <% Subtotal += cartProduct[i].price * cartProduct[i].count %>
                 </tr>
