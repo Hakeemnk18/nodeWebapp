@@ -14,7 +14,9 @@
 
                     <input type="text" name="username" placeholder="User name" required="" class="login-input">
                     <input type="password" name="password" placeholder="Password" required="" class="login-input">
+                    <a style="color: #fff;margin-left: 50%;" href="/forgotPassword">forgot password ?</a>
                     <button class="login-button" type="submit">Login</button>
+                    
                     <% if (typeof message !== 'undefined') { %>
                         <div style="color: #fff; text-align: center;" role="alert">
                           <%= message %>

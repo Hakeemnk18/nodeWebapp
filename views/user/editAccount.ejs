@@ -1,0 +1,179 @@
+
+<%- include('../partials/user/header') %>
+<style>
+    .text-danger{
+        color: red;
+    }
+</style>
+<link rel="stylesheet" href="/css/addAddress.css">
+<div class="container-fluid add-address-form-container" >
+    <form action="/myAccount/editAccount" method="POST" class="add-address-form" id="editAccount">
+        <div style="text-align: center;">
+            <h2>Edit Account</h2>
+        </div>
+        
+        <!-- House Number -->
+        <div class="address-form-group">
+            <label for="First Name">First Name:</label>
+            <input type="text" id="firstname" name="firstname" value="<%= userData[0].firstName %>" >
+            <div id="error1" class="text-danger"></div>
+        </div>
+        
+        
+        <!-- Street -->
+        <div class="address-form-group">
+            <label for="Last Name">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" value="<%= userData[0].lastName %>">
+            <div id="error2" class="text-danger"></div>
+        </div>
+    
+        <!-- Village -->
+        <div class="address-form-group">
+            <label for="User Name">User Name:</label>
+            <input type="text" id="userName" name="userName" value="<%= userData[0].username %>">
+            <div id="error3" class="text-danger"></div>
+        </div>
+    
+        <!-- City -->
+        <div class="address-form-group">
+            <label for="email">Email::</label>
+            <input type="text" id="email" name="email" value="<%= userData[0].email %>">
+            <div id="error4" class="text-danger"></div>
+        </div>
+    
+        <!-- Pincode -->
+        <div class="address-form-group">
+            <label for="phoneNumber">Phone Numbe:</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" value="<%= userData[0].phoneNumber %>">
+            <div id="error5" class="text-danger"></div>
+        </div>
+    
+        <!-- Country -->
+        
+    
+        <!-- Submit Button -->
+         <div style="text-align: right;">
+            <button type="submit" class="address-submit-button">Edit</button>
+        </div>
+        
+    </form>
+</div>
+<script>
+    const editAccountForm=document.getElementById('editAccount')
+    const lastName=document.getElementById('lastName')
+    const firstname=document.getElementById('firstname')
+    const userName=document.getElementById("userName")
+    const email=document.getElementById('email')
+    const phoneNumber=document.getElementById("phoneNumber")
+    
+
+    const error1=document.getElementById("error1")
+    const error2=document.getElementById("error2")
+    const error3=document.getElementById("error3")
+    const error4=document.getElementById("error4")
+    const error5=document.getElementById("error5")
+    
+    
+    function lastNameValidation(){
+        const lastVal=lastName.value
+        const namePattern=/^[a-zA-Z\s'-]*$/
+        if(! namePattern.test(lastVal)){
+            error2.innerHTML="name only contain caracters"
+            return false
+        }else{
+            error2.innerHTML=""
+            return true
+        }
+
+    }
+    function firstnameValidation(){
+        const firstVal=firstname.value 
+        const namePattern=/^[a-zA-Z\s'-]*$/
+        if(!namePattern.test(firstVal)){
+            error1.innerHTML="name only contain caracters"
+            return false
+        }
+        else{
+            error1.innerHTML=""
+            return true
+        }
+    }
+    function userValidation(){
+        const nameVal=userName.value 
+        const namepattern=/^[a-zA-z\s]+$/
+
+        if(nameVal.trim()===""){
+            
+            error3.innerHTML="user name is required"
+            return false
+        }else if(!namepattern.test(nameVal)){
+            
+            error3.innerHTML="name can oly contain alphabeat and space"
+            return false
+        }else{
+            
+            error3.innerHTML=""
+            return true
+        }
+    }
+    function emailValidation(){
+        const emailVal=email.value
+        const emailPattern=/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
+
+        if(!emailPattern.test(emailVal)){
+            
+            error4.innerHTML="invalid email adress"
+            return false
+        }else{
+            
+            error4.innerHTML=""
+            return true
+        }
+    }
+    function phoneValidation(){
+
+        const phoneVal=phoneNumber.value;
+        const phonePattern=/^[1-9]\d{9}$/
+
+        if(phoneVal.trim()===""){
+            
+            error5.innerHTML="please enter the phone number"
+            return false
+        }else if(phoneVal.length !== 10){
+            
+            error5.innerHTML="phone number should be 10 digits"
+            return false
+        }else if(! phonePattern.test(phoneVal)){
+            
+            error5.innerHTML="phone numbers only allow numbers"
+            return false
+        }
+        else{
+            
+            error5.innerHTML=""
+            return true
+        }
+
+    }
+    
+
+    document.addEventListener("DOMContentLoaded",()=>{
+        editAccountForm.addEventListener("submit",(e)=>{
+            const isFirst=firstnameValidation()
+            const isLast=lastNameValidation()
+            const isuserName=userValidation()
+            const isEmail=emailValidation()
+            const isPhone=phoneValidation()
+            
+
+           
+
+            if( !isFirst || !isLast || !isuserName || !isEmail || !isPhone){
+                e.preventDefault()
+            }
+        })
+    })
+</script>
+
+
+<%- include('../partials/user/footer') %>

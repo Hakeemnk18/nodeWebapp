@@ -3,6 +3,8 @@ const Category=require('../../models/category')
 const Cart=require('../../models/cartSchema')
 const User=require('../../models/userSchema')
 const app = require('../../app')
+const product = require('../../models/productSchema')
+const Order=require('../../models/ordersSchema')
 
 const productDetails=async (req,res)=>{
     try {
@@ -110,8 +112,9 @@ const cart=async(req,res)=>{
 
         )
         
-        console.log(cartProduct[0].varient[0].stock )
-
+        
+        console.log(cartProduct.length>0)
+        
         res.render('addtoCart',{cartProduct,logout})
         
     } catch (error) {
@@ -135,7 +138,7 @@ const allProduct=async (req,res)=>{
 
         
 
-        const limit=12
+        const limit=6
         const startIndex=(page-1)*limit
         const endIndex=page*limit
 
@@ -187,12 +190,98 @@ const allProduct=async (req,res)=>{
     }
 }
 
+const checkout=async(req,res)=>{
+    try {
+        let logout;
+        if(req.session.user_id){
+            logout="logout"
+        }
+        const userId=req.session.user_id
+        const user=await User.findById(userId).populate({path:'address',match:{isActive:true}}).exec()
+        const userCart=await Cart.find({userId:userId})
+        const productCount=userCart.reduce((acc,cur)=>{
+            acc[cur.productId]=(acc[cur.productId] || 0)+1
+            return acc
+        },{})
+        const productIds=Object.keys(productCount)
+        let cartProduct=await Product.find({_id:{$in:productIds }})
+        cartProduct=cartProduct.map((product)=>{
+            return {...product._doc,count:productCount[product._id]}
+        })
+        if(cartProduct.length === 0){
+            return res.redirect('/products')
+        }
+        res.render('checkout',{logout,cartProduct,addresses:user.address})
+    } catch (error) {
+        console.log("error in checkout "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+    function generateUniqueOrderId() {
+        const prefix = 'ORD'; // You can customize the prefix
+        const timestamp = Date.now(); // Current timestamp
+        const randomChars = Math.random().toString(36).substr(2, 5).toUpperCase(); // Generate 5 random characters
+    
+        return `${prefix}-${timestamp}-${randomChars}`;
+    }
+
+const orderSubmission=async(req,res)=>{
+    try {
+
+        let logout;
+        if(req.session.user_id){
+            logout="logout"
+        }
+        const {productIds,productQty,productPrice,address,totalAmount}=req.body
+        
+        const productDetails=[]
+        for(let i=0;i<productIds.length;i++){
+            productDetails.push({product:productIds[i],quantity:productQty[i],price:productPrice[i]})
+        }
+        const orderId=generateUniqueOrderId()
+        console.log(productDetails)
+        const user_id=req.session.user_id
+        const order=new Order({
+            user:user_id,
+            cartItems:productDetails,
+            address:address,
+            totalPrice:totalAmount,
+            orderId:orderId
+
+        })
+        const orderData=await order.save()
+        
+        await Cart.deleteMany({userId:user_id})
+        res.redirect('/productDetails/cart/checkout/success')
+
+    } catch (error) {
+        console.log("error in order submition "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const orderSuccess=async(req,res)=>{
+    try {
+        let logout;
+        if(req.session.user_id){
+            logout="logout"
+        }
+        res.render("orderSuccess",{logout})
+    } catch (error) {
+        console.log("error in order success "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
 module.exports={
     productDetails,
     addCart,
     allProduct,
     cart,
-    removeCart
+    removeCart,
+    checkout,
+    orderSubmission,
+    orderSuccess
 }
 
 

@@ -17,6 +17,7 @@ const isLogout=async(req,res,next)=>{
     try {
         console.log("inside user logout")
         if(req.session.user_id){
+            console.log(req.session)
             return res.redirect('/')
         }
         next()
@@ -24,6 +25,8 @@ const isLogout=async(req,res,next)=>{
         console.log("error in is logout user "+error.message)
     }
 }
+
+
 
 module.exports={
     isLogin,

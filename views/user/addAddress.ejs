@@ -18,7 +18,10 @@
             <input type="number" id="houseNumber" name="houseNumber"  >
             <div id="error1" class="text-danger"></div>
         </div>
-    
+        <% if(typeof from !== 'undefined'){ %>
+            <input type="hidden" name="from" id="userIdField" value="<%= from %>">
+        <% } %>
+        
         <!-- Street -->
         <div class="address-form-group">
             <label for="street">Street:</label>

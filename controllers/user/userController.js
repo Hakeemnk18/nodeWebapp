@@ -23,7 +23,7 @@ const pageNotfound = async (req, res) => {
         res.redirect("/pageNotfound")
     }
 }
-//////////////////////////////////////////////////////////////////////////
+
 
 const loadHomepage = async (req, res) => {
 
@@ -51,34 +51,6 @@ const loadHomepage = async (req, res) => {
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////
-
-// const loadHomepage = async (req, res) => {
-
-//     try {
-//         let logout;
-//         const product=await Product.find({name:'kitt'})
-//         const allProduct=await Product.find({})
-//         const latestProduct=await Product.findOne({})
-//         .sort({createdAt:-1})
-//         .limit(8)
-//         .exec()
-//         if(req.session.passport){
-            
-//             req.session.user_id=req.session.passport.user
-            
-//         }
-//         if(req.session.user_id){
-//             logout="logout"
-//         }
-        
-//         console.log(allProduct)
-//         return res.render("sampleHome",{logout,product})
-//     } catch (error) {
-//         console.log("err in load Home page "+error.message)
-//         res.status(500).send("Server error")
-//     }
-//  }
 
 
 // render the signup page get 
@@ -194,6 +166,7 @@ const otpverification=async (req,res)=>{
 
             const userData= await newUser.save()
             req.session.user_id=userData._id
+            req.session.role=userData.role
             //console.log(userData)
             //console.log(req.session.user_id)
 
@@ -265,10 +238,12 @@ const login = async (req, res) => {
                 if (passwordMatch) {
                     if (userData.role === "admin") {
                         req.session.admin_id=userData._id
+                        req.session.role=userData.role
                         
                         return res.redirect("/admin")
                     }
                     req.session.user_id=userData._id
+                    req.session.role=userData.role
                     
                     return  res.redirect("/")
                 }else{
@@ -318,7 +293,31 @@ const logout=async(req,res)=>{
     }
 }
 
+const forgotPassword=async(req,res)=>{
+    try {
+        res.render('forgotPassword')
+    } catch (error) {
+        return res.status(400).json({success:false,message:"an error occured"})
+        console.log("error forgot password "+error.message)
+    }
+}
 
+const forgotEmailVarification=async(req,res)=>{
+    try {
+        
+        const {email}=req.body
+
+        const data=await user.findOne({email:email})
+        if(data){
+            return res.send("mail varified")
+        }else{
+            return res.redirect('')
+        }
+
+    } catch (error) {
+        
+    }
+}
 
 
 module.exports = {
@@ -330,5 +329,7 @@ module.exports = {
     login,
     otpverification,
     resendOtp,
-    logout
+    logout,
+    forgotPassword,
+    forgotEmailVarification
 }

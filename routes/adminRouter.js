@@ -6,6 +6,7 @@ const upload=require('../config/multerHelpper')
 const auth=require('../middlewares/adminAuth')
 const costumerController=require('../controllers/admin/customerController')
 const categoryController=require('../controllers/admin/categoryController')
+const ordersController=require('../controllers/admin/ordersController')
 
 
 
@@ -40,6 +41,9 @@ router.get('/category/unblockCategory',auth.isLogin,categoryController.unblockCa
 router.get('/category/editCategory/:id',auth.isLogin,categoryController.editCategoryLoad)
 router.post('/category/editCategory/:id',auth.isLogin, categoryController.editCategory)
 
+//orders
+router.get('/orders',ordersController.orders)
+router.get('/orders/orderDetails',ordersController.orderDetails)
 
 
 module.exports=router;

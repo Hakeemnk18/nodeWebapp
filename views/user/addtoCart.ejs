@@ -37,11 +37,48 @@
         pointer-events: none; 
         opacity: 0.5;
     }
+    .buy-now{
+        padding: 10px 30px;
+        border-radius: 15px;
+        background-color: rgb(10, 150, 10);
+        color: #fff;
+        border: none;
+    }
+    .start-shopping{
+        padding: 20px 50px;
+    }
+    .empty-cart{
+        text-align: center;
+    }
+    .empty-cart .empty-image {
+        
+        max-width: 100%;
+        height: auto;
+        width: 300px;
+        
+
+    }
+    .start-shopping {
+        
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        border: none;
+        font-size: 16px;
+        display: block; /* Ensure the button appears on a new line */
+        margin-left: auto;
+        margin-right: auto; /* Centers the button */
+    }
 
   </style>
 
     <!-- Cart items details -->
     <div class="small-container cart-page">
+        <% if(cartProduct && cartProduct.length>0) { %>
         <table>
             <tr>
                 <th>Product</th>
@@ -51,7 +88,7 @@
          <% let Subtotal=0 %>
          <% let tax=35 %>
 
-         <% if(typeof cartProduct !== 'undefined') { %>
+         
             
             <% for(let i=0;i<cartProduct.length;i++){ %>
                 <tr>
@@ -82,7 +119,8 @@
                     <% Subtotal += cartProduct[i].price * cartProduct[i].count %>
                 </tr>
             <% } %>
-         <% } %>   
+
+           
             
         </table>
         <div class="total-price">
@@ -99,8 +137,19 @@
                     <td>Total</td>
                     <td><%= tax+Subtotal %></td>
                 </tr>
+                <td></td>
+                <td><button class="buy-now"><a href="/productDetails/cart/checkout" style="color: #fff; font-weight: bold; font-size: 20px;">Buy now</a></button></td>
             </table>
         </div>
+        <% } else{ %>
+            
+                <div class="empty-cart">
+                    <img class="img-fluid empty-image" src="/images/empty-shop-cart-icon-flat-style-vector.jpg" alt="">
+                    <button class="start-shopping"><a style="color: #fff;" href="/products">Start Shopping</a></button>
+                </div>
+            
+            
+         <%} %> 
     </div>
 
     <!-- Footer -->

@@ -5,36 +5,47 @@
         <h2>Your Orders</h2>
     
         <!-- Order Card 1 -->
-        <div class="order-card">
-            <div class="order-image">
-                <img src="https://via.placeholder.com/150" alt="Product Image">
-            </div>
-            <div class="order-info">
-                <div class="order-details">
-                    <h3>Order ID: 123456789</h3>
-                    <p><strong>Date:</strong> 12th September 2024</p>
-                    <p><strong>Status:</strong> Shipped</p>
-                </div>
-    
-                <div class="item-details">
-                    <h4>Items:</h4>
-                    <ul>
-                        <li>
-                            <p><strong>Product:</strong> Zero Gravity Chair</p>
-                            <p><strong>Quantity:</strong> 2</p>
-                            <p><strong>Price:</strong> $200</p>
-                        </li>
-                    </ul>
-                    <p><strong>Total:</strong> $200</p>
-                </div>
-            </div>
-    
-            <!-- Order Actions -->
-            <div class="order-actions">
-                <button class="track-btn">Track Order</button>
-                <button class="cancel-btn">Cancel Order</button>
-            </div>
-        </div>
+         <% if(typeof orderItems !== 'undefined'){ %>
+            <% for(let i=0;i<orderItems.length;i++){ %>
+                <% for(let j=0;j<orderItems[i].cartItems.length;j++){ %>
+                    <div class="order-card">
+                        <div class="order-image">
+                            <img src="/uploads/<%= orderItems[i].cartItems[j].product.croppedImage[0] %>" alt="Product Image">
+                        </div>
+                        <div class="order-info">
+                            <div class="order-details">
+                                <h3><%= orderItems[i].orderId %></h3>
+                                <p><strong>Date:</strong><%= orderItems[i].
+                                    orderDate %> </p>
+                                <p><strong>Status:</strong><%= orderItems[i].orderStatus %></p>
+                            </div>
+                
+                            <div class="item-details">
+                                <h4>Items:</h4>
+                                <ul>
+                                    <li>
+                                        <p><strong>Product:</strong><%= orderItems[i].cartItems[j].product.name %></p>
+                                        <p><strong>Quantity:</strong><%= orderItems[i].cartItems[j].
+                                            quantity %></p>
+                                        <p><strong>Price:</strong><%= orderItems[i].cartItems[j].price %></p>
+                                    </li>
+                                </ul>
+                                <p><strong>Total:</strong><%= orderItems[i].cartItems[j].price * orderItems[i].cartItems[j].quantity %></p>
+                            </div>
+                        </div>
+                
+                        <!-- Order Actions -->
+                        <div class="order-actions">
+                            <button class="track-btn">Track Order</button>
+                            <button class="cancel-btn">Cancel Order</button>
+                        </div>
+                    </div>
+                <% } %>
+                
+            <% } %>
+            
+         <% } %>
+        
     
         <!-- Repeat for more orders -->
     </div>

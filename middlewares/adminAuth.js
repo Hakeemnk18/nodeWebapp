@@ -1,6 +1,6 @@
 const isLogin=async(req,res,next)=>{
     try {
-        //console.log("inside is admin login")
+        
         if(req.session.admin_id){}
         else{
             return res.redirect('/')
@@ -14,8 +14,10 @@ const isLogin=async(req,res,next)=>{
 const isLogout=async(req,res,next)=>{
 
     try {
-        //console.log("inside is admin logout")
+        
+        console.log("inside is logout admin")
         if(req.session.admin_id){
+            console.log(req.session)
            return res.redirect('/admin')
         }
         next()
@@ -23,6 +25,8 @@ const isLogout=async(req,res,next)=>{
         console.log("error in islogut in admin "+error.message)
     }
 }
+
+
 
 module.exports={
     isLogin,

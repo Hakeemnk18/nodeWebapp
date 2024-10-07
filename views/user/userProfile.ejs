@@ -11,7 +11,7 @@
             <!-- User Header Section -->
             <div class="account-header">
                 <h1>My Account</h1>
-                <button class="btn" id="editProfileBtn">Edit Profile</button>
+                <button class="btn" id="editProfileBtn"><a style="color: #fff;" href="/myAccount/editAccount">Edit Profile</a></button>
             </div>
 
             <!-- Profile Section -->
@@ -20,7 +20,7 @@
                     <svg class="profile-image-placeholder" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                     </svg>
-                    <button class="btn-change-photo" id="changePhotoBtn">Change Photo</button>
+                    
                 </div>
 
                 <div class="profile-info">
@@ -32,7 +32,7 @@
                         </div>
                         <div class="info-group">
                             <label>Name</label>
-                            <p>nabeel</p>
+                            <p><%= userData.firstName %></p>
                         </div>
                         <div class="info-group">
                             <label>Email</label>
@@ -64,10 +64,15 @@
         </div>
     </div>
 </div>
+
+    <% if(message) { %>
+        <script>
+            alert("<%- message %>");
+        </script>
+    <% } %>
+    
     <script>
-        document.getElementById('editProfileBtn').addEventListener('click', function() {
-            alert('Edit profile functionality would go here');
-        });
+        
 
         document.getElementById('changePhotoBtn').addEventListener('click', function() {
             alert('Change photo functionality would go here');

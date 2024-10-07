@@ -1,0 +1,149 @@
+<%- include('../partials/user/header') %>
+
+<style>
+    .address-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<link rel="stylesheet" href="/css/checkout.css">
+
+<div class="checkout-container">
+    <h1>Checkout</h1>
+
+    <!-- Checkout Form -->
+    <form id="checkout-form" action="/productDetails/cart/checkout" method="post">
+
+        <!-- Address Selection Section -->
+        <div class="address-selection">
+            <div class="address-header">
+                <h2>Select Address</h2>
+                <p><a href="/myAccount/address/addAddress?from=cart">Add new address</a></p>
+            </div>
+            
+            <div class="address-dropdown">
+                <select id="address-dropdown" name="address" onchange="updateAddressDetails()" required>
+                    <% if(typeof addresses !== 'undefined'){ %>
+                        <% for(let i=0;i<addresses.length;i++){ %>
+                            <option value="<%= addresses[i]._id %>">
+                                <%= addresses[i].street + ', ' + addresses[i].city + ', ' + addresses[i].pincode %>
+                            </option>
+                        <% } %>
+                    <% } %>
+                </select>
+            </div>
+            <div id="selected-address-box" class="address-box">
+                <!-- Selected address details will appear here -->
+            </div>
+        </div>
+
+        <!-- Payment Information Section -->
+        <div class="payment-info">
+            <h2>Payment Information</h2>
+
+            <label for="payment-method">Choose Payment Method:</label>
+            <select id="payment-method" name="payment-method" onchange="togglePaymentMethod()" required>
+                <option value="Cod">Cash on Delivery</option>
+                <option value="credit-card">Credit / Debit Card</option>
+                <option value="paypal">PayPal</option>
+                <option value="google-pay">Google Pay</option>
+            </select>
+
+            <!-- Credit Card Section -->
+            <div id="credit-card-section" class="payment-section" style="display: none;">
+                <label for="card-name">Name on Card:</label>
+                <input type="text" id="card-name" name="card-name">
+
+                <label for="card-number">Card Number:</label>
+                <input type="text" id="card-number" name="card-number">
+
+                <label for="expiry-date">Expiry Date:</label>
+                <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
+
+                <label for="cvv">CVV:</label>
+                <input type="text" id="cvv" name="cvv">
+            </div>
+
+            <!-- PayPal Section -->
+            <div id="paypal-section" class="payment-section" style="display: none;">
+                <p>You'll be redirected to PayPal to complete your purchase.</p>
+            </div>
+
+            <!-- Google Pay Section -->
+            <div id="google-pay-section" class="payment-section" style="display: none;">
+                <p>You'll be redirected to Google Pay to complete your purchase.</p>
+            </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <ul>
+                <% let total = 0 %>
+                <% if (typeof cartProduct !== 'undefined') { %>
+                    <% for (let i = 0; i < cartProduct.length; i++) { %>
+                        <li>
+                            <%= cartProduct[i].name %>
+                            
+                            <span>QTY : <%= cartProduct[i].count %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= cartProduct[i].price*cartProduct[i].count %></span>
+                            <!-- Include a hidden input for each product's ID and price -->
+                            
+                            <input type="hidden" name="productIds[]" value="<%= cartProduct[i]._id %>">
+                            <input type="hidden" name="productQty[]" value="<%= cartProduct[i].count %>">
+                            <input type="hidden" name="productPrice[]" value="<%= cartProduct[i].price %>">
+                        </li>
+                        <% total += cartProduct[i].price *cartProduct[i].count %>
+                    <% } %>
+                <% } %>
+                <% let tax=35; let deliveryCharge=50 %>
+                <li class="tax">Tax </span><span><%= tax %></span></li>
+                <li>Delivery charge <span><%= deliveryCharge %></span></li>
+                <li class="total">Total <span><%= total+tax+deliveryCharge %></span></li>
+                <% total = tax+deliveryCharge+total %>
+                <!-- Include a hidden input for the total amount -->
+                <input type="hidden" name="totalAmount" value="<%= total %>">
+            </ul>
+        </div>
+
+        <!-- Checkout Button -->
+        <div class="checkout-btn">
+            <button type="submit">Place Order</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    // Function to toggle payment method sections
+    function togglePaymentMethod() {
+        const paymentMethod = document.getElementById('payment-method').value;
+        document.getElementById('credit-card-section').style.display = 'none';
+        document.getElementById('paypal-section').style.display = 'none';
+        document.getElementById('google-pay-section').style.display = 'none';
+
+        if (paymentMethod === 'credit-card') {
+            document.getElementById('credit-card-section').style.display = 'block';
+        } else if (paymentMethod === 'paypal') {
+            document.getElementById('paypal-section').style.display = 'block';
+        } else if (paymentMethod === 'google-pay') {
+            document.getElementById('google-pay-section').style.display = 'block';
+        }
+    }
+
+    // Function to update the selected address details in the box
+    function updateAddressDetails() {
+        const addressDropdown = document.getElementById('address-dropdown');
+        const selectedAddress = addressDropdown.options[addressDropdown.selectedIndex].text;
+        document.getElementById('selected-address-box').innerHTML = `
+            <p><strong>Selected Address:</strong></p>
+            <p>${selectedAddress}</p>
+        `;
+    }
+
+    // Set default selected address on page load
+    window.onload = updateAddressDetails;
+</script>
+
+<%- include('../partials/user/footer') %>

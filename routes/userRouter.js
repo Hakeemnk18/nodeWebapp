@@ -15,6 +15,8 @@ router.post('/signup',userController.signup)
 router.post('/login',userController.login)
 router.post('/verify-otp',userController.otpverification)
 router.get('/resend-otp',userController.resendOtp)
+router.get('/forgotPassword',userController.forgotPassword)
+router.post('/forgotPassword',)
 
 //logout
 router.get('/logout',userController.logout)
@@ -24,7 +26,10 @@ router.get('/products',userAuth.isLogin,productController.allProduct)
 router.get('/productDetails',userAuth.isLogin,productController.productDetails)
 router.get('/productDetails/addCart',userAuth.isLogin,productController.addCart)
 router.get('/productDetails/cart',userAuth.isLogin,productController.cart)
-router.get("/productDetails/addCart/sub",productController.removeCart)
+router.get("/productDetails/addCart/sub",userAuth.isLogin,productController.removeCart)
+router.get("/productDetails/cart/checkout",userAuth.isLogin,productController.checkout)
+router.post('/productDetails/cart/checkout',productController.orderSubmission)
+router.get('/productDetails/cart/checkout/success',productController.orderSuccess)
 
 //my account
 router.get("/myAccount",userAuth.isLogin,profileController.myAccount)
@@ -35,6 +40,9 @@ router.get("/myAccount/address/setDefault",userAuth.isLogin,profileController.se
 router.get("/myAccount/address/deleteAddress",userAuth.isLogin,profileController.deleteAddress)
 router.get("/myAccount/address/updateAddress",userAuth.isLogin,profileController.updateAddress)
 router.get('/myAccount/orders',userAuth.isLogin,profileController.orders)
+router.get('/myAccount/editAccount',userAuth.isLogin,profileController.editAccount)
+router.post('/myAccount/editAccount',userAuth.isLogin,profileController.updateAccount)
+
 
 
 router.get("/auth/google",passport.authenticate('google',{scope:['profile','email']}));
