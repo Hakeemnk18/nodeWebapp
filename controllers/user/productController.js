@@ -127,15 +127,28 @@ const allProduct=async (req,res)=>{
 
     try {
 
+        
         console.log(req.query)
         const page=parseInt(req.query.page )|| 1
         
         const {sort}= req.query
         const search=(req.query.search || '').trim();
         const regex=new RegExp(`^${search}`,'i');
+        const query = { isActive: true, name: { $regex: regex } };
+        
+        let categoryFillter=req.query.filter
+        if(categoryFillter){
+            categoryFillter=categoryFillter.trim()
+            query.category=categoryFillter
+            console.log("category filter : "+categoryFillter)
+            
+        }
+        
+
+        console.log(query)
 
 
-
+        const category=await Category.find()
         
 
         const limit=6
@@ -148,7 +161,7 @@ const allProduct=async (req,res)=>{
         }
        
 
-        const productCount=await Product.find({isActive:true,name:{$regex : regex}}).countDocuments()
+        const productCount=await Product.find(query).countDocuments()
 
         let sortCriteria={}
         if(sort === 'lowtohigh'){
@@ -163,7 +176,7 @@ const allProduct=async (req,res)=>{
             sortCriteria = {createdAt :-1}
         }
         
-        const allProduct=await Product.find({isActive:true,name:{$regex : regex}})
+        const allProduct=await Product.find(query)
         .sort(sortCriteria)
         .limit(limit)
         .skip(startIndex)
@@ -181,7 +194,8 @@ const allProduct=async (req,res)=>{
             sort,
             search,
             logout,
-            cart
+            cart,
+            category
         })
         
     } catch (error) {

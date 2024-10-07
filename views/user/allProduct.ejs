@@ -36,6 +36,13 @@
                     <option value="Z to A">z - A</option>
                     <option value="New Arrivals">New Arrivals</option>
                 </select>
+                <select name="filter" id="">
+                    <% if(typeof category !== 'undefined'){ %>
+                        <% for(let i=0;i<category.length;i++){ %>
+                            <option value="<%= category[i]._id %>"><%= category[i].categoryName %></option>
+                        <% } %>
+                    <% } %>
+                </select>
 
                 <button type="submit" style="background: none; border: none; cursor: pointer;">
                     <i class="fas fa-search"></i>

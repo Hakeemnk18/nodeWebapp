@@ -7,12 +7,14 @@ const auth=require('../middlewares/adminAuth')
 const costumerController=require('../controllers/admin/customerController')
 const categoryController=require('../controllers/admin/categoryController')
 const ordersController=require('../controllers/admin/ordersController')
+const loginController=require('../controllers/admin/loginController')
 
 
 
 
 
-
+// router.get('/login',auth.isLogout,loginController.adminLoginLoading)
+// router.post('/login',loginController.veryfing)
 
 //dashboard
 router.get('/',auth.isLogin,adminController.dashBoard)

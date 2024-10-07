@@ -94,7 +94,7 @@ const editCategory=async (req,res)=>{
         
         const {id}=req.params
         const{categoryName,description}=req.body
-        const data=await Category.findOne({categoryName:categoryName})
+        const data=await Category.findOne({categoryName:{ $regex: new RegExp(`^${categoryName}$`, "i") }})
         if(! data){
             await Category.updateOne({_id:id},{$set:{categoryName:categoryName,description:description}})
             res.redirect('/admin/category')
@@ -130,7 +130,7 @@ const addCategory=async(req,res)=>{
 
         
         const{categoryName,categoryDiscription}=req.body
-        const categoryData=await Category.findOne({categoryName:categoryName})
+        const categoryData=await Category.findOne({categoryName:{ $regex: new RegExp(`^${categoryName}$`, "i") }})
         if(!categoryData){
             const newCategory=new Category({
                 categoryName:categoryName,

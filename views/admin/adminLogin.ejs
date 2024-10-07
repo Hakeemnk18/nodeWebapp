@@ -1,0 +1,40 @@
+
+<%- include('../partials/user/header') %>
+
+
+
+<body>
+    <div class="login-container">
+        <div class="inside-login-main">
+
+
+            <div class="login-main">
+                <form action="/admin/login" method="post">
+                    <label for="chk" aria-hidden="true" class="login-label">Login</label>
+
+                    <input type="text" name="username" placeholder="User name" required="" class="login-input">
+                    <input type="password" name="password" placeholder="Password" required="" class="login-input">
+                    <a style="color: #fff;margin-left: 50%;" href="/forgotPassword">forgot password ?</a>
+                    <button class="login-button" type="submit">Login</button>
+                    
+                    <% if (typeof message !== 'undefined') { %>
+                        <div style="color: #fff; text-align: center;" role="alert">
+                          <%= message %>
+                        </div>
+                      <% } %>
+                    <p class="notRegister">Not registered? <a href="/signup" >Create an account</a></p>
+                    <!-- <a class="google-login" type="button"><i class="fa-brands fa-google" style="margin-right: 10px;"></i>Login with Google</a> -->
+                    <a class="google-login" href="/auth/google" type="button">
+                        <i class="fa-brands fa-google" style="margin-right: 10px;"></i>Login with Google
+                    </a>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+    
+    
+</body>
+
+<%- include('../partials/user/footer') %>

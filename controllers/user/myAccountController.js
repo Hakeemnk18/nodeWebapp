@@ -226,6 +226,16 @@ const updateAccount=async(req,res)=>{
     }
 }
 
+const resetPassword=async(req,res)=>{
+
+    try {
+        res.render('resetPassword')
+    } catch (error) {
+        console.log("error in update account  : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
 module.exports={
     myAccount,
     addressManegment,
