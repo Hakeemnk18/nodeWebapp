@@ -42,7 +42,9 @@ router.get("/myAccount/address/updateAddress",userAuth.isLogin,profileController
 router.get('/myAccount/orders',userAuth.isLogin,profileController.orders)
 router.get('/myAccount/editAccount',userAuth.isLogin,profileController.editAccount)
 router.post('/myAccount/editAccount',userAuth.isLogin,profileController.updateAccount)
-router.get("/myAccount/resetPassword",)
+router.get("/myAccount/resetPassword",profileController.resetPassword)
+router.post('/myAccount/resetPassword/checkPassword',profileController.checkOldPassword)
+router.post('/myAccount/resetPassword',profileController.addNewPassword)
 
 
 

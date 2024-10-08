@@ -1,6 +1,7 @@
 const User=require('../../models/userSchema')
 const Address=require('../../models/addressSchema');
 const Order = require('../../models/ordersSchema');
+const bcrypt = require('bcrypt');
 
 
 const myAccount=async (req,res)=>{
@@ -236,6 +237,68 @@ const resetPassword=async(req,res)=>{
     }
 }
 
+const checkOldPassword=async(req,res)=>{
+
+    try {
+        console.log(req.body)
+        const {oldPassword}=req.body
+        console.log("fetch working")
+        let userId
+        if(req.session.user_id){
+            
+            userId=req.session.user_id
+        }
+
+        const user=await User.findOne({_id:userId})
+
+        console.log(user)
+
+        const passwordMatch=await bcrypt.compare(oldPassword,user.password)
+
+        if(passwordMatch){
+            console.log("isValid")
+            return res.json({isValid:true})
+            
+        }else{
+            console.log("is not Valid")
+            return res.json({isValid:false})
+        }
+
+        
+    } catch (error) {
+        console.log("error in check old password  : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+const securePassword = async (password) => {
+    try {
+        const passwordHash = await bcrypt.hash(password, 10)
+        return passwordHash
+    } catch (err) {
+        console.log("err in securepasword" + err.message)
+    }
+}
+const addNewPassword=async(req,res)=>{
+    try {
+        console.log(req.body)
+
+        const {newPassword}=req.body
+        const hashPassword=await securePassword(newPassword)
+        let userId
+        if(req.session.user_id){
+            
+            userId=req.session.user_id
+        }
+
+        const update=await User.findByIdAndUpdate(userId,{$set:{password:hashPassword}},{new:true})
+        console.log(update)
+        return res.redirect('/myAccount');
+    } catch (error) {
+        console.log("error in add new password  : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
 module.exports={
     myAccount,
     addressManegment,
@@ -246,5 +309,8 @@ module.exports={
     updateAddress,
     orders,
     editAccount,
-    updateAccount
+    updateAccount,
+    resetPassword,
+    checkOldPassword,
+    addNewPassword
 }
