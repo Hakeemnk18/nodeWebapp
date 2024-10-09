@@ -42,6 +42,7 @@
                                 <th>status</th>
                                 <th>payment</th>
                                 <th>Amount</th>
+                                <th>Action</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -55,6 +56,13 @@
                                          <td><%= data[i].orderStatus %></td>
                                          <td><%= data[i].payment %></td>
                                          <td><%= data[i].totalPrice %></td>
+                                         <td>
+                                             <select name="" id="" style="display: inline-block;">
+                                                <option value=""><a href="#">Delivered</a></option>
+                                                <option value=""><a href="">Canceled</a></option>
+                                                <option value=""><a href="">Shipped</a></option>
+                                             </select>
+                                         </td>
                                          <td><Button><a href="/admin/orders/orderDetails?id=<%= data[i]._id %>">View More</a></Button></td>
                                      </tr>
                                  <% } %>

@@ -5,13 +5,14 @@ const User=require('../../models/userSchema')
 const app = require('../../app')
 const product = require('../../models/productSchema')
 const Order=require('../../models/ordersSchema')
+const isUser=require('../../helpers/isUserlogin')
 
 const productDetails=async (req,res)=>{
     try {
         
         const {id}=req.query
         
-        let logout;
+        let userName=await isUser.isUser(req)
         const productData=await Product.findOne({_id:id})
         const relatedProduct=await Product.find({category:productData.category})
         const color=await Product.aggregate([
@@ -92,9 +93,7 @@ const cart=async(req,res)=>{
     try {
 
         const userId=req.session.user_id
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
         const allCart=await Cart.find({userId:userId})
        
 
@@ -115,7 +114,7 @@ const cart=async(req,res)=>{
         
         console.log(cartProduct.length>0)
         
-        res.render('addtoCart',{cartProduct,logout})
+        res.render('addtoCart',{cartProduct,userName})
         
     } catch (error) {
         console.log("error in cart "+error.message)
@@ -155,10 +154,7 @@ const allProduct=async (req,res)=>{
         const startIndex=(page-1)*limit
         const endIndex=page*limit
 
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
        
 
         const productCount=await Product.find(query).countDocuments()
@@ -193,7 +189,7 @@ const allProduct=async (req,res)=>{
             totalPages,
             sort,
             search,
-            logout,
+            userName,
             cart,
             category
         })
@@ -206,10 +202,7 @@ const allProduct=async (req,res)=>{
 
 const checkout=async(req,res)=>{
     try {
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
         const userId=req.session.user_id
         const user=await User.findById(userId).populate({path:'address',match:{isActive:true}}).exec()
         const userCart=await Cart.find({userId:userId})
@@ -225,7 +218,7 @@ const checkout=async(req,res)=>{
         if(cartProduct.length === 0){
             return res.redirect('/products')
         }
-        res.render('checkout',{logout,cartProduct,addresses:user.address})
+        res.render('checkout',{userName,cartProduct,addresses:user.address})
     } catch (error) {
         console.log("error in checkout "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
@@ -243,10 +236,7 @@ const checkout=async(req,res)=>{
 const orderSubmission=async(req,res)=>{
     try {
 
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
+        
         const {productIds,productQty,productPrice,address,totalAmount}=req.body
         
         const productDetails=[]
@@ -277,11 +267,8 @@ const orderSubmission=async(req,res)=>{
 
 const orderSuccess=async(req,res)=>{
     try {
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
-        res.render("orderSuccess",{logout})
+        let userName=await isUser.isUser(req)
+        res.render("orderSuccess",{userName})
     } catch (error) {
         console.log("error in order success "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})

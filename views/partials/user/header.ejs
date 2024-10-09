@@ -42,16 +42,33 @@
                     <li><a href="/productDetails/cart">Cart</a></li>
                     <li><a href="">Contact</a></li>
                     <li><a href="/myAccount">Account</a></li>
-                    <% if(typeof logout === 'undefined') { %>
+                    <% if(typeof userName === 'undefined') { %>
                         <li><a href="/login" >Login</a></li>
                     <% } else { %>
-                        <li><a href="/logout" >Logout</a></li>
+                        <li><select name="" id="userActions" style="border: none; background-color: inherit;">
+                            <option value="" disabled selected><%=userName.username %> </option>
+                            <option value="/myAccount">Account</option>
+                            <option value="/logout">logout</option>
+                        </select>
+                            
+                        </li>
                     <% } %>
                 </ul>
             </nav>
         </div>
     </div>
 </div>
+
+
+
+<script>
+    document.getElementById('userActions').addEventListener('change', function () {
+        const selectedValue = this.value;
+        if (selectedValue) {
+            window.location.href = selectedValue;  // Redirect to the selected URL
+        }
+    });
+</script>
 
 
 

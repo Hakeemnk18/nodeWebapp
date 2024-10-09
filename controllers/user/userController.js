@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const { CommandSucceededEvent } = require('mongodb');
 const nodemail=require('nodemailer')
 const env=require("dotenv").config();
+const isUser=require('../../helpers/isUserlogin')
+
 
 const securePassword = async (password) => {
     try {
@@ -17,7 +19,8 @@ const securePassword = async (password) => {
 const pageNotfound = async (req, res) => {
 
     try {
-        res.render("page-404")
+        let userName=await isUser.isUser(req)
+        res.render("page-404",userName)
     } catch (error) {
         console.log("err in pagenot found")
         res.redirect("/pageNotfound")
@@ -28,7 +31,7 @@ const pageNotfound = async (req, res) => {
 const loadHomepage = async (req, res) => {
 
     try {
-        let logout;
+        
         const product=await Product.find({isActive:true})
         const latestProduct=await Product.find({})
         .sort({createdAt:-1})
@@ -39,12 +42,10 @@ const loadHomepage = async (req, res) => {
             req.session.user_id=req.session.passport.user
             
         }
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
         
         
-        return res.render("home",{logout,product,latestProduct})
+        return res.render("home",{userName,product,latestProduct})
     } catch (error) {
         console.log("err in load Home page "+error.message)
         res.status(500).send("Server error")
@@ -57,7 +58,8 @@ const loadHomepage = async (req, res) => {
 const loadSignup = async (req, res) => {
 
     try {
-        return res.render("signup")
+        let userName=await isUser.isUser(req)
+        return res.render("signup",{userName})
     } catch (error) {
         console.log("err in load signup page" + error)
         res.status(500).send("Server error")
@@ -216,7 +218,8 @@ const resendOtp=async (req,res)=>{
 const loadLogin = async (req, res) => {
 
     try {
-        return res.render("login")
+        let userName=await isUser.isUser(req)
+        return res.render("login",{userName})
     } catch (err) {
         console.log("err in load login page " + err)
         res.status(500).send("Server error")
@@ -269,7 +272,7 @@ const login = async (req, res) => {
     
 }
 
-//product details
+
 
 
 
@@ -296,10 +299,14 @@ const logout=async(req,res)=>{
 
 const forgotPassword=async(req,res)=>{
     try {
-        res.render('forgotPassword')
+        let userName=await isUser.isUser(req)
+        const message=req.query.message
+        console.log("inside forgot password")
+        console.log(message)
+        res.render('forgotPassword',{message,userName})
     } catch (error) {
-        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error forgot password "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
@@ -312,10 +319,12 @@ const forgotEmailVarification=async(req,res)=>{
         if(data){
             return res.send("mail varified")
         }else{
-            return res.redirect('')
+            return res.redirect('/forgotPassword?message=no user found',)
         }
 
     } catch (error) {
+        console.log("error forgot email varificatoin "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
         
     }
 }

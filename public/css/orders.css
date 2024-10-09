@@ -69,10 +69,14 @@
 .track-btn {
     background-color: #007bff;
     color: white;
+    font-weight: bold;
+    font-size: larger;
     
 }
 
 .cancel-btn {
-    background-color: #ff4d4d;
+    background-color: #f64848;
     color: white;
+    font-weight: bold;
+    font-size: larger;
 }

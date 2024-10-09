@@ -1,5 +1,22 @@
 
 <%- include('../partials/user/header') %>
+<style>
+    .pagination {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 50px;
+        }
+        .pagination .page-item {
+          margin: 0 5px;
+        }
+        .acti{
+            background-color: rgb(189, 189, 248);
+            width: 20px;
+            height: 20px;
+            text-align: center;
+        }
+    
+</style>
 <link rel="stylesheet" href="/css/orders.css">
     <div class="orders-list">
         <h2>Your Orders</h2>
@@ -15,8 +32,7 @@
                         <div class="order-info">
                             <div class="order-details">
                                 <h3><%= orderItems[i].orderId %></h3>
-                                <p><strong>Date:</strong><%= orderItems[i].
-                                    orderDate %> </p>
+                                <p><strong>Date:</strong> <%=dateField[i]  %> </p>
                                 <p><strong>Status:</strong><%= orderItems[i].orderStatus %></p>
                             </div>
                 
@@ -37,7 +53,12 @@
                         <!-- Order Actions -->
                         <div class="order-actions">
                             <button class="track-btn">Track Order</button>
-                            <button class="cancel-btn">Cancel Order</button>
+                            <% if(orderItems[i].orderStatus !== 'Delivered'){ %>
+                                <button class="cancel-btn">Cancel Order</button>
+                            <% }else{ %>
+                                <button class="cancel-btn">Return</button>
+                            <% } %>
+                            
                         </div>
                     </div>
                 <% } %>
@@ -49,6 +70,13 @@
     
         <!-- Repeat for more orders -->
     </div>
+
+    <!-- <ul class="pagination">
+        <li class="page-item">prev</li>
+        <li class="page-item">1</li>
+        <li class="page-item">2</li>
+        <li class="page-item">Next</li>
+    </ul> -->
 
     <%- include('../partials/user/footer') %>
     

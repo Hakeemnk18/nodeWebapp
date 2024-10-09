@@ -2,20 +2,19 @@ const User=require('../../models/userSchema')
 const Address=require('../../models/addressSchema');
 const Order = require('../../models/ordersSchema');
 const bcrypt = require('bcrypt');
+const moment=require('moment')
+const isUser=require('../../helpers/isUserlogin')
 
 
 const myAccount=async (req,res)=>{
     try {
         
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
         const userData=await User.findOne({_id:req.session.user_id})
         const {message}=req.query
 
         
-        res.render("userProfile",{logout,userData,message})
+        res.render("userProfile",{userName,userData,message})
 
         
     } catch (error) {
@@ -31,12 +30,9 @@ const addressManegment=async (req,res)=>{
         const userId=req.session.user_id
         const user=await User.findById(userId).populate({path:'address',match:{isActive:true}}).exec()
         
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
         
-        res.render('address',{addressData:user.address,logout})
+        res.render('address',{addressData:user.address,userName})
 
     } catch (error) {
         
@@ -55,11 +51,9 @@ const loadAddadress=async (req,res)=>{
             
         }
         
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
-        res.render('addAddress',{logout,from})
+        let userName=await isUser.isUser(req)
+
+        res.render('addAddress',{userName,from})
     } catch (error) {
         console.log("error in addrest management "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
@@ -144,18 +138,21 @@ const updateAddress=async(req,res)=>{
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
-
 const orders=async(req,res)=>{
     try {
-        let logout;
-        if(req.session.user_id){
-            logout="logout"
-        }
+        let userName=await isUser.isUser(req)
+        
+        let dateField=[]
         const userId=req.session.user_id
         const orderItems=await Order.find({user:userId}).populate('cartItems.product').exec()
-        
 
-        res.render('orders',{logout,orderItems})
+        for(let i=0;i<orderItems.length;i++){
+            dateField.push(moment(orderItems[i].orderDate).format('DD/MM/YYYY'))
+        }
+
+        
+        
+        res.render('orders',{userName,orderItems,dateField})
     } catch (error) {
         console.log("error in orders  : "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
@@ -164,16 +161,18 @@ const orders=async(req,res)=>{
 
 const editAccount=async(req,res)=>{
     try {
-        let logout;
+        
+        
         let userId
         if(req.session.user_id){
-            logout="logout"
+            
             userId=req.session.user_id
         }
+        let userName=await isUser.isUser(req)
         const userData=await User.find({_id:userId})
-        console.log(userData)
+       
 
-        res.render('editAccount',{logout,userData})
+        res.render('editAccount',{userName,userData})
     } catch (error) {
         console.log("error in edit account  : "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
@@ -230,7 +229,12 @@ const updateAccount=async(req,res)=>{
 const resetPassword=async(req,res)=>{
 
     try {
-        res.render('resetPassword')
+
+        
+        let userName=await isUser.isUser(req)
+        
+        
+        res.render('resetPassword',{userName})
     } catch (error) {
         console.log("error in update account  : "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
@@ -240,9 +244,9 @@ const resetPassword=async(req,res)=>{
 const checkOldPassword=async(req,res)=>{
 
     try {
-        console.log(req.body)
+        
         const {oldPassword}=req.body
-        console.log("fetch working")
+        
         let userId
         if(req.session.user_id){
             
@@ -251,7 +255,7 @@ const checkOldPassword=async(req,res)=>{
 
         const user=await User.findOne({_id:userId})
 
-        console.log(user)
+       
 
         const passwordMatch=await bcrypt.compare(oldPassword,user.password)
 
@@ -280,7 +284,7 @@ const securePassword = async (password) => {
 }
 const addNewPassword=async(req,res)=>{
     try {
-        console.log(req.body)
+        
 
         const {newPassword}=req.body
         const hashPassword=await securePassword(newPassword)
@@ -291,7 +295,7 @@ const addNewPassword=async(req,res)=>{
         }
 
         const update=await User.findByIdAndUpdate(userId,{$set:{password:hashPassword}},{new:true})
-        console.log(update)
+        
         return res.redirect('/myAccount');
     } catch (error) {
         console.log("error in add new password  : "+error.message)

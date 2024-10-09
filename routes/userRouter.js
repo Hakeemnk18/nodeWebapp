@@ -16,7 +16,7 @@ router.post('/login',userController.login)
 router.post('/verify-otp',userController.otpverification)
 router.get('/resend-otp',userController.resendOtp)
 router.get('/forgotPassword',userController.forgotPassword)
-router.post('/forgotPassword',)
+router.post('/forgotPassword',userController.forgotEmailVarification)
 
 //logout
 router.get('/logout',userController.logout)
@@ -45,6 +45,7 @@ router.post('/myAccount/editAccount',userAuth.isLogin,profileController.updateAc
 router.get("/myAccount/resetPassword",profileController.resetPassword)
 router.post('/myAccount/resetPassword/checkPassword',profileController.checkOldPassword)
 router.post('/myAccount/resetPassword',profileController.addNewPassword)
+
 
 
 
