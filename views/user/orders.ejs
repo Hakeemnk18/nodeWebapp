@@ -52,7 +52,7 @@
                 
                         <!-- Order Actions -->
                         <div class="order-actions">
-                            <button class="track-btn">Track Order</button>
+                            <button class="track-btn"><a style="color: #fff;" href="/myAccount/orders/trackOrder?id=<%= orderItems[i]._id %>">Track Order</a></button>
                             <% if(orderItems[i].orderStatus !== 'Delivered'){ %>
                                 <button class="cancel-btn">Cancel Order</button>
                             <% }else{ %>

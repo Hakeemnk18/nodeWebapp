@@ -6,6 +6,7 @@ const app = require('../../app')
 const product = require('../../models/productSchema')
 const Order=require('../../models/ordersSchema')
 const isUser=require('../../helpers/isUserlogin')
+const statusTime=require('../../helpers/orderStatusTime')
 
 const productDetails=async (req,res)=>{
     try {
@@ -233,6 +234,9 @@ const checkout=async(req,res)=>{
         return `${prefix}-${timestamp}-${randomChars}`;
     }
 
+
+/////////////////////////////////////////////////////////////////////////////////////
+
 const orderSubmission=async(req,res)=>{
     try {
 
@@ -244,7 +248,7 @@ const orderSubmission=async(req,res)=>{
             productDetails.push({product:productIds[i],quantity:productQty[i],price:productPrice[i]})
         }
         const orderId=generateUniqueOrderId()
-        console.log(productDetails)
+       
         const user_id=req.session.user_id
         const order=new Order({
             user:user_id,
@@ -252,10 +256,12 @@ const orderSubmission=async(req,res)=>{
             address:address,
             totalPrice:totalAmount,
             orderId:orderId
-
         })
         const orderData=await order.save()
         
+        await statusTime.statusTime(orderData.orderStatus,orderData._id)
+        const uorderData = await Order.findById(orderData._id);
+        console.log(uorderData)
         await Cart.deleteMany({userId:user_id})
         res.redirect('/productDetails/cart/checkout/success')
 

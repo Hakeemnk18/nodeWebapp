@@ -45,7 +45,7 @@ router.post('/myAccount/editAccount',userAuth.isLogin,profileController.updateAc
 router.get("/myAccount/resetPassword",profileController.resetPassword)
 router.post('/myAccount/resetPassword/checkPassword',profileController.checkOldPassword)
 router.post('/myAccount/resetPassword',profileController.addNewPassword)
-
+router.get('/myAccount/orders/trackOrder',profileController.trackOrder)
 
 
 

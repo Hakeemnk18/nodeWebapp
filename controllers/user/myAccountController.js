@@ -303,6 +303,22 @@ const addNewPassword=async(req,res)=>{
     }
 }
 
+const trackOrder=async(req,res)=>{
+    try {
+        let userName=await isUser.isUser(req)
+        console.log(req.query)
+        const {id}=req.query
+        const orders=await Order.findById(id)
+        const date=moment(orders.orderDate).format('DD/MM/YYYY')
+        console.log(orders)
+        console.log(date)
+        res.render('orderTracking',{userName,orders,date})
+    } catch (error) {
+        console.log("error in track order page : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
 module.exports={
     myAccount,
     addressManegment,
@@ -316,5 +332,6 @@ module.exports={
     updateAccount,
     resetPassword,
     checkOldPassword,
-    addNewPassword
+    addNewPassword,
+    trackOrder
 }

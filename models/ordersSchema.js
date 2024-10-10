@@ -36,9 +36,18 @@ const ordersSchema=new Schema({
     },
     orderStatus: {
         type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+        enum: ['Pending', 'Processing', 'Shipped','outForDelivery', 'Delivered', 'Cancelled','Returned'],
         default: 'Pending'
     }, 
+    statusTimestamps: {
+        pendingAt: { type: Date },          
+        processingAt: { type: Date },       
+        shippedAt: { type: Date },          
+        outForDeliveryAt: { type: Date },  
+        deliveredAt: { type: Date },        
+        cancelledAt: { type: Date },       
+        returnedAt: { type: Date }          
+    },
     orderDate:{
         type:Date,
         default:Date.now()

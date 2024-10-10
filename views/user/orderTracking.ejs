@@ -1,0 +1,110 @@
+<%- include('../partials/user/header') %>
+<link rel="stylesheet" href="/css/ordertracking.css">
+
+<div id="order-tracking-container">
+    <h1 id="tracking-title">Order Tracking</h1>
+    <div id="order-details">
+        <h2 id="order-number"><%= orders.orderId %></h2>
+        <p id="order-date">Placed on: <strong><%= date %></strong></p>
+    </div>
+    <div id="tracking-timeline">
+        <div class="tracking-item" data-status="Pending">
+            <div class="tracking-point"></div>
+            <div class="tracking-content">
+                <h3 class="tracking-status">Order Placed</h3>
+                <p class="tracking-description">Your order has been placed successfully.</p>
+                <span class="tracking-date">October 1, 2024</span>
+            </div>
+        </div>
+        <div class="tracking-item" data-status="Shipped">
+            <div class="tracking-point"></div>
+            <div class="tracking-content">
+                <h3 class="tracking-status">Order Dispatched</h3>
+                <p class="tracking-description">Your order has been dispatched and is on its way.</p>
+                <span class="tracking-date">October 2, 2024</span>
+            </div>
+        </div>
+        <div class="tracking-item" data-status="outForDelivery">
+            <div class="tracking-point"></div>
+            <div class="tracking-content">
+                <h3 class="tracking-status">Out for Delivery</h3>
+                <p class="tracking-description">Your order is out for delivery.</p>
+                <span class="tracking-date">October 3, 2024</span>
+            </div>
+        </div>
+        <div class="tracking-item" data-status="Delivered">
+            <div class="tracking-point" ></div>
+            <div class="tracking-content" >
+                <h3 class="tracking-status">Delivered</h3>
+                <p class="tracking-description">Your order has been delivered!</p>
+                <span class="tracking-date">October 4, 2024</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+   const orderStatus = "<%= orders.orderStatus %>"; // Get the order status dynamically from the server
+   // const orderStatus = "Cancelled"; // Get the order status dynamically from the server
+
+    // Get all tracking items
+    const trackingItems = document.querySelectorAll('.tracking-item');
+
+    // Loop through tracking items to show/hide based on status
+    trackingItems.forEach(item => {
+        const status = item.getAttribute('data-status');
+
+        if (status === orderStatus) {
+            item.querySelector('.tracking-point').style.backgroundColor = 'green'; // Highlight current status
+        } else if (status !== orderStatus) {
+            item.querySelector('.tracking-point').style.backgroundColor = 'lightgray'; // Past statuses
+            item.querySelector('.tracking-content').style.color = 'lightgray'; // Make text gray for past statuses
+        }
+    });
+
+    // Check if the order is cancelled, then dynamically add a "Cancelled" div
+    if (orderStatus === 'Cancelled') {
+        const trackingTimeline = document.getElementById('tracking-timeline');
+        
+        // Create the Cancelled div
+        const cancelledDiv = document.createElement('div');
+        cancelledDiv.classList.add('tracking-item');
+        cancelledDiv.setAttribute('data-status', 'Cancelled');
+
+        cancelledDiv.innerHTML = `
+            <div class="tracking-point" style="background-color: red;"></div>
+            <div class="tracking-content" style="color: red;">
+                <h3 class="tracking-status">Cancelled</h3>
+                <p class="tracking-description">Your order has been cancelled.</p>
+                <span class="tracking-date">October 5, 2024</span>
+            </div>
+        `;
+
+        // Append the Cancelled div to the timeline
+        trackingTimeline.appendChild(cancelledDiv);
+    }
+    if (orderStatus === 'Returned') {
+        const trackingTimeline = document.getElementById('tracking-timeline');
+        
+        // Create the Cancelled div
+        const returnDiv = document.createElement('div');
+        returnDiv.classList.add('tracking-item');
+        returnDiv.setAttribute('data-status', 'Returned');
+
+        returnDiv.innerHTML = `
+            <div class="tracking-point" tyle="color: red;"></div>
+            <div class="tracking-content" style="color: rgb(248, 137, 120);">
+                <h3 class="tracking-status">Returned</h3>
+                <p class="tracking-description">Your order has been cancelled.</p>
+                <span class="tracking-date">October 5, 2024</span>
+            </div>
+        `;
+
+        // Append the Cancelled div to the timeline
+        trackingTimeline.appendChild(returnDiv);
+    }
+});
+</script>
+
+<%- include('../partials/user/footer') %>

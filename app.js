@@ -32,7 +32,7 @@ app.use(express.static(path.join(__dirname,"public")))
 
 
 
-
+// logoutpassword,alert when delete,cancel order
 
 app.use("/admin",adminRouter)
 app.use("/",userRouter)

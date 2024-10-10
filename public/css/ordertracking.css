@@ -1,0 +1,52 @@
+#order-tracking-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#tracking-timeline {
+    position: relative;
+    padding-left: 20px; /* Space for the tracking points */
+}
+
+.tracking-item {
+    position: relative;
+    margin: 20px 0;
+}
+
+.tracking-point {
+    position: absolute;
+    left: 0; /* Center point */
+    transform: translateX(-50%); /* Center the point */
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    top: 0; /* Align the point at the top */
+}
+
+.tracking-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 0; /* Center line */
+    transform: translateX(-50%); /* Center the line */
+    top: 10px; /* Positioning below the point */
+    width: 2px; /* Width of the line */
+    height: calc(100% - 10px); /* Adjust height based on the item */
+    background-color: black; /* Line color */
+}
+
+.tracking-content {
+    margin-left: 30px; /* Space for the point */
+}
+
+.tracking-status {
+    font-weight: bold;
+}
+
+.tracking-date {
+    display: block;
+    font-size: 0.9em;
+    color: #888;
+    margin-top: 5px;
+}
