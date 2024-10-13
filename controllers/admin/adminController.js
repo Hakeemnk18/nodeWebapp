@@ -123,7 +123,7 @@ const addProduct=async(req,res)=>{
         });
 
 
-        console.log(savedImagePaths) 
+       
 
         const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
         if (req.files.length > 3) {
