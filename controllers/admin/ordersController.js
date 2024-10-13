@@ -1,6 +1,7 @@
 const Order=require('../../models/ordersSchema')
 const orderStatus=require('../../helpers/orderStatusTime')
 const { pageNotfound } = require('../user/userController')
+const Product=require('../../models/productSchema')
 
 const orders=async(req,res)=>{
     try {
@@ -16,8 +17,8 @@ const orders=async(req,res)=>{
         
 
         const totalOrders=await Order.find().countDocuments().exec()
-        const totalPages=Math.floor(totalOrders/limit)
-
+        const totalPages=Math.ceil(totalOrders/limit)
+        
         const data=await Order
         .find()
         .skip(startIndex)
@@ -66,10 +67,41 @@ const statusChange=async(req,res)=>{
         await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
         await orderStatus.statusTime(status,id)
         const orderData=await Order.findById(id)
-        console.log(orderData)
-        res.send("status changed")
+        // console.log(orderData)
+        res.redirect('/admin/orders')
     } catch (error) {
         console.log("error in admin status change"+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const orderCancel=async (req,res)=>{
+    try {
+        const {id,status}=req.query
+        await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
+        await orderStatus.statusTime(status,id)
+        const orderData=await Order.findById(id)
+        for(let i=0;i<orderData.cartItems.length;i++){
+            await Product.findByIdAndUpdate(orderData.cartItems[i].product,{$inc:{"varient.0.stock":orderData.cartItems[i].quantity}})
+            const product=await Product.findById(orderData.cartItems[i].product)
+            
+        }
+        
+        res.redirect('/admin/orders')
+    } catch (error) {
+        console.log("error in admin order cancel"+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const orderReqRej=async(req,res)=>{
+    try {
+        const {id}=req.query
+        const data=await Order.findByIdAndUpdate(id,{$set:{accept:'reject'}},{new:true})
+        console.log(data)
+        res.redirect('/admin/orders')
+    } catch (error) {
+        console.log("error in admin order req rejected"+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
@@ -77,5 +109,7 @@ const statusChange=async(req,res)=>{
 module.exports={
     orders,
     orderDetails,
-    statusChange
+    statusChange,
+    orderCancel,
+    orderReqRej
 }

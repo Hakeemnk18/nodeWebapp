@@ -36,6 +36,7 @@
                                  <th>Amount</th>
                                  <th>Action</th>
                                  <th></th>
+                                 <th></th>
                               </tr>
                            </thead>
                            <tbody>
@@ -67,7 +68,7 @@
                                                 >Delivered
                                              </option>
                                              <option
-                                                value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Cancelled"
+                                                value="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"
                                                 >Canceled
                                              </option>
                                              <option
@@ -82,6 +83,11 @@
                                                 >Pending</option>
                                           </select>
                                        </td>
+                                       <% if(data[i].isReturn === true && data[i].orderStatus !== 'Cancelled'){ %>
+                                          <td><button><a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled">Accept</a></button>
+                                          <button><a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>">Reject</a></button></td>
+                                       <% } %>
+                                       
                                        <td><Button><a href="/admin/orders/orderDetails?id=<%= data[i]._id %>">View
                                                 More</a></Button></td>
                                     </tr>
@@ -148,14 +154,14 @@
                      const orderId=selectElement.id.split('-')[3];
                      const statusCell=document.getElementById(`order-status-${orderId}`)
                      const currentStatus=statusCell.innerText.trim()
-
+                     
                      selectElement.querySelectorAll('option').forEach((option)=>{
-                        if(option.textContent === currentStatus){
+                        if(option.textContent.trim() === currentStatus){
                            option.selected = true
                         }else{
                            option.selected=false
                         }
-
+                        
                         if(currentStatus === 'Shipped' ){
                            if(option.textContent === 'Pending'){
                               option.disabled =true
@@ -201,4 +207,4 @@
 
 
 
-   <
+   

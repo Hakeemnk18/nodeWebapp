@@ -3,7 +3,8 @@ const Address=require('../../models/addressSchema');
 const Order = require('../../models/ordersSchema');
 const bcrypt = require('bcrypt');
 const moment=require('moment')
-const isUser=require('../../helpers/isUserlogin')
+const isUser=require('../../helpers/isUserlogin');
+const product = require('../../models/productSchema');
 
 
 const myAccount=async (req,res)=>{
@@ -97,7 +98,7 @@ const setDefault=async(req,res)=>{
         await Address.updateMany({_id:{$ne:id}},{$set:{isDefault:false}})
         await Address.updateOne({_id:id},{$set:{isDefault:true}})
         const updateData=await Address.findOne({_id:id})
-        console.log(updateData)
+        
         res.redirect("/myAccount/address");
 
     } catch (error) {
@@ -306,15 +307,41 @@ const addNewPassword=async(req,res)=>{
 const trackOrder=async(req,res)=>{
     try {
         let userName=await isUser.isUser(req)
-        console.log(req.query)
+        
         const {id}=req.query
         const orders=await Order.findById(id)
         const date=moment(orders.orderDate).format('DD/MM/YYYY')
-        console.log(orders)
-        console.log(date)
+        
         res.render('orderTracking',{userName,orders,date})
     } catch (error) {
         console.log("error in track order page : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const orderCancel=async(req,res)=>{
+    try {
+        console.log(req.query)
+        const {id}=req.query
+        const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})
+        console.log(data)
+        res.redirect('/myAccount/orders')
+
+    } catch (error) {
+        console.log("error in order cancel user side : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const returnOrder=async(req,res)=>{
+    try {
+        const {id}=req.query
+        console.log(id)
+        // const data=await product.findByIdAndUpdate(id,{$set:{}})
+        // console.log(data)
+        res.redirect('/myAccount/orders')
+    } catch (error) {
+        console.log("error in order return order : "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
@@ -333,5 +360,8 @@ module.exports={
     resetPassword,
     checkOldPassword,
     addNewPassword,
-    trackOrder
+    trackOrder,
+    orderCancel,
+    returnOrder
+    
 }

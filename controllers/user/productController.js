@@ -37,7 +37,7 @@ const productDetails=async (req,res)=>{
         
         
     
-        res.render('productDetails',{productData,relatedProduct,color,logout,size})
+        res.render('productDetails',{productData,relatedProduct,color,logout,size,userName})
     } catch (error) {
        console.log("error in product details page "+error.message) 
        return res.status(400).json({success:false,message:"an error occured"})
@@ -128,7 +128,7 @@ const allProduct=async (req,res)=>{
     try {
 
         
-        console.log(req.query)
+        
         const page=parseInt(req.query.page )|| 1
         
         const {sort}= req.query
@@ -137,6 +137,7 @@ const allProduct=async (req,res)=>{
         const query = { isActive: true, name: { $regex: regex } };
         
         let categoryFillter=req.query.filter
+        console.log(req.query)
         if(categoryFillter){
             categoryFillter=categoryFillter.trim()
             query.category=categoryFillter
@@ -227,8 +228,8 @@ const checkout=async(req,res)=>{
 }
 
     function generateUniqueOrderId() {
-        const prefix = 'ORD'; // You can customize the prefix
-        const timestamp = Date.now(); // Current timestamp
+        const prefix = 'ORD'; 
+        const timestamp = Date.now(); 
         const randomChars = Math.random().toString(36).substr(2, 5).toUpperCase(); // Generate 5 random characters
     
         return `${prefix}-${timestamp}-${randomChars}`;

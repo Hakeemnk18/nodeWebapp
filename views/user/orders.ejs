@@ -15,6 +15,9 @@
             height: 20px;
             text-align: center;
         }
+        .order-cancel-btn{
+            background-color: #9e9b9b;
+        }
     
 </style>
 <link rel="stylesheet" href="/css/orders.css">
@@ -54,9 +57,15 @@
                         <div class="order-actions">
                             <button class="track-btn"><a style="color: #fff;" href="/myAccount/orders/trackOrder?id=<%= orderItems[i]._id %>">Track Order</a></button>
                             <% if(orderItems[i].orderStatus !== 'Delivered'){ %>
-                                <button class="cancel-btn">Cancel Order</button>
+
+                                <% if (orderItems[i].orderStatus === 'Cancelled' || orderItems[i].accept === 'reject') { %>
+                                    <button class="order-cancel-btn" disabled>Cancel Order</button>
+                                 <% } else { %>
+                                <button class="cancel-btn" <%= orderItems[i].orderStatus === 'Cancelled' ? 'disabled':'' %> ><a style="color: #fff;" href="/myAccount/orders/cancelOrder?id=<%= orderItems[i]._id %>">Cancel Order</a></button>
+                                <% } %>
+
                             <% }else{ %>
-                                <button class="cancel-btn">Return</button>
+                                <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?id=<%= orderItems[i].cartItems[j].product._id %>">Return</a></button>
                             <% } %>
                             
                         </div>

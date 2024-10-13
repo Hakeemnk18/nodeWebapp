@@ -28,8 +28,8 @@ router.get('/productDetails/addCart',userAuth.isLogin,productController.addCart)
 router.get('/productDetails/cart',userAuth.isLogin,productController.cart)
 router.get("/productDetails/addCart/sub",userAuth.isLogin,productController.removeCart)
 router.get("/productDetails/cart/checkout",userAuth.isLogin,productController.checkout)
-router.post('/productDetails/cart/checkout',productController.orderSubmission)
-router.get('/productDetails/cart/checkout/success',productController.orderSuccess)
+router.post('/productDetails/cart/checkout',userAuth.isLogin,productController.orderSubmission)
+router.get('/productDetails/cart/checkout/success',userAuth.isLogin,productController.orderSuccess)
 
 //my account
 router.get("/myAccount",userAuth.isLogin,profileController.myAccount)
@@ -42,10 +42,12 @@ router.get("/myAccount/address/updateAddress",userAuth.isLogin,profileController
 router.get('/myAccount/orders',userAuth.isLogin,profileController.orders)
 router.get('/myAccount/editAccount',userAuth.isLogin,profileController.editAccount)
 router.post('/myAccount/editAccount',userAuth.isLogin,profileController.updateAccount)
-router.get("/myAccount/resetPassword",profileController.resetPassword)
-router.post('/myAccount/resetPassword/checkPassword',profileController.checkOldPassword)
-router.post('/myAccount/resetPassword',profileController.addNewPassword)
-router.get('/myAccount/orders/trackOrder',profileController.trackOrder)
+router.get("/myAccount/resetPassword",userAuth.isLogin,profileController.resetPassword)
+router.post('/myAccount/resetPassword/checkPassword',userAuth.isLogin,profileController.checkOldPassword)
+router.post('/myAccount/resetPassword',userAuth.isLogin,profileController.addNewPassword)
+router.get('/myAccount/orders/trackOrder',userAuth.isLogin,profileController.trackOrder)
+router.get('/myAccount/orders/cancelOrder',userAuth.isLogin,profileController.orderCancel)
+router.get('/myAccount/orders/returnOrder',userAuth.isLogin,profileController.returnOrder)
 
 
 

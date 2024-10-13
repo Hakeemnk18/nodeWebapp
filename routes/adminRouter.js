@@ -46,7 +46,9 @@ router.post('/category/editCategory/:id',auth.isLogin, categoryController.editCa
 //orders
 router.get('/orders',ordersController.orders)
 router.get('/orders/changeStatus',ordersController.statusChange)
+router.get('/orders/changeStatus/cancel',ordersController.orderCancel)
 router.get('/orders/orderDetails',ordersController.orderDetails)
+router.get('/orders/changeStatus/rejectReq',ordersController.orderReqRej)
 
 
 module.exports=router;

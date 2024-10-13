@@ -22,6 +22,15 @@ const ordersSchema=new Schema({
             price:{
                 type:Number,
                 required:true
+            },
+            isReturn:{
+                type:Boolean,
+                default:false
+            },
+            accept:{
+                type:String,
+                enum:['accept','reject'],
+                default:'accept'
             }
         }
     ],
@@ -64,6 +73,11 @@ const ordersSchema=new Schema({
         type:Boolean,
         default:false
 
+    },
+    accept:{
+        type:String,
+        enum:['accept','reject'],
+        default:'accept'
     }
 
 })
