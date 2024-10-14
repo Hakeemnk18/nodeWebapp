@@ -1,7 +1,7 @@
 <%- include('../partials/admin/header') %>
-<style>
-  /* Modal styles */
-  .modal {
+  <style>
+    /* Modal styles */
+    .modal {
       display: none;
       position: fixed;
       z-index: 1000;
@@ -10,68 +10,77 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.4);
-  }
-  .modal-content {
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
       background-color: #fefefe;
       margin: 15% auto;
       padding: 20px;
       border: 1px solid #888;
       width: 80%;
       max-width: 600px;
-  }
-  #cropperContainer {
+    }
+
+    #cropperContainer {
       max-width: 100%;
       max-height: 400px;
-  }
+    }
 
-  /* Essential Cropper.js styles */
-  .cropper-container {
+    /* Essential Cropper.js styles */
+    .cropper-container {
       direction: ltr;
       font-size: 0;
       line-height: 0;
       position: relative;
       touch-action: none;
       user-select: none;
-  }
-  .cropper-wrap-box,
-  .cropper-canvas,
-  .cropper-drag-box,
-  .cropper-crop-box,
-  .cropper-modal {
+    }
+
+    .cropper-wrap-box,
+    .cropper-canvas,
+    .cropper-drag-box,
+    .cropper-crop-box,
+    .cropper-modal {
       bottom: 0;
       left: 0;
       position: absolute;
       right: 0;
       top: 0;
-  }
-  .cropper-wrap-box,
-  .cropper-canvas {
+    }
+
+    .cropper-wrap-box,
+    .cropper-canvas {
       overflow: hidden;
-  }
-  .cropper-drag-box {
+    }
+
+    .cropper-drag-box {
       background-color: #fff;
       opacity: 0;
-  }
-  .cropper-modal {
+    }
+
+    .cropper-modal {
       background-color: #000;
       opacity: 0.5;
-  }
-  .cropper-view-box {
+    }
+
+    .cropper-view-box {
       display: block;
       height: 100%;
       outline: 1px solid #39f;
       outline-color: rgba(51, 153, 255, 0.75);
       overflow: hidden;
       width: 100%;
-  }
-  .cropper-dashed {
+    }
+
+    .cropper-dashed {
       border: 0 dashed #eee;
       display: block;
       opacity: 0.5;
       position: absolute;
-  }
-  .cropper-center {
+    }
+
+    .cropper-center {
       display: block;
       height: 0;
       left: 50%;
@@ -79,40 +88,45 @@
       position: absolute;
       top: 50%;
       width: 0;
-  }
-  .cropper-center::before,
-  .cropper-center::after {
+    }
+
+    .cropper-center::before,
+    .cropper-center::after {
       background-color: #eee;
       content: ' ';
       display: block;
       position: absolute;
-  }
-  .cropper-face,
-  .cropper-line,
-  .cropper-point {
+    }
+
+    .cropper-face,
+    .cropper-line,
+    .cropper-point {
       display: block;
       height: 100%;
       opacity: 0.1;
       position: absolute;
       width: 100%;
-  }
-  .cropper-face {
+    }
+
+    .cropper-face {
       background-color: #fff;
       left: 0;
       top: 0;
-  }
-  .cropper-line {
+    }
+
+    .cropper-line {
       background-color: #39f;
-  }
-  .cropper-point {
+    }
+
+    .cropper-point {
       background-color: #39f;
       height: 5px;
       opacity: 0.75;
       width: 5px;
-  }
-</style>
+    }
+  </style>
 
-<div id="page-wrapper">
+  <div id="page-wrapper">
     <div class="header">
       <h1 class="page-header">
         Add New Product
@@ -129,91 +143,97 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="card">
-            
+
             <div class="card-content">
-                <form class="col s12" action="/admin/product/addProduct" method="post" enctype="multipart/form-data" id="productForm">
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <input placeholder="Product Name" id="productName" type="text" class="validate" name="productName">
-                        <div id="error1" class="text-danger"></div>
-                      </div>
-                    </div>
-                    
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <input placeholder="Description" id="pDiscription" type="text" class="validate" name="productDiscription">
-                        <div id="error2" class="text-danger"></div>
-                      </div>
-                    </div>
-                  
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <input placeholder="Price" id="productPrice" type="number" class="validate" name="productPrice">
-                        <div id="error3" class="text-danger"></div>
-                      </div>
-                    </div>
-                  
-                    <div class="row">
-                      <div class="input-field col s12">
-                        <select id="category" name="productCategory" style="display: inline-block;">
-                          <option value="" disabled selected>Choose a category</option>
-                          <% if(typeof category !== 'undifined'){ %>
-
-                            <% for(let i=0;i<category.length;i++){ %>
-                              <option value="<%= category[i]._id %>"><%= category[i].categoryName %></option>
-                            <% } %>
-
-                          <% } %>
-                        </select>
-                        <div id="error5" class="text-danger"></div>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="input-field col s12">
-                          <input placeholder="Product Image URL" id="productIimage" type="file" class="validate" name="productImage" multiple>
-                          <div id="error4" class="text-danger"></div>
-                      </div>
+              <form class="col s12" action="/admin/product/addProduct" method="post" enctype="multipart/form-data"
+                id="productForm">
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input placeholder="Product Name" id="productName" type="text" class="validate" name="productName">
+                    <div id="error1" class="text-danger"></div>
                   </div>
-                  <div id="croppedImagesContainer"></div>
+                </div>
 
-                                <!-- Hidden inputs for cropped images -->
-                  <input type="hidden" id="croppedImage1" name="croppedImage1">
-                  <input type="hidden" id="croppedImage2" name="croppedImage2">
-                  <input type="hidden" id="croppedImage3" name="croppedImage3">
-                    
-                  
-                  
-                    <div class="row">
-                      <div class="col s12">
-                        <div>
-                          <div class="input-field inline">
-                            <select name="productSize" id="" style="display: inline-block;">
-                              <option value="" selected disabled>Size</option>
-                              <option value="M">M</option>
-                              <option value="S">S</option>
-                              <option value="L">L</option>
-                              <option value="XL">XL</option>
-                            </select>
-                            <!-- <input placeholder="Size" id="size" type="text" class="validate" name="productSize"> -->
-                          </div>
-                          <div class="input-field inline">
-                            <input placeholder="Color" id="color" type="text" class="validate" name="productColor">
-                          </div>
-                          <div class="input-field inline">
-                            <input placeholder="Stock" id="stock" type="number" class="validate" name="productStock">
-                          </div>
-                          <!-- <div class="input-field inline">
-                            <button style="border:none"  ><i class="fa-solid fa-plus"></i></button>
-                          </div> -->
-                        </div>
-                        
-                        <div>
-                          <button type="submit" class="btn btn-success">add product</button>
-                        </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input placeholder="Description" id="pDiscription" type="text" class="validate"
+                      name="productDiscription">
+                    <div id="error2" class="text-danger"></div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input placeholder="Price" id="productPrice" type="number" class="validate" name="productPrice">
+                    <div id="error3" class="text-danger"></div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="input-field col s12">
+                    <select id="category" name="productCategory" style="display: inline-block;">
+                      <option value="" disabled selected>Choose a category</option>
+                      <% if(typeof category !=='undifined' ){ %>
+
+                        <% for(let i=0;i<category.length;i++){ %>
+                          <option value="<%= category[i]._id %>">
+                            <%= category[i].categoryName %>
+                          </option>
+                          <% } %>
+
+                            <% } %>
+                    </select>
+                    <div id="error5" class="text-danger"></div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <input placeholder="Product Image URL" id="productIimage" type="file" class="validate"
+                      name="productImage" multiple>
+                    <div id="error4" class="text-danger"></div>
+                  </div>
+                </div>
+                <div id="croppedImagesContainer"></div>
+
+                <!-- Hidden inputs for cropped images -->
+                <input type="hidden" id="croppedImage1" name="croppedImage1">
+                <input type="hidden" id="croppedImage2" name="croppedImage2">
+                <input type="hidden" id="croppedImage3" name="croppedImage3">
+
+
+
+                <div class="row">
+                  <div class="col s12">
+                    <div id="variant-field-container">
+                      <div class="input-field inline">
+                        <select name="productSize" id="size1" style="display: inline-block;">
+                          <option value="" selected disabled>Size</option>
+                          <option value="M">M</option>
+                          <option value="S">S</option>
+                          <option value="L">L</option>
+                          <option value="XL">XL</option>
+                        </select>
+                        <span style="color: red;" id="error6"></span>
+                      </div>
+
+                      
+                      <div class="input-field inline">
+                        <input placeholder="Stock" id="stock1" type="number" class="validate" name="productStock">
+                        <span style="color: red;" id="error8"></span>
+                      </div>
+                      <div class="input-field inline">
+                        <button type="button" style="border:none" id="add-variant-field"><i
+                            class="fa-solid fa-plus"></i></button>
                       </div>
                     </div>
-                  </form>
-                  
+
+                    <div>
+                      <button type="submit" class="btn btn-success" style="margin-top: 20px;">add product</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
               <div class="clearBoth"></div>
             </div>
           </div>
@@ -222,45 +242,105 @@
 
       <div id="cropModal" class="modal">
         <div class="modal-content">
-            <h2>Crop Image <span id="imageNumber"></span></h2>
-            <button id="cropButton">Crop</button>
-            <button id="closeModal">Close</button>
-            <div id="cropperContainer">
-                <img id="cropperImage" src="" alt="Image to crop">
-            </div>
-            
+          <h2>Crop Image <span id="imageNumber"></span></h2>
+          <button id="cropButton">Crop</button>
+          <button id="closeModal">Close</button>
+          <div id="cropperContainer">
+            <img id="cropperImage" src="" alt="Image to crop">
+          </div>
+
         </div>
-    </div>
-    <script>
-      let cropper;
-      let croppedImagesCount = 0;
-      const maxImages = 3;
-      const productImagesInput = document.getElementById('productIimage');
-      const croppedImagesContainer = document.getElementById('croppedImagesContainer');
-      const modal = document.getElementById('cropModal');
-      const cropperImage = document.getElementById('cropperImage');
-      const cropButton = document.getElementById('cropButton');
-      const closeModal = document.getElementById('closeModal');
-      const error4 = document.getElementById('error4');
-      const imageNumber = document.getElementById('imageNumber');
-      const productName=document.getElementById('productName');
-      const productDiscription=document.getElementById('pDiscription')
-      const productPrice=document.getElementById('productPrice')
-      const productIimage=document.getElementById('productIimage')
-      const error1=document.getElementById('error1')
-      const error2=document.getElementById('error2')
-      const error3=document.getElementById('error3')
-      const form=document.getElementById('productForm')
-      const categorySelect=document.getElementById('category')
-      const error5=document.getElementById('error5')
+      </div>
 
-      let imagesToCrop = [];
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          document.getElementById("add-variant-field").addEventListener("click", function (event) {
+      
+            console.log("button clicked");
+            event.preventDefault();
+            var newVariant = document.createElement('div');
+            newVariant.classList.add('variant-add-group');  // Fixed class name 'variant-add-group'
+      
+            // Add input fields for Size, Color, and Stock
+            newVariant.innerHTML =` 
+              <div class="input-field inline">
+                <select name="productSize" class="size" style="display: inline-block;">
+                  <option value="" selected disabled>Size</option>
+                  <option value="M">M</option>
+                  <option value="S">S</option>
+                  <option value="L">L</option>
+                  <option value="XL">XL</option>
+                </select>
+                <span style="color: red;" class="error-size"></span>
+              </div>
+              
+              <div class="input-field inline">
+                <input placeholder="Stock" type="number" class="stock validate" name="productStock">
+                <span style="color: red;" class="error-stock"></span>
+              </div>
+              <div class="input-field inline">
+                <button style="border:none" class="remove-variant-field"><i class="fa-solid fa-minus"></i></button>
+              </div>
+            `;
+      
+            // Append the new variant group to the container
+            document.getElementById('variant-field-container').appendChild(newVariant);
+      
+            // Handle remove variant field
+            newVariant.querySelector('.remove-variant-field').addEventListener('click', function (e) {
+              e.preventDefault();
+              newVariant.remove();
+            });
+          });
+      
+          // Validate on form submission
+          
+        });
+      </script>
+      
+      
+      
+      
 
-      productImagesInput.addEventListener('change', function(event) {
+      <script>
+        let cropper;
+        let croppedImagesCount = 0;
+        const maxImages = 3;
+        const productImagesInput = document.getElementById('productIimage');
+        const croppedImagesContainer = document.getElementById('croppedImagesContainer');
+        const modal = document.getElementById('cropModal');
+        const cropperImage = document.getElementById('cropperImage');
+        const cropButton = document.getElementById('cropButton');
+        const closeModal = document.getElementById('closeModal');
+        const error4 = document.getElementById('error4');
+        const imageNumber = document.getElementById('imageNumber');
+        const productName = document.getElementById('productName');
+        const productDiscription = document.getElementById('pDiscription')
+        const productPrice = document.getElementById('productPrice')
+        const productIimage = document.getElementById('productIimage')
+        const error1 = document.getElementById('error1')
+        const error2 = document.getElementById('error2')
+        const error3 = document.getElementById('error3')
+        const form = document.getElementById('productForm')
+        const categorySelect = document.getElementById('category')
+        const error5 = document.getElementById('error5')
+        const size = document.getElementById('size1')
+        const color = document.getElementById("color1")
+        const stock = document.getElementById('stock1')
+        const error6 = document.getElementById('error6')
+        const error7 = document.getElementById('error7')
+        const error8 = document.getElementById('error8')
+
+
+
+
+        let imagesToCrop = [];
+
+        productImagesInput.addEventListener('change', function (event) {
           const files = event.target.files;
           if (files.length > maxImages) {
-              error4.innerHTML = `Please select up to ${maxImages} images.`;
-              return;
+            error4.innerHTML = `Please select up to ${maxImages} images.`;
+            return;
           }
           error4.innerHTML = '';
 
@@ -272,43 +352,43 @@
           document.getElementById('croppedImage3').value = '';
 
           cropNextImage();
-      });
+        });
 
-      function cropNextImage() {
+        function cropNextImage() {
           if (imagesToCrop.length > 0) {
-              const file = imagesToCrop.shift();
-              const reader = new FileReader();
-              reader.onload = function(e) {
-                  showCropModal(e.target.result);
-              }
-              reader.readAsDataURL(file);
+            const file = imagesToCrop.shift();
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              showCropModal(e.target.result);
+            }
+            reader.readAsDataURL(file);
           }
-      }
+        }
 
-      function showCropModal(imageSrc) {
+        function showCropModal(imageSrc) {
           cropperImage.src = imageSrc;
           modal.style.display = 'block';
           imageNumber.textContent = `(${croppedImagesCount + 1} of ${maxImages})`;
 
           if (cropper) {
-              cropper.destroy();
+            cropper.destroy();
           }
 
           cropper = new Cropper(cropperImage, {
-              aspectRatio: 1,
-              viewMode: 1,
+            aspectRatio: 1,
+            viewMode: 1,
           });
 
-          cropButton.onclick = function() {
-              const croppedCanvas = cropper.getCroppedCanvas();
-              const croppedImageData = croppedCanvas.toDataURL('image/jpeg');
-              addCroppedImage(croppedImageData);
-              modal.style.display = 'none';
-              cropNextImage();
+          cropButton.onclick = function () {
+            const croppedCanvas = cropper.getCroppedCanvas();
+            const croppedImageData = croppedCanvas.toDataURL('image/jpeg');
+            addCroppedImage(croppedImageData);
+            modal.style.display = 'none';
+            cropNextImage();
           };
-      }
+        }
 
-      function addCroppedImage(imageData) {
+        function addCroppedImage(imageData) {
           const img = document.createElement('img');
           img.src = imageData;
           img.style.width = '100px';
@@ -321,120 +401,199 @@
           croppedImagesCount++;
 
           if (croppedImagesCount === maxImages) {
-              productImagesInput.disabled = true;
+            productImagesInput.disabled = true;
           }
-      }
+        }
 
-      closeModal.onclick = function() {
+        closeModal.onclick = function () {
           modal.style.display = 'none';
           cropNextImage();
-      }
+        }
 
-      window.onclick = function(event) {
+        window.onclick = function (event) {
           if (event.target === modal) {
-              modal.style.display = 'none';
-              cropNextImage();
+            modal.style.display = 'none';
+            cropNextImage();
           }
-      }
+        }
 
-      // Update form submission to include cropped images validation
-      document.addEventListener("DOMContentLoaded", () => {
+        // Update form submission to include cropped images validation
+        document.addEventListener("DOMContentLoaded", () => {
           const form = document.getElementById('productForm');
           form.addEventListener("submit", (e) => {
-            const isName=nameValidation()
-            const isDescription=descriptionValidation()
-            const isPrice=priceValidation()
-            const isImage=imageValidation()
-            const isCategory=categoryValidation()
+            const isName = nameValidation()
+            const isDescription = descriptionValidation()
+            const isPrice = priceValidation()
+            const isImage = imageValidation()
+            const isCategory = categoryValidation()
+            const isSaze=sizeValidation()
+            
+            const isStock=stockValidation()
+            const isAddContainor=addContainerValidation()
 
-            if(!isName || !isDescription || !isPrice || !isImage || !isCategory){
+            if (!isName || !isDescription || !isPrice || !isImage || !isCategory || !isSaze  || !isStock || !isAddContainor) {
               e.preventDefault()
             }
-              const isCroppedImages = croppedImagesCount === maxImages;
+            const isCroppedImages = croppedImagesCount === maxImages;
 
-              if (!isCroppedImages) {
-                  e.preventDefault();
-                  error4.innerHTML = `Please crop and add exactly ${maxImages} images.`;
-              }
+            if (!isCroppedImages) {
+              e.preventDefault();
+              error4.innerHTML = `Please crop and add exactly ${maxImages} images.`;
+            }
 
-              // Other existing validations...
+            // Other existing validations...
           });
-      });
+        });
+//////////////////////////////////////////////////////////
 
-      function categoryValidation(){
-        const categoryVal=categorySelect.value
-        if(!categoryVal){
-          error5.innerHTML="Please select a category"
-          return false;
-        }else{
-          error5.innerHTML=""
-          return true;
+        function addContainerValidation(){
+          var isValid = true;
+
+    // Validate each variant field
+          document.querySelectorAll('.variant-add-group').forEach(function (variant) {
+      // Validate size
+          var size = variant.querySelector('.size');
+          var sizeError = variant.querySelector('.error-size');
+          if (size.value === "") {
+            sizeError.textContent = "Please select a size.";
+            
+            isValid = false;
+          } else {
+            sizeError.textContent = "";
+            size.style.border = "none";
+          }
+
+          // Validate color
+          
+
+          // Validate stock
+          var stock = variant.querySelector('.stock');
+            var stockError = variant.querySelector('.error-stock');
+            if (stock.value === "" || parseInt(stock.value) <= 0) {
+              stockError.textContent = "Please enter a valid stock quantity.";
+              isValid = false;
+            } else {
+              stockError.textContent = "";
+              stock.style.border = "none";
+            }
+          });
+
+        // Submit if validation passes
+          if (isValid) {
+
+            
+            console.log("Form is valid, proceeding...");
+            return true
+            // Example: document.querySelector("form").submit();
+          } else {
+            console.log("Form has errors, please correct them.");
+            return false
+          }
         }
-      }
-      function imageValidation() {
+
+        function sizeValidation(){
+          const sizeVal=size.value
+          if(sizeVal === ""){
+            error6.innerHTML="Please select a size"
+            return false
+          }else{
+            error6.innerHTML=""
+            return true
+          }
+        }
+
+        function colorValidation(){
+          if(color.value.trim()=== ""){
+            error7.innerHTML="please enter a color"
+            return false
+          }else{
+            error7.innerHTML=""
+            return true
+          }
+        }
+        function stockValidation(){
+          stockVal=stock.value
+          if(stockVal === "" || parseInt(stockVal) <0){
+            error8.innerHTML="please select valid stock"
+            return false
+          }else{
+            error8.innerHTML=""
+            return true
+          }
+        }
+
+        function categoryValidation() {
+          const categoryVal = categorySelect.value
+          if (!categoryVal) {
+            error5.innerHTML = "Please select a category"
+            return false;
+          } else {
+            error5.innerHTML = ""
+            return true;
+          }
+        }
+        function imageValidation() {
           const fileLength = productImagesInput.files.length;
           const allowedFile = 3;
           if (fileLength > allowedFile) {
-              error4.innerHTML = "Only allowed 3 images";
-              return false;
+            error4.innerHTML = "Only allowed 3 images";
+            return false;
           } else if (fileLength < allowedFile) {
-              error4.innerHTML = "Need three images";
-              return false;
+            error4.innerHTML = "Need three images";
+            return false;
           } else {
-              error4.innerHTML = "";
-              return true;
-          }
-      }
-      function nameValidation(){
-          const nameVal=productName.value
-          const namePattern=/^[A-Za-z\s&]+$/
-          
-          if(!namePattern.test(nameVal)){
-            error1.innerHTML="name only contain caracters"
-            return false
-          }else{
-            error1.innerHTML="";
+            error4.innerHTML = "";
             return true;
           }
-          
+        }
+        function nameValidation() {
+          const nameVal = productName.value
+          const namePattern = /^[A-Za-z\s&]+$/
+
+          if (!namePattern.test(nameVal)) {
+            error1.innerHTML = "name only contain caracters"
+            return false
+          } else {
+            error1.innerHTML = "";
+            return true;
+          }
+
 
         }
 
-        function descriptionValidation(){
-                const descrptionVal=productDiscription.value 
-                
-                if(descrptionVal.length>60){
-                    error2.innerHTML="discription only allowed 60 caracters"
-                    return false
-                }else{
-                    error2.innerHTML=""
-                    return true
-                }
-            }
-         
-        function priceValidation(){
+        function descriptionValidation() {
+          const descrptionVal = productDiscription.value
 
-          const priceVal=parseFloat(productPrice.value) 
+          if (descrptionVal.length > 60) {
+            error2.innerHTML = "discription only allowed 60 caracters"
+            return false
+          } else {
+            error2.innerHTML = ""
+            return true
+          }
+        }
+
+        function priceValidation() {
+
+          const priceVal = parseFloat(productPrice.value)
 
           console.log(typeof priceVal)
-          if(priceVal<1){
-            error3.innerHTML="enter a valid price"
+          if (priceVal < 1) {
+            error3.innerHTML = "enter a valid price"
             return false
-          }else{
-            error3.innerHTML='';
+          } else {
+            error3.innerHTML = '';
             return true;
           }
         }
-        
 
-      // Include imageValidation in your form submission check
-  </script>
+
+        // Include imageValidation in your form submission check
+      </script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-      
-      
-        <!-- /.panel-body -->
-      </div>
-      <!-- /.col-lg-12 -->
-      <%- include('../partials/admin/footer') %>
 
-    
+
+      <!-- /.panel-body -->
+    </div>
+    <!-- /.col-lg-12 -->
+    <%- include('../partials/admin/footer') %>

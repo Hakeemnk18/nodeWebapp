@@ -23,7 +23,7 @@ const allProduct=async (req,res)=>{
         const search=req.query.search || ''; 
         const regex = new RegExp(`^${search}`, 'i');
         const page = parseInt(req.query.page)|| 1
-        const limit=2
+        const limit=5
         const startIndex=(page-1)*limit
         const endIndex=page*limit
 
@@ -125,7 +125,8 @@ const addProduct=async(req,res)=>{
 
        
 
-        const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
+        const {productName,productDiscription,productPrice,productCategory,productSize,productStock}=req.body
+        
         if (req.files.length > 3) {
             console.log("not allowed more than 3 image")
             return res.status(400).send('Only up to 3 images are allowed.');
@@ -144,7 +145,32 @@ const addProduct=async(req,res)=>{
             };
         }));
 
-        console.log()
+        console.log(productSize,productStock)
+        let productVariant=[]
+        if(typeof productSize !== String){
+            let variantMap={}
+            for(let i=0;i<productSize.length;i++){
+
+                if(variantMap[productSize[i]]){
+                    variantMap[productSize[i]] += parseInt(productStock[i])
+                }else{
+                    variantMap[productSize[i]]= parseInt(productStock[i])
+                }
+            }
+            console.log(variantMap)
+
+            for(const [key,value] of Object.entries(variantMap)){
+                productVariant.push({size:key,stock:value})
+            }
+        }else{
+            productVariant.push({size:productSize,stock:productStock.toString()})
+        }
+        
+
+
+        console.log(productVariant)
+        
+
 
         const newProduct= new Product({
             name:productName,
@@ -152,14 +178,7 @@ const addProduct=async(req,res)=>{
             price:productPrice,
             productImage:processedImages,
             croppedImage:savedImagePaths,
-            varient:[
-                {
-                    size:productSize,
-                    color:productColor,
-                    stock:productStock,
-
-                }
-            ],
+            varient:productVariant,
             category:productCategory
 
         })
@@ -230,12 +249,11 @@ const loadEditProduct=async(req,res)=>{
         const {name,description,price,varient,category,croppedImage}=data
         const {size,stock,color}=varient[0]
         const find=await Category.findOne({_id:category},{categoryName:1})
-        
         const allCategory=await Category.find({categoryName:{$ne:find.categoryName}})
 
-        console.log(croppedImage)
+        console.log(varient)
         
-        res.render('editProduct',{name,description,price,size,stock,color,id,allCategory,find,croppedImage})
+        res.render('editProduct',{name,description,price,size,stock,color,id,allCategory,find,croppedImage,varient})
 
         
 

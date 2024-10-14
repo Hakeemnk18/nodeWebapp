@@ -71,7 +71,14 @@
                     <div class="row">
                       <div class="col s12">
                         <div class="input-field inline">
-                          <input placeholder="Size" id="size" type="text" class="validate" name="productSize" value="<%= size %>">
+                          <select name="productSize" id="size1" style="display: inline-block;">
+                            <option value="" selected disabled><%= size %></option>
+                            <option value="M">M</option>
+                            <option value="S">S</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                          </select>
+                          <span style="color: red;" id="error6"></span>
                         </div>
                         <div class="input-field inline">
                           <input placeholder="Color" id="color" type="text" class="validate" name="productColor" value="<%= color %>">
@@ -91,6 +98,10 @@
           </div>
         </div>
       </div>
+
+      <script>
+
+      </script>
       
       <script>
         

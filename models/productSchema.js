@@ -11,10 +11,6 @@ const variantSchema=new Schema({
         type: Number,
         required: true
     },
-    color: {
-        type: String,
-        required: true
-    },
 })
 
 const productSchema=new Schema({
