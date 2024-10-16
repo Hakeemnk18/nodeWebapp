@@ -12,35 +12,47 @@ const productDetails=async (req,res)=>{
     try {
         
         const {id}=req.query
-        
+        console.log(req.query)
         let userName=await isUser.isUser(req)
         const productData=await Product.findOne({_id:id})
         const relatedProduct=await Product.find({category:productData.category})
-        const color=await Product.aggregate([
-            {$match:{name:productData.name}},
-            {$unwind:"$varient"},
-            {$group:{_id:"$varient.color"}}
-            
-        ])
-
-        const size=await Product.aggregate([
-            {$match:{name:productData.name}},
-            {$unwind:"$varient"},
-            {$group:{_id:"$varient.size"}}
-        ])
         
-        if(req.session.user_id){
-            logout="logout"
+        console.log(productData)
+        let stock=productData.varient[0].stock
+        let index=0
+        if(req.query.index){
+            index=req.query.index
+            stock=productData.varient[index].stock
+        }else{
+            let stock=productData.varient[0].stock
         }
         
+        console.log(stock)
 
-        
+        console.log(index)
         
     
-        res.render('productDetails',{productData,relatedProduct,color,logout,size,userName})
+        res.render('productDetails',{productData,relatedProduct,userName,stock,index})
     } catch (error) {
        console.log("error in product details page "+error.message) 
        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+const stockDetails=async(req,res)=>{
+    try {
+        
+        console.log("inside stock fetch")
+        console.log(req.query)
+        const {id,index}=req.query
+        const product=await Product.findById(id)
+        const stock=product.varient[index].stock
+
+        console.log("stock : "+stock)
+
+        res.json({stock})
+    } catch (error) {
+        console.log("error in stock fetching page "+error.message)
+        res.status(404).json({ error: 'Product not found or index out of range' })
     }
 }
 
@@ -289,7 +301,8 @@ module.exports={
     removeCart,
     checkout,
     orderSubmission,
-    orderSuccess
+    orderSuccess,
+    stockDetails
 }
 
 

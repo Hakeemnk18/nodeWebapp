@@ -147,7 +147,8 @@ const addProduct=async(req,res)=>{
 
         console.log(productSize,productStock)
         let productVariant=[]
-        if(typeof productSize !== String){
+        if(typeof productSize !== "string"){
+            console.log("inside if condition")
             let variantMap={}
             for(let i=0;i<productSize.length;i++){
 
@@ -163,7 +164,8 @@ const addProduct=async(req,res)=>{
                 productVariant.push({size:key,stock:value})
             }
         }else{
-            productVariant.push({size:productSize,stock:productStock.toString()})
+            console.log("inside else condition")
+            productVariant.push({size:productSize,stock:parseInt(productStock)})
         }
         
 
@@ -251,7 +253,7 @@ const loadEditProduct=async(req,res)=>{
         const find=await Category.findOne({_id:category},{categoryName:1})
         const allCategory=await Category.find({categoryName:{$ne:find.categoryName}})
 
-        console.log(varient)
+        
         
         res.render('editProduct',{name,description,price,size,stock,color,id,allCategory,find,croppedImage,varient})
 
@@ -272,27 +274,48 @@ const loadEditProduct=async(req,res)=>{
 const editProduct=async(req,res)=>{
     try {
         const {id}=req.params
-        const {productName,productDiscription,productPrice,productCategory,productSize,productColor,productStock}=req.body
+        const {productName,productDiscription,productPrice,productCategory,productSize,productStock}=req.body
         
-
-        const data=await Product.updateOne(
-            {_id:id},
-            {
-                name:productName,
-                description:productDiscription,
-                price:productPrice,
-                varient:[
-                    {
-                        size:productSize,
-                        color:productColor,
-                        stock:productStock,
-
-                    }
-                ],
-                category:productCategory
-
+        console.log(typeof productSize)
+        console.log(productStock)
+        let productVariant=[]
+        if(typeof productSize !== "string"){
+            console.log("iside if condition")
+            let productSizeObj={}
+            for(let i=0;i<productSize.length;i++){
+                if(productSizeObj[productSize[i]]){
+                    productSizeObj[productSize[i]] += parseInt(productStock[i])
+                }else{
+                    productSizeObj[productSize[i]]= parseInt(productStock[i])
+                }
             }
-        )
+
+            console.log(productSizeObj)
+
+            for(const [key,value] of Object.entries(productSizeObj)){
+                productVariant.push({size:key,stock:value})
+            }
+
+        }else{
+            console.log("inside else case")
+            productVariant.push({size:productSize,stock:parseInt(productStock)})
+        }
+
+        console.log(productVariant)
+
+        const data = await Product.findOneAndUpdate(
+            { _id: id },
+            {
+                name: productName,
+                description: productDiscription,
+                price: productPrice,
+                varient: productVariant,
+                category: productCategory
+            },
+            { new: true,upsert:true } 
+        );
+
+        console.log(data)
         
         res.redirect('/admin/product')
     } catch (error) {

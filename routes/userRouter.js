@@ -30,6 +30,7 @@ router.get("/productDetails/addCart/sub",userAuth.isLogin,productController.remo
 router.get("/productDetails/cart/checkout",userAuth.isLogin,productController.checkout)
 router.post('/productDetails/cart/checkout',userAuth.isLogin,productController.orderSubmission)
 router.get('/productDetails/cart/checkout/success',userAuth.isLogin,productController.orderSuccess)
+router.get('/api/product/stock',productController.stockDetails)
 
 //my account
 router.get("/myAccount",userAuth.isLogin,profileController.myAccount)

@@ -51,14 +51,10 @@
                     <h1><%= productData.name %></h1>
                     <h4><%= productData.price %></h4>
                     <form action="/productDetails/addCart">
-                        <select name="size" required>
-                            <% if(typeof size !== 'undefined'){ %>
-                                <% for(let i = 0;i<size.length;i++){ %>
-                                    <option value="<%= size[i]._id %>"><%= size[i]._id %></option>
+                        <select name="size" required id="product-size">
+                                <% for(let i=0;i<productData.varient.length;i++){ %>
+                                    <option value="<%= i %>"><%= productData.varient[i].size  %></option>
                                 <% } %>
-                            <% } %>
-                            
-                            
                         </select>
                         <input type="number" style="width: 70px;" name="quantity" value="1" min="1" max="<%= productData.varient[0].stock %>">
     
@@ -74,11 +70,17 @@
                     <h3>Product Details <i class="fa fa-indent"></i></h3>
                     <br>
                     <p><%= productData. description %></p>
-                    <% if(productData.varient[0].stock<1){%>
-                        <p style="color: red;">out of stock</p>
-                    <% }else{ %>
-                        <p>only <%= productData.varient[0].stock %> left</p>
-                    <% } %>
+                    
+                        
+
+                        <p id="empty-stock" style="display: <%= stock < 1 ? 'block' : 'none' %>; color: red;">out of stock</p>
+                        <p id="product-stock" style="display: <%= stock >= 1 ? 'block' : 'none' %>;">only <%= stock %> left</p>
+
+                    
+                        
+                    
+                        
+                    
                     
                 <% } %>
 
@@ -124,6 +126,53 @@
   
 
     <!-- product gallery -->
+     <script>
+        document.getElementById('product-size').addEventListener("change",async function(){
+            const selectVal=this.value 
+            const productId='<%= productData._id %>'
+            try {
+                const response=await fetch(`/api/product/stock?id=${productId}&index=${selectVal}`)
+
+                let data
+                if(!response.ok){
+                    throw new Error("Network response was not ok")
+                }
+
+                data=await response.json()
+                if (data.stock < 1) {
+                document.getElementById('empty-stock').style.display = 'block'; 
+                const productStockElement = document.getElementById('product-stock');
+                
+                if (productStockElement) {
+                    productStockElement.style.display = 'none';
+                }
+                } else {
+                    console.log("inside else condition ");
+                    const emptyStockElement = document.getElementById('empty-stock');
+                    const productStockElement = document.getElementById('product-stock');
+                    
+                    if (emptyStockElement) {
+                        emptyStockElement.style.display = 'none';
+                    }
+                    
+                    if (productStockElement) {
+                        productStockElement.style.display = 'block';
+                        productStockElement.textContent = `only ${data.stock} left`;
+                    }
+                }
+                
+
+            } catch (error) {
+                console.log("error in fetch "+error.message)
+            }
+            
+
+
+
+            
+
+        })
+     </script>
     <script>
         var ProductImg = document.getElementById("ProductImg");
         var SmallImg = document.getElementsByClassName("small-img");

@@ -70,24 +70,55 @@
                   
                     <div class="row">
                       <div class="col s12">
-                        <div class="input-field inline">
-                          <select name="productSize" id="size1" style="display: inline-block;">
-                            <option value="" selected disabled><%= size %></option>
-                            <option value="M">M</option>
-                            <option value="S">S</option>
-                            <option value="L">L</option>
-                            <option value="XL">XL</option>
-                          </select>
-                          <span style="color: red;" id="error6"></span>
+                        <div id="variant-field-container">
+                          <div class="input-field inline">
+                            <select name="productSize" class="size" style="display: inline-block;">
+                              <option value="<%= size %>" selected ><%= size %></option>
+                              <option value="M">M</option>
+                              <option value="S">S</option>
+                              <option value="L">L</option>
+                              <option value="XL">XL</option>
+                            </select>
+                            <span style="color: red;" class="error-size"></span>
+                          </div>
+                          
+                          <div class="input-field inline">
+                            <input placeholder="Stock" class="stock" type="number"  name="productStock" value="<%= stock %>">
+                            <span style="color: red;" class="error-stock"></span>
+                          </div>
+                          <div class="input-field inline">
+                            <button type="button" style="border:none" id="add-variant-field"><i
+                                class="fa-solid fa-plus"></i></button>
+                          </div>
                         </div>
-                        <div class="input-field inline">
-                          <input placeholder="Color" id="color" type="text" class="validate" name="productColor" value="<%= color %>">
-                        </div>
-                        <div class="input-field inline">
-                          <input placeholder="Stock" id="stock" type="number" class="validate" name="productStock" value="<%= stock %>">
-                        </div>
+                        <% if(typeof varient !== 'undefined') { %>
+                            <% for(let i=1;i< varient.length ; i++){ %>
+                              <div class="variant-add-group">
+                                <div class="input-field inline">
+                                  <select name="productSize" class="size" style="display: inline-block;">
+                                    <option value="<%= varient[i].size %>" selected ><%= varient[i].size %></option>
+                                    <option value="M">M</option>
+                                    <option value="S">S</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                  </select>
+                                  <span style="color: red;" class="error-size"></span>
+                                </div>
+                                
+                                <div class="input-field inline">
+                                  <input placeholder="Stock" type="number" class="stock validate" name="productStock" value="<%= varient[i].stock %>">
+                                  <span style="color: red;" class="error-stock"></span>
+                                </div>
+                                <div class="input-field inline">
+                                  <button style="border:none" class="remove-variant-field"><i class="fa-solid fa-minus"></i></button>
+                                </div>
+                              </div>
+                              
+                            <% } %>
+                        <% } %>
+                        
                         <div>
-                          <button type="submit" class="btn btn-success">edit product</button>
+                          <button type="submit" class="btn btn-success" style="margin-top: 20px;">edit product</button>
                         </div>
                       </div>
                     </div>
@@ -100,7 +131,55 @@
       </div>
 
       <script>
-
+          document.addEventListener("DOMContentLoaded", function () {
+          document.getElementById("add-variant-field").addEventListener("click", function (event) {
+      
+            console.log("button clicked");
+            event.preventDefault();
+            var newVariant = document.createElement('div');
+            newVariant.classList.add('variant-add-group');  // Fixed class name 'variant-add-group'
+      
+            // Add input fields for Size, Color, and Stock
+            newVariant.innerHTML =` 
+              <div class="input-field inline">
+                <select name="productSize" class="size" style="display: inline-block;">
+                  <option value="" selected disabled>Size</option>
+                  <option value="M">M</option>
+                  <option value="S">S</option>
+                  <option value="L">L</option>
+                  <option value="XL">XL</option>
+                </select>
+                <span style="color: red;" class="error-size"></span>
+              </div>
+              
+              <div class="input-field inline">
+                <input placeholder="Stock" type="number" class="stock validate" name="productStock">
+                <span style="color: red;" class="error-stock"></span>
+              </div>
+              <div class="input-field inline">
+                <button style="border:none" class="remove-variant-field"><i class="fa-solid fa-minus"></i></button>
+              </div>
+            `;
+      
+            // Append the new variant group to the container
+            document.getElementById('variant-field-container').appendChild(newVariant);
+      
+            // Handle remove variant field
+            newVariant.querySelector('.remove-variant-field').addEventListener('click', function (e) {
+              e.preventDefault();
+              newVariant.remove();
+            });
+          });
+      
+          const existingRemoveButtons = document.querySelectorAll('.remove-variant-field');
+          existingRemoveButtons.forEach(function (button) {
+            button.addEventListener('click', function (event) {
+              event.preventDefault();
+              button.closest('.variant-add-group').remove(); // Remove the variant field
+            });
+          });
+          
+        });
       </script>
       
       <script>
@@ -114,6 +193,35 @@
         const error3=document.getElementById('error3')
         const error4=document.getElementById('error4')
         const form=document.getElementById('productForm')
+
+        function validateVariantFields() {
+        let isValid = true;  // Use this flag to track the validation status
+        
+        const sizeFields = document.querySelectorAll('.size');
+        const stockFields = document.querySelectorAll('.stock');
+        
+        sizeFields.forEach((select, index) => {
+            const errorSize = select.nextElementSibling; // Error span for size field
+            if (select.value === "") {
+                errorSize.textContent = "Please select a size";
+                isValid = false;  // Set the flag to false if validation fails
+            } else {
+                errorSize.textContent = ""; // Clear error if valid
+            }
+        });
+
+        stockFields.forEach((input, index) => {
+            const errorStock = input.nextElementSibling; // Error span for stock field
+            if (input.value === "" || input.value <= 0) {
+                errorStock.textContent = "Please enter a valid stock quantity";
+                isValid = false;  // Set the flag to false if validation fails
+            } else {
+                errorStock.textContent = "";  // Clear error if valid
+            }
+        });
+        
+        return isValid;  // Return the overall validation status
+    }
 
         function nameValidation(){
           const nameVal=productName.value
@@ -176,9 +284,9 @@
             const isName=nameValidation()
             const isDescription=descriptionValidation()
              const isPrice=priceValidation()
-            // const isImage=imageValidation()
+             const isVariant=validateVariantFields()
 
-            if(!isName || !isDescription || !isPrice){
+            if(!isName || !isDescription || !isPrice || !isVariant){
               e.preventDefault()
             }
 
