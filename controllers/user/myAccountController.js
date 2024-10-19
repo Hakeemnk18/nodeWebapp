@@ -146,7 +146,7 @@ const orders=async(req,res)=>{
         let dateField=[]
         const userId=req.session.user_id
         const userOrder=await Order.find({user:userId})
-        console.log(userOrder[0])
+        
         const orderItems=await Order.find({user:userId}).populate('cartItems.product').exec()
 
         for(let i=0;i<orderItems.length;i++){
@@ -323,11 +323,11 @@ const trackOrder=async(req,res)=>{
 
 const orderCancel=async(req,res)=>{
     try {
-        console.log("inside ")
-        console.log(req.query)
+        // console.log("inside ")
+        // console.log(req.query)
         const {id}=req.query
         const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})
-        console.log(data)
+        // console.log(data)
         res.redirect('/myAccount/orders')
 
     } catch (error) {
@@ -338,10 +338,15 @@ const orderCancel=async(req,res)=>{
 
 const returnOrder=async(req,res)=>{
     try {
-        const {id}=req.query
-        console.log(id)
-        // const data=await product.findByIdAndUpdate(id,{$set:{}})
-        // console.log(data)
+
+        console.log(req.query)
+        const {id,index}=req.query
+        const orderData=await Order.findById(id)
+        console.log(orderData)
+        console.log("befor updation")
+        await Order.updateOne({_id:id},{$set:{[`cartItems.${index}.isReturn`]:true}})
+        const orderDat=await Order.findById(id)
+        
         res.redirect('/myAccount/orders')
     } catch (error) {
         console.log("error in order return order : "+error.message)

@@ -83,7 +83,7 @@
                                                 >Pending</option>
                                           </select>
                                        </td>
-                                       <% if(data[i].isReturn === true && data[i].orderStatus !== 'Cancelled'){ %>
+                                       <% if(data[i].isReturn === true && data[i].orderStatus !== 'Cancelled' && data[i].orderStatus !== 'Delivered'){ %>
                                           <td><button><a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled">Accept</a></button>
                                           <button><a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>">Reject</a></button></td>
                                        <% } %>

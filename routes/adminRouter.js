@@ -49,6 +49,7 @@ router.get('/orders/changeStatus',auth.isLogin,ordersController.statusChange)
 router.get('/orders/changeStatus/cancel',auth.isLogin,ordersController.orderCancel)
 router.get('/orders/orderDetails',auth.isLogin,ordersController.orderDetails)
 router.get('/orders/changeStatus/rejectReq',auth.isLogin,ordersController.orderReqRej)
+router.get('/orders/changeStatus/acceptReturn',auth.isLogin,ordersController.returnAccept)
 
 
 module.exports=router;

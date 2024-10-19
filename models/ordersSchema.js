@@ -32,14 +32,16 @@ const ordersSchema=new Schema({
                 type:Boolean,
                 default:false
             },
-            accept:{
-                type:String,
-                enum:['accept','reject'],
-                default:'accept'
+            isAccept:{
+                type:Boolean,
+                
             },
             size:{
                 type:String,
                 required:true
+            },
+            productStatusTimeStamp:{
+               returnedAt:{type:Date}
             }
         }
     ],

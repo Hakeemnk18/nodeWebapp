@@ -66,7 +66,12 @@
                                 <% } %>
 
                             <% }else{ %>
-                                <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?id=<%= orderItems[i].cartItems[j].product._id %>">Return</a></button>
+                                <% if(orderItems[i].cartItems[j].isReturn === false){ %>
+                                    <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?id=<%= orderItems[i]._id %>&index=<%= j %>">Return</a></button>
+                                <% } else{ %>
+                                    <button class="order-cancel-btn" disabled>Return</button>
+                                <% } %>
+                                
                             <% } %>
                             
                         </div>

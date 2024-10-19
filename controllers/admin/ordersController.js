@@ -52,7 +52,7 @@ const orderDetails=async(req,res)=>{
     try {
         const {id}=req.query
         const data=await Order.findOne({_id:id}).populate("cartItems.product")
-        console.log(data)
+        
         res.render('orderDetails',{totalPages :3,data})
     } catch (error) {
         console.log("error in admin order details "+error.message)
@@ -66,27 +66,59 @@ const statusChange=async(req,res)=>{
         const {id,status}=req.query
         await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
         await orderStatus.statusTime(status,id)
-        const orderData=await Order.findById(id)
-        // console.log(orderData)
+        
         res.redirect('/admin/orders')
     } catch (error) {
         console.log("error in admin status change"+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
+const returnAccept=async(req,res)=>{
+    try {
+        const {id,index}=req.query
+        const data=await Order.findById(id)
+        const updatedOrder = await Order.findOneAndUpdate(
+            { _id: id },
+            { $set: { [`cartItems.${index}.isAccept`]: true } },
+            { new: true }
+          );
+          
+          // Get the updated cart item
+        const updatedCartItem = updatedOrder.cartItems[index];
+        const ppp=await Product.findById(updatedCartItem.product)
+        await Product.updateOne(
+            {
+                _id:updatedCartItem.product,
+                "varient.size":updatedCartItem.size
+            },
+            {
+                $inc:{
+                    "varient.$.stock":updatedCartItem.quantity
+                }
+            }
+        ) 
+        const pp=await Product.findById(updatedCartItem.product)
+
+
+        res.redirect(`/admin/orders/orderDetails?id=${id}`)
+    } catch (error) {
+        console.log("error in admin return accept "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
 
 const orderCancel=async (req,res)=>{
     try {
-        console.log("inside admin order cancel")
+        
         const {id,status}=req.query
         await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
         await orderStatus.statusTime(status,id)
         const orderData=await Order.findById(id)
-        console.log(orderData)
+        
         for(let i=0;i<orderData.cartItems.length;i++){
             await Product.updateOne({_id:orderData.cartItems[i].product,"varient.size":orderData.cartItems[i].size},{$inc:{"varient.$.stock":orderData.cartItems[i].quantity}})
             const product=await Product.findById(orderData.cartItems[i].product)
-            //await Product.updateOne({_id:productId,"varient.size":size},{$inc:{"varient.$.stock":1}})
+            
         }
         
         res.redirect('/admin/orders')
@@ -113,5 +145,6 @@ module.exports={
     orderDetails,
     statusChange,
     orderCancel,
-    orderReqRej
+    orderReqRej,
+    returnAccept
 }

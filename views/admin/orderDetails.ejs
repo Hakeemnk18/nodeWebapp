@@ -39,6 +39,7 @@
                         <thead>
                             <tr>
                                 <th>Product Name</th>
+                                <th>Size</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Total Amount</th>
@@ -53,14 +54,31 @@
                                  <% for (let i = 0; i < data.cartItems.length; i++) { %>
                                      <tr class="odd gradeX">
                                          <td><%= data.cartItems[i].product.name %></td>
+                                         <td><%= data.cartItems[i].size %></td>
                                          <td><%= data.cartItems[i].price %></td>
                                          <td><%= data.cartItems[i].quantity %></td>
                                          <td><%= data.cartItems[i].price * data.cartItems[i].quantity %></td>
-                                         <% if(data.isReturn === false) {%>
+                                         <% if(data.orderStatus === 'Delivered' && data.cartItems[i].isReturn === true  ) {%>
+
+                                            <% if(data.cartItems[i].isAccept === false){ %>
+
+                                                <td>return rejected</td>
+
+                                            <% } else if(data.cartItems[i].isAccept === true) { %>
+
+                                                <td>return accepted</td>
+
+                                            <% } else {%>
                                             
-                                            <td><button>Accept</button> <button>Rejected</button></td>
+                                                 <td><button ><a href="/admin/orders/changeStatus/acceptReturn?id=<%=data._id%>&index=<%= i %>">Accept</a></button> <button>Rejected</button></td>
+                                            <% } %>
+
+                                            
+
                                          <% }else{ %> 
+
                                             <td>No Request</td>
+
                                          <% } %>   
                                          
                                      </tr>
