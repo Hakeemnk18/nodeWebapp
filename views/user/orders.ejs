@@ -43,10 +43,11 @@
                                 <h4>Items:</h4>
                                 <ul>
                                     <li>
-                                        <p><strong>Product:</strong><%= orderItems[i].cartItems[j].product.name %></p>
-                                        <p><strong>Quantity:</strong><%= orderItems[i].cartItems[j].
+                                        <p><strong>Product : </strong><%= orderItems[i].cartItems[j].product.name %></p>
+                                        <p><strong>Quantity : </strong><%= orderItems[i].cartItems[j].
                                             quantity %></p>
-                                        <p><strong>Price:</strong><%= orderItems[i].cartItems[j].price %></p>
+                                        <p><strong>Price : </strong><%= orderItems[i].cartItems[j].price %></p>
+                                        <p><strong>Size : </strong><%= orderItems[i].cartItems[j].size %></p>
                                     </li>
                                 </ul>
                                 <p><strong>Total:</strong><%= orderItems[i].cartItems[j].price * orderItems[i].cartItems[j].quantity %></p>

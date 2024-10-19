@@ -51,12 +51,13 @@
                     <h1><%= productData.name %></h1>
                     <h4><%= productData.price %></h4>
                     <form action="/productDetails/addCart">
-                        <select name="size" required id="product-size">
+                        <select name="index" required id="product-size">
+                                <option value="" selected disabled >Select The size</option>
                                 <% for(let i=0;i<productData.varient.length;i++){ %>
                                     <option value="<%= i %>"><%= productData.varient[i].size  %></option>
                                 <% } %>
                         </select>
-                        <input type="number" style="width: 70px;" name="quantity" value="1" min="1" max="<%= productData.varient[0].stock %>">
+                        <input type="number" style="width: 70px;" name="quantity" value="1" min="1" max="" id="quantity-input">
     
                         <input type="hidden" name="id" value="<%= productData._id %>">
 
@@ -73,8 +74,8 @@
                     
                         
 
-                        <p id="empty-stock" style="display: <%= stock < 1 ? 'block' : 'none' %>; color: red;">out of stock</p>
-                        <p id="product-stock" style="display: <%= stock >= 1 ? 'block' : 'none' %>;">only <%= stock %> left</p>
+                        <p id="empty-stock" style="color: red;"></p>
+                        <p id="product-stock"></p>
 
                     
                         
@@ -126,6 +127,17 @@
   
 
     <!-- product gallery -->
+    
+
+
+    <% if (typeof message !== 'undefined' && message) { %>
+        <script>
+            alert('<%= message %>');
+        </script>
+    <% } %>
+    
+    
+
      <script>
         document.getElementById('product-size').addEventListener("change",async function(){
             const selectVal=this.value 
@@ -133,31 +145,31 @@
             try {
                 const response=await fetch(`/api/product/stock?id=${productId}&index=${selectVal}`)
 
+                const quantityField=document.getElementById("quantity-input")
+                const emptyStock=document.getElementById('empty-stock')
+                const productStock=document.getElementById('product-stock');
+
                 let data
                 if(!response.ok){
                     throw new Error("Network response was not ok")
                 }
-
-                data=await response.json()
-                if (data.stock < 1) {
-                document.getElementById('empty-stock').style.display = 'block'; 
-                const productStockElement = document.getElementById('product-stock');
                 
-                if (productStockElement) {
-                    productStockElement.style.display = 'none';
-                }
+                data=await response.json()
+
+                if (data.stock < 1) {
+                    emptyStock.style.display='block'
+                    emptyStock.textContent="out of stock"
+                    productStock.style.display='none'
+                    quantityField.max=data.stock
                 } else {
                     console.log("inside else condition ");
-                    const emptyStockElement = document.getElementById('empty-stock');
-                    const productStockElement = document.getElementById('product-stock');
+                    emptyStock.style.display = 'none';
+                    productStock.style.display = 'block';
+                    productStock.textContent = `only ${data.stock} left`;
+                    quantityField.max=data.stock
                     
-                    if (emptyStockElement) {
-                        emptyStockElement.style.display = 'none';
-                    }
-                    
-                    if (productStockElement) {
-                        productStockElement.style.display = 'block';
-                        productStockElement.textContent = `only ${data.stock} left`;
+                    if (quantityInput.value > stock) {
+                        quantityInput.value = stock; 
                     }
                 }
                 

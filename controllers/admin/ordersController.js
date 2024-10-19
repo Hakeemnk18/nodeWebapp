@@ -77,14 +77,16 @@ const statusChange=async(req,res)=>{
 
 const orderCancel=async (req,res)=>{
     try {
+        console.log("inside admin order cancel")
         const {id,status}=req.query
         await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
         await orderStatus.statusTime(status,id)
         const orderData=await Order.findById(id)
+        console.log(orderData)
         for(let i=0;i<orderData.cartItems.length;i++){
-            await Product.findByIdAndUpdate(orderData.cartItems[i].product,{$inc:{"varient.0.stock":orderData.cartItems[i].quantity}})
+            await Product.updateOne({_id:orderData.cartItems[i].product,"varient.size":orderData.cartItems[i].size},{$inc:{"varient.$.stock":orderData.cartItems[i].quantity}})
             const product=await Product.findById(orderData.cartItems[i].product)
-            
+            //await Product.updateOne({_id:productId,"varient.size":size},{$inc:{"varient.$.stock":1}})
         }
         
         res.redirect('/admin/orders')

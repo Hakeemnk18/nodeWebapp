@@ -12,27 +12,20 @@ const productDetails=async (req,res)=>{
     try {
         
         const {id}=req.query
-        console.log(req.query)
+        let message;
+        if (req.query.message) {
+            message = req.query.message;
+        }
+        
         let userName=await isUser.isUser(req)
         const productData=await Product.findOne({_id:id})
         const relatedProduct=await Product.find({category:productData.category})
         
-        console.log(productData)
-        let stock=productData.varient[0].stock
-        let index=0
-        if(req.query.index){
-            index=req.query.index
-            stock=productData.varient[index].stock
-        }else{
-            let stock=productData.varient[0].stock
-        }
         
-        console.log(stock)
-
-        console.log(index)
+        
         
     
-        res.render('productDetails',{productData,relatedProduct,userName,stock,index})
+        res.render('productDetails',{productData,relatedProduct,userName,message})
     } catch (error) {
        console.log("error in product details page "+error.message) 
        return res.status(400).json({success:false,message:"an error occured"})
@@ -41,13 +34,13 @@ const productDetails=async (req,res)=>{
 const stockDetails=async(req,res)=>{
     try {
         
-        console.log("inside stock fetch")
-        console.log(req.query)
+        
         const {id,index}=req.query
         const product=await Product.findById(id)
+        
         const stock=product.varient[index].stock
 
-        console.log("stock : "+stock)
+        
 
         res.json({stock})
     } catch (error) {
@@ -62,20 +55,45 @@ const addCart=async(req,res)=>{
         let logout;
         
         const {id,quantity}=req.query
-        const userId=req.session.user_id
-        if(req.session.user_id){
-            logout="logout"
-        }
+        const index=parseInt(req.query.index)
 
-        for(let i=0;i<quantity;i++){
+        const userId=req.session.user_id
+        const productData=await Product.findById(id)
+        
+        if(productData.varient[index].stock < quantity){
+            console.log("stock is empty")
+            return res.redirect(`/productDetails?id=${id}`);
+        }
+        const size=productData.varient[index].size
+        
+        const cart=await Cart.find({userId:userId})
+
+        let flag=0
+        
+        if(cart.length > 0){
+            for(const carts of cart){
+        
+                if(carts.productId == id && carts.size === size){
+                    console.log("a cart avaliable just increase the quntity")
+                    await Cart.updateOne({userId:userId,productId:id,size:size},{$inc:{quantity:quantity}})
+                    flag=1
+
+                }
+                
+            }
+        }
+        if(cart.length < 1 || flag === 0){
             const newCart=new Cart({
-                userId:userId,
-                productId:id
-            }) 
-            const cartData=await newCart.save()
+                        userId:userId,
+                        productId:id,
+                        size:size,
+                        quantity:quantity
+                    })
+                    const cartData=await newCart.save()
         }
         
-        await Product.updateOne({_id:id},{$inc:{"varient.0.stock":-quantity}})
+
+        await Product.updateOne({_id:id},{$inc:{[`varient.${index}.stock`]:-quantity}})
         res.redirect('/productDetails/cart')
         
 
@@ -84,17 +102,49 @@ const addCart=async(req,res)=>{
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
+const updateCartQty=async(req,res)=>{
+    try {
+        const {id,productId,size}=req.query
+        
+        const result=await Product.find({_id:productId,"varient.size":size},{_id:0,"varient.$":1})
+        const stock=result[0]?.varient?.[0]?.stock
+        
+        if(stock < 1){
+            return res.status(200).json({success:false,message:"Out of stock"})
+        }
+        await Cart.findByIdAndUpdate(id,{$inc:{quantity:1}})
+        await Product.updateOne({_id:productId,"varient.size":size},{$inc:{"varient.$.stock":-1}})
+        return res.status(200).json({success:true})
+
+    } catch (error) {
+        console.log("error in cart plus one qty "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
 const removeCart=async(req,res)=>{
     try {
-        const {id}=req.query
+        
+        const {id,size,productId}=req.query 
         const userId=req.session.user_id
+        let theProduct=await Product.findById(productId,{varient:1})
+       
         if(req.query.qty){
-            await Cart.deleteMany({productId:id,userId:userId})
-            await Product.updateOne({_id:id},{$inc:{"varient.0.stock":req.query.qty}})
+            await Cart.deleteOne({_id:id})
+            const sizekey=`varient.${size}.stock`
+            
+            const data = await Product.findOneAndUpdate(
+                { _id: productId,"varient.size":size },
+                { $inc: { "varient.$.stock": req.query.qty } },
+                { new: true } 
+            );
+            
         }else{
-            await Cart.deleteOne({productId:id,userId:userId})
-            await Product.updateOne({_id:id},{$inc:{"varient.0.stock":1}})
+            await Cart.findByIdAndUpdate(id,{$inc:{quantity:-1}})
+            await Product.updateOne({_id:productId,"varient.size":size},{$inc:{"varient.$.stock":1}})
+            return res.status(200).json({success:true})
         }
+       
+
         res.redirect('/productDetails/cart')
 
     } catch (error) {
@@ -105,35 +155,25 @@ const removeCart=async(req,res)=>{
 const cart=async(req,res)=>{
     try {
 
-        const userId=req.session.user_id
-        let userName=await isUser.isUser(req)
-        const allCart=await Cart.find({userId:userId})
+        
+        const userId = req.session.user_id;
+        let userName = await isUser.isUser(req);
+        const allCart = await Cart.find({ userId: userId })
+        const cartData =await Cart.find({ userId: userId }).populate('productId')
+
+        
+
+        
        
 
-        const productCount=allCart.reduce((acc,cart)=>{
-            acc[cart.productId]=(acc[cart.productId]||0)+1
-            return acc
-        },{})
+        res.render('addtoCart', { cartData, userName });
 
-        const productIds = Object.keys(productCount);
-        let cartProduct = await Product.find({ _id: { $in: productIds } });
-
-        cartProduct=cartProduct.map(product =>
-
-            ({...product._doc,count:productCount[product._id]})
-
-        )
-        
-        
-        console.log(cartProduct.length>0)
-        
-        res.render('addtoCart',{cartProduct,userName})
-        
-    } catch (error) {
-        console.log("error in cart "+error.message)
-        return res.status(400).json({success:false,message:"an error occured"})
+            
+        } catch (error) {
+            console.log("error in cart "+error.message)
+            return res.status(400).json({success:false,message:"an error occured"})
+        }
     }
-}
 
 const allProduct=async (req,res)=>{
 
@@ -219,16 +259,11 @@ const checkout=async(req,res)=>{
         let userName=await isUser.isUser(req)
         const userId=req.session.user_id
         const user=await User.findById(userId).populate({path:'address',match:{isActive:true}}).exec()
-        const userCart=await Cart.find({userId:userId})
-        const productCount=userCart.reduce((acc,cur)=>{
-            acc[cur.productId]=(acc[cur.productId] || 0)+1
-            return acc
-        },{})
-        const productIds=Object.keys(productCount)
-        let cartProduct=await Product.find({_id:{$in:productIds }})
-        cartProduct=cartProduct.map((product)=>{
-            return {...product._doc,count:productCount[product._id]}
-        })
+        const cartProduct=await Cart.find({userId:userId}).populate('productId')
+
+        console.log(cartProduct)
+
+        
         if(cartProduct.length === 0){
             return res.redirect('/products')
         }
@@ -254,11 +289,11 @@ const orderSubmission=async(req,res)=>{
     try {
 
         
-        const {productIds,productQty,productPrice,address,totalAmount}=req.body
+        const {productIds,productQty,productPrice,address,totalAmount,cartIds,productSize}=req.body
         
         const productDetails=[]
         for(let i=0;i<productIds.length;i++){
-            productDetails.push({product:productIds[i],quantity:productQty[i],price:productPrice[i]})
+            productDetails.push({product:productIds[i],quantity:productQty[i],price:productPrice[i],cartId:cartIds[i],size:productSize[i]})
         }
         const orderId=generateUniqueOrderId()
        
@@ -273,8 +308,7 @@ const orderSubmission=async(req,res)=>{
         const orderData=await order.save()
         
         await statusTime.statusTime(orderData.orderStatus,orderData._id)
-        const uorderData = await Order.findById(orderData._id);
-        console.log(uorderData)
+        
         await Cart.deleteMany({userId:user_id})
         res.redirect('/productDetails/cart/checkout/success')
 
@@ -302,7 +336,8 @@ module.exports={
     checkout,
     orderSubmission,
     orderSuccess,
-    stockDetails
+    stockDetails,
+    updateCartQty
 }
 
 

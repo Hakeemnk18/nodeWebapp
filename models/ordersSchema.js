@@ -23,6 +23,11 @@ const ordersSchema=new Schema({
                 type:Number,
                 required:true
             },
+            cartId:{
+                type:Schema.Types.ObjectId,
+                ref:"cart",
+                required:true
+            },
             isReturn:{
                 type:Boolean,
                 default:false
@@ -31,6 +36,10 @@ const ordersSchema=new Schema({
                 type:String,
                 enum:['accept','reject'],
                 default:'accept'
+            },
+            size:{
+                type:String,
+                required:true
             }
         }
     ],

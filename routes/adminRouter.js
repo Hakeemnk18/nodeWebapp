@@ -44,11 +44,11 @@ router.get('/category/editCategory/:id',auth.isLogin,categoryController.editCate
 router.post('/category/editCategory/:id',auth.isLogin, categoryController.editCategory)
 
 //orders
-router.get('/orders',ordersController.orders)
-router.get('/orders/changeStatus',ordersController.statusChange)
-router.get('/orders/changeStatus/cancel',ordersController.orderCancel)
-router.get('/orders/orderDetails',ordersController.orderDetails)
-router.get('/orders/changeStatus/rejectReq',ordersController.orderReqRej)
+router.get('/orders',auth.isLogin,ordersController.orders)
+router.get('/orders/changeStatus',auth.isLogin,ordersController.statusChange)
+router.get('/orders/changeStatus/cancel',auth.isLogin,ordersController.orderCancel)
+router.get('/orders/orderDetails',auth.isLogin,ordersController.orderDetails)
+router.get('/orders/changeStatus/rejectReq',auth.isLogin,ordersController.orderReqRej)
 
 
 module.exports=router;

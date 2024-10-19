@@ -78,7 +78,7 @@
 
     <!-- Cart items details -->
     <div class="small-container cart-page">
-        <% if(cartProduct && cartProduct.length>0) { %>
+        <% if(cartData && cartData.length>0) { %>
         <table>
             <tr>
                 <th>Product</th>
@@ -90,33 +90,49 @@
 
          
             
-            <% for(let i=0;i<cartProduct.length;i++){ %>
+            <% for(let i=0;i<cartData.length;i++){ %>
                 <tr>
                     <td>
                         <div class="cart-info">
-                            <img src="/uploads/<%= cartProduct[i].croppedImage[0] %>">
+                            <img src="/uploads/<%= cartData[i].productId.croppedImage[0] %>">
                             <div>
-                                <p><%= cartProduct[i].name %></p>
-                                <small><%= cartProduct[i].price %></small>
+                                <p><%= cartData[i].productId.name %></p>
+                                <small><%= cartData[i].productId.price %></small>
+                                <p>Size : <%= cartData[i].size %></p>
                                 <br>
-                                <a href="/productDetails/addCart/sub?qty=<%= cartProduct[i].count %>&id=<%= cartProduct[i]._id %>">Remove</a>
+                                <a href="/productDetails/addCart/sub?qty=<%= cartData[i].quantity  %>&id=<%= cartData[i]._id %>&size=<%=cartData[i].size %>&productId=<%= cartData[i].productId._id %>">Remove</a>
                             </div>
                         </div>
                     </td>
                     <td> 
                         <div class="quantity-container">
-                        <input type="number" value="<%= cartProduct[i].count %>" class="quantity-input">
+                        <input type="number" value="<%= cartData[i].quantity %>" class="quantity-input">
                         <div class="quantity-buttons">
                            
-                          <a href="/productDetails/addCart?id=<%= cartProduct[i]._id %>&quantity=1" class="<%=cartProduct[i].varient[0].stock > 0 ? '' : 'add-product-disabled' %> " ><i class="fa-solid fa-plus"></i></a>
+                         
+                        <a href="#"
+                            class="add-quantity"
+                            data-id="<%= cartData[i]._id %>"
+                            data-size="<%= cartData[i].size %>"
+                            data-productId="<%= cartData[i].productId._id %>"
+                            data-quantity="<%= cartData[i].quantity %>">
+                            <i class="fa-solid fa-plus"></i>
+                        </a>
 
-
-                          <a href="/productDetails/addCart/sub?id=<%= cartProduct[i]._id %>" class="<%= cartProduct[i].count > 1 ? '' : 'add-product-disabled' %> "><i class="fa-solid fa-minus"></i></a>
+                          
+                        <a href="#" 
+                          class="minus-btn <%= cartData[i].quantity > 1 ? '' : 'add-product-disabled' %>"
+                          data-id="<%= cartData[i]._id %>"
+                          data-size="<%= cartData[i].size %>"
+                          data-productId="<%= cartData[i].productId._id %>"
+                          data-quantity="<%= cartData[i].quantity %>">
+                           <i class="fa-solid fa-minus"></i>
+                       </a>
                         </div>
                         </div>
                     </td>
-                    <td><%= cartProduct[i].price*cartProduct[i].count %></td>
-                    <% Subtotal += cartProduct[i].price * cartProduct[i].count %>
+                    <td><%= cartData[i].productId.price*cartData[i].quantity %></td>
+                    <% Subtotal += cartData[i].productId.price*cartData[i].quantity %>
                 </tr>
             <% } %>
 
@@ -154,3 +170,108 @@
 
     <!-- Footer -->
     <%- include('../partials/user/footer') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            document.querySelectorAll('.minus-btn').forEach(button => {
+                button.addEventListener('click', async function(e) {
+                    e.preventDefault(); 
+                    
+                    
+                    const productId = this.getAttribute('data-productId');
+                    const size = this.getAttribute('data-size');
+                    const id = this.getAttribute('data-id');
+                    const quantity = parseInt(this.getAttribute('data-quantity'));
+    
+                    
+                    if (quantity > 1) {
+                        
+                        const url = `/productDetails/addCart/sub?productId=${productId}&size=${size}&id=${id}`;
+    
+                        try {
+                           
+                            const response = await fetch(url, {
+                                method: 'GET', 
+                            });
+    
+                            if (response.ok) {
+                                
+                                window.location.reload();
+                            } else {
+                                console.error('Error updating cart:', response.statusText);
+                            }
+                        } catch (error) {
+                            console.error('Error updating cart:', error);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll(".add-quantity").forEach(addButton => {
+                addButton.addEventListener("click",async function (e){
+                e.preventDefault()
+
+                
+                const productId = this.getAttribute('data-productId');
+                const size = this.getAttribute('data-size');
+                const id = this.getAttribute('data-id');
+                const quantity = parseInt(this.getAttribute('data-quantity'));
+
+                
+                    const url = `/productDetails/addCart/addQty?productId=${productId}&size=${size}&id=${id}`;
+                    try {
+                        const response=await fetch(url,{
+                            method:"GET",
+                        });
+                        const data=await response.json()
+                        if (data.success) {
+                                
+                            window.location.reload();
+                        } else {
+                            console.error("out of stock");
+                            showToast(data.message);
+                            
+                        }
+
+                    } catch (error) {
+                        console.error('Error updating cart:', error);
+                    }
+                
+                })
+            })
+
+            function showToast(message) {
+            // Create the toast div
+            const toast = document.createElement('div');
+            toast.innerText = message;
+
+            // Apply basic inline styles for toast
+            toast.style.position = 'fixed';
+            toast.style.bottom = '200px'; // You can change this to position it higher or lower
+            toast.style.left = '50%'; // Center horizontally
+            toast.style.transform = 'translateX(-50%)'; // Adjust for centering
+            toast.style.backgroundColor = 'red'; // Darker background for better visibility
+            toast.style.color = '#fff';
+            toast.style.padding = '15px 30px'; // Increase padding for a larger appearance
+            toast.style.borderRadius = '8px'; // Larger border radius for a smoother appearance
+            toast.style.zIndex = '1000';
+            toast.style.fontSize = '30px'; // Increase font size
+            toast.style.fontWeight= "bold"
+            toast.style.maxWidth = '80%'; // Limit width to 80% of the screen width
+            toast.style.textAlign = 'center';
+            
+
+            // Append the toast to the body
+            document.body.appendChild(toast);
+
+            // Remove the toast after 3 seconds
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 1000);
+        }
+            
+        });
+    </script>
+    
+    

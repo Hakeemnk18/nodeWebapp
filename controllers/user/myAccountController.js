@@ -145,6 +145,8 @@ const orders=async(req,res)=>{
         
         let dateField=[]
         const userId=req.session.user_id
+        const userOrder=await Order.find({user:userId})
+        console.log(userOrder[0])
         const orderItems=await Order.find({user:userId}).populate('cartItems.product').exec()
 
         for(let i=0;i<orderItems.length;i++){
@@ -321,6 +323,7 @@ const trackOrder=async(req,res)=>{
 
 const orderCancel=async(req,res)=>{
     try {
+        console.log("inside ")
         console.log(req.query)
         const {id}=req.query
         const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})

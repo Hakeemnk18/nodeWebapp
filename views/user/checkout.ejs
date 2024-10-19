@@ -85,16 +85,18 @@
                 <% if (typeof cartProduct !== 'undefined') { %>
                     <% for (let i = 0; i < cartProduct.length; i++) { %>
                         <li>
-                            <%= cartProduct[i].name %>
+                            <%= cartProduct[i].productId.name %>
                             
-                            <span>QTY : <%= cartProduct[i].count %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= cartProduct[i].price*cartProduct[i].count %></span>
+                            <span>Size : <%=cartProduct[i].size %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; QTY : <%= cartProduct[i].quantity %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= cartProduct[i].productId.price*cartProduct[i].quantity %></span>
                             <!-- Include a hidden input for each product's ID and price -->
                             
-                            <input type="hidden" name="productIds[]" value="<%= cartProduct[i]._id %>">
-                            <input type="hidden" name="productQty[]" value="<%= cartProduct[i].count %>">
-                            <input type="hidden" name="productPrice[]" value="<%= cartProduct[i].price %>">
+                            <input type="hidden" name="productIds[]" value="<%= cartProduct[i].productId._id %>">
+                            <input type="hidden" name="productQty[]" value="<%= cartProduct[i].quantity %>">
+                            <input type="hidden" name="cartIds[]" value="<%= cartProduct[i]._id %>">
+                            <input type="hidden" name="productPrice[]" value="<%= cartProduct[i].productId.price %>">
+                            <input type="hidden" name="productSize[]" value="<%= cartProduct[i].size %>">
                         </li>
-                        <% total += cartProduct[i].price *cartProduct[i].count %>
+                        <% total += cartProduct[i].productId.price*cartProduct[i].quantity %>
                     <% } %>
                 <% } %>
                 <% let tax=35; let deliveryCharge=50 %>
