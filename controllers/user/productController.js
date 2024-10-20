@@ -7,6 +7,7 @@ const product = require('../../models/productSchema')
 const Order=require('../../models/ordersSchema')
 const isUser=require('../../helpers/isUserlogin')
 const statusTime=require('../../helpers/orderStatusTime')
+const Wishlist=require('../../models/wishlistSchema')
 
 const productDetails=async (req,res)=>{
     try {
@@ -88,8 +89,8 @@ const addCart=async(req,res)=>{
                         productId:id,
                         size:size,
                         quantity:quantity
-                    })
-                    const cartData=await newCart.save()
+            })
+            const cartData=await newCart.save()
         }
         
 
@@ -327,6 +328,53 @@ const orderSuccess=async(req,res)=>{
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
+
+const addWishlist=async(req,res)=>{
+    try {
+        
+        const {id,size}=req.body
+        const userId=req.session.user_id
+        const cartProduct=await Cart.findOne({userId:userId,productId:id,size:size})
+        
+        const wishlistProduct=await Wishlist.findOne({userId:userId,productId:id,size:size})
+       
+
+        if(cartProduct === null && wishlistProduct === null){
+
+            console.log("not  in your cart")
+
+            const newWishlist=new Wishlist({
+                userId:userId,
+                productId:id,
+                size:size
+            })
+            const wishlistdata=await newWishlist.save()
+            
+            return res.status(200).json({success:true, message: " Added Wishlist  successfully" });
+        }else{
+            console.log("allr redy in your cart")
+            return res.status(200).json({success:false, message: "Product allready in your cart or wishlist" });
+        }
+        
+        
+    } catch (error) {
+        console.log("error in add wishlist "+error.message)
+        res.status(500).json({ message: "Error adding to wishlist" });
+    }
+}
+const renderWishlist=async(req,res)=>{
+    try {
+        const userId=req.session.user_id
+        //const index=await Product.
+        wishlistItems = await Wishlist.find({userId:userId}).populate('productId')
+        console.log(wishlistItems)
+        res.render("wishlist",{wishlistItems})
+    } catch (error) {
+        console.log("error in render the wishlist "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
 module.exports={
     productDetails,
     addCart,
@@ -337,7 +385,9 @@ module.exports={
     orderSubmission,
     orderSuccess,
     stockDetails,
-    updateCartQty
+    updateCartQty,
+    addWishlist,
+    renderWishlist
 }
 
 

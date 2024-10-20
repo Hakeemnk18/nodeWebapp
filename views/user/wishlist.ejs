@@ -1,0 +1,39 @@
+
+<%- include('../partials/user/header') %>
+
+    <!-- Cart items details -->
+    <div class="small-container cart-page">
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Size</th>
+                <th></th>
+            </tr>
+            <% if(typeof wishlistItems !== undefined) { %>
+                <% for(let i=0;i<wishlistItems.length;i++){ %>
+                    <tr>
+                        <td>
+                            <div class="cart-info">
+                                <img src="/uploads/<%= wishlistItems[i].productId.croppedImage[0] %>">
+                                <div>
+                                    <p><%= wishlistItems[i].productId.name %></p>
+                                    <small>Price: <%= wishlistItems[i].productId.price %></small>
+                                    <br>
+                                    <a href="">Remove</a>
+                                </div>
+                            </div>
+                        </td>
+                        <td><input type="text" value="<%= wishlistItems[i].size %>"></td>
+                        <td><button><a href="">Add to Cart</a></button></td>
+                    </tr>
+                <% } %>
+            <% } %>
+            
+            
+        </table>
+        
+            
+    </div>
+
+    <!-- Footer -->
+    <%- include('../partials/user/footer') %>

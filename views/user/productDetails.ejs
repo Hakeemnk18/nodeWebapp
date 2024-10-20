@@ -66,7 +66,7 @@
                     
                     
                     
-                    <a style="margin-left: 10px;" href=""><i class="fa-regular fa-heart fa-2x"></i></a>
+                    <a id="wishlist-button" style="margin-left: 10px;" href="" data-product="<%= productData._id %>"><i class="fa-regular fa-heart fa-2x" ></i></a>
 
                     <h3>Product Details <i class="fa fa-indent"></i></h3>
                     <br>
@@ -130,18 +130,84 @@
     
 
 
-    <% if (typeof message !== 'undefined' && message) { %>
-        <script>
-            alert('<%= message %>');
-        </script>
-    <% } %>
-    
+   <script>
+    document.addEventListener("DOMContentLoaded",()=>{
+        const selectSize=document.getElementById("product-size")
+        document.getElementById("wishlist-button").addEventListener("click",async function(e){
+            e.preventDefault()
+            console.log("inside wishlist fetch")
+            const sizeVal=selectSize.value
+
+            if(!sizeVal){
+                alert("please select a size")
+                return
+            }
+
+            const selectedSIze=selectSize.options[selectSize.selectedIndex].text
+            const productId=this.getAttribute('data-product')
+
+            try {
+                const response= await fetch('/productDetails/wishlist',{
+                    method:"POST",
+                    headers:{
+                        "Content-Type": "application/json"
+                    },
+                    body:JSON.stringify({
+                        id: productId,
+                        size:selectedSIze
+                    })
+                })
+                const data=await response.json()
+                if(data.success){
+                    console.log("add wish list")
+                    showToast(data.message);
+                }else{
+                    console.log("not add wishlist")
+                    showToast(data.message);
+                }
+            } catch (error) {
+                console.error('Error adding product to wishlist:', error);
+            }
+        })
+
+        function showToast(message) {
+            // Create the toast div
+            const toast = document.createElement('div');
+            toast.innerText = message;
+
+            // Apply basic inline styles for toast
+            toast.style.position = 'fixed';
+            toast.style.bottom = '200px'; // You can change this to position it higher or lower
+            toast.style.left = '50%'; // Center horizontally
+            toast.style.transform = 'translateX(-50%)'; // Adjust for centering
+            toast.style.backgroundColor = 'red'; // Darker background for better visibility
+            toast.style.color = '#fff';
+            toast.style.padding = '15px 30px'; // Increase padding for a larger appearance
+            toast.style.borderRadius = '8px'; // Larger border radius for a smoother appearance
+            toast.style.zIndex = '1000';
+            toast.style.fontSize = '30px'; // Increase font size
+            toast.style.fontWeight= "bold"
+            toast.style.maxWidth = '80%'; // Limit width to 80% of the screen width
+            toast.style.textAlign = 'center';
+            
+
+            // Append the toast to the body
+            document.body.appendChild(toast);
+
+            // Remove the toast after 3 seconds
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 1000);
+        }
+    })
+   </script>
     
 
      <script>
         document.getElementById('product-size').addEventListener("change",async function(){
             const selectVal=this.value 
             const productId='<%= productData._id %>'
+            console.log("inside product size event listner")
             try {
                 const response=await fetch(`/api/product/stock?id=${productId}&index=${selectVal}`)
 
