@@ -8,6 +8,25 @@ const Order=require('../../models/ordersSchema')
 const isUser=require('../../helpers/isUserlogin')
 const statusTime=require('../../helpers/orderStatusTime')
 const Wishlist=require('../../models/wishlistSchema')
+const wishlist = require('../../models/wishlistSchema')
+
+
+// find stock according to the size
+async function findStock(id,size){
+    try {
+        console.log("inside find stock")
+        const product=await Product.findOne({_id:id},{varient:1,_id:0})
+        console.log(product)
+        const variant=product.varient.find(v => v.size === size)
+        console.log(variant)
+        console.log(variant.stock)
+        return variant.stock
+    } catch (error) {
+        console.log("error in find stock"+error.message)
+    }
+}
+
+
 
 const productDetails=async (req,res)=>{
     try {
@@ -36,13 +55,11 @@ const stockDetails=async(req,res)=>{
     try {
         
         
-        const {id,index}=req.query
-        const product=await Product.findById(id)
+        const {id,size}=req.query
         
-        const stock=product.varient[index].stock
-
+       
+        const stock=await findStock(id,size)
         
-
         res.json({stock})
     } catch (error) {
         console.log("error in stock fetching page "+error.message)
@@ -50,22 +67,34 @@ const stockDetails=async(req,res)=>{
     }
 }
 
+
 const addCart=async(req,res)=>{
     try {
         
         let logout;
         
+        console.log(req.query)
+        
         const {id,quantity}=req.query
-        const index=parseInt(req.query.index)
-
+        const sizeVal=req.query.size
         const userId=req.session.user_id
+
+        if(req.query.remove){
+            await Wishlist.deleteOne({productId:id,size:sizeVal,userId:userId})
+            console.log("delete one product in wishlist")
+        }
+        const stock=await findStock(id,sizeVal)
+        
+        
         const productData=await Product.findById(id)
         
-        if(productData.varient[index].stock < quantity){
+        
+        if(stock < quantity){
             console.log("stock is empty")
             return res.redirect(`/productDetails?id=${id}`);
         }
-        const size=productData.varient[index].size
+        const size=sizeVal
+        
         
         const cart=await Cart.find({userId:userId})
 
@@ -93,8 +122,14 @@ const addCart=async(req,res)=>{
             const cartData=await newCart.save()
         }
         
+        
+        const pppp=await Product.findById(id)
+        
+        await Product.updateOne({_id:id,"varient.size":size},{$inc:{"varient.$.stock":-quantity}})
+        
+        const ppp=await Product.findById(id)
+        
 
-        await Product.updateOne({_id:id},{$inc:{[`varient.${index}.stock`]:-quantity}})
         res.redirect('/productDetails/cart')
         
 
@@ -284,7 +319,7 @@ const checkout=async(req,res)=>{
     }
 
 
-/////////////////////////////////////////////////////////////////////////////////////
+
 
 const orderSubmission=async(req,res)=>{
     try {
@@ -365,13 +400,32 @@ const addWishlist=async(req,res)=>{
 const renderWishlist=async(req,res)=>{
     try {
         const userId=req.session.user_id
-        //const index=await Product.
+        let userName=await isUser.isUser(req)
         wishlistItems = await Wishlist.find({userId:userId}).populate('productId')
         console.log(wishlistItems)
-        res.render("wishlist",{wishlistItems})
+        res.render("wishlist",{wishlistItems,userName})
     } catch (error) {
         console.log("error in render the wishlist "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const removeWishlist=async(req,res)=>{
+    try {
+        console.log("inside fetch remove whishlist")
+        console.log(req.body)
+        const id=req.body.Id
+        if(!id){
+            return res.status(400).json({success:false,message:"Wishlist ID is required"})
+        }
+        const result=await wishlist.findByIdAndDelete(id)
+        if(!result){
+            return res.status(400).json({success:false,message:"Wishlist item not found"})
+        }
+        return res.status(200).json({success:true,message:"wishlist removed"})
+    } catch (error) {
+        console.log("allr redy in your cart")
+        return res.status(500).json({success:false });
     }
 }
 
@@ -387,7 +441,8 @@ module.exports={
     stockDetails,
     updateCartQty,
     addWishlist,
-    renderWishlist
+    renderWishlist,
+    removeWishlist
 }
 
 

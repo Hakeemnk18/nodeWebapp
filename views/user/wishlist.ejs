@@ -19,12 +19,12 @@
                                     <p><%= wishlistItems[i].productId.name %></p>
                                     <small>Price: <%= wishlistItems[i].productId.price %></small>
                                     <br>
-                                    <a href="">Remove</a>
+                                    <a href="" class="remove-wishlist" data-wishlistid="<%= wishlistItems[i]._id %>">Remove</a>
                                 </div>
                             </div>
                         </td>
                         <td><input type="text" value="<%= wishlistItems[i].size %>"></td>
-                        <td><button><a href="">Add to Cart</a></button></td>
+                        <td><button><a href="/productDetails/addCart?id=<%=wishlistItems[i].productId._id %>&quantity=1&size=<%= wishlistItems[i].size %>&remove=1">Add to Cart</a></button></td>
                     </tr>
                 <% } %>
             <% } %>
@@ -34,6 +34,75 @@
         
             
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded",()=>{
+            document.querySelectorAll(".remove-wishlist").forEach(remove =>{
+                remove.addEventListener("click",async function (e){
+                    e.preventDefault()
+                    const wishlistId=this.getAttribute("data-wishlistid")
+
+                    try {
+                        console.log("inside remove fetch")
+                        const response=await fetch("/wishlist/remove",{
+                            method:"POST",
+                            headers:{
+                                "Content-Type": "application/json"
+                            },
+                            body:JSON.stringify({
+                                Id:wishlistId
+                            })
+                        })
+
+                        const data=await response.json()
+
+                        if(data.message){
+                            console.log("remove wish list")
+                            showToast(data.message);
+                            window.location.reload()
+                        }else{
+                            console.log("error not remove wishlist")
+                        }
+
+                    } catch (error) {
+                        console.log("erron ir remove wishlist fetch "+error)
+                    }
+                }) 
+            })
+            
+
+            function showToast(message) {
+                // Create the toast div
+                const toast = document.createElement('div');
+                toast.innerText = message;
+
+                // Apply basic inline styles for toast
+                toast.style.position = 'fixed';
+                toast.style.bottom = '200px'; // You can change this to position it higher or lower
+                toast.style.left = '50%'; // Center horizontally
+                toast.style.transform = 'translateX(-50%)'; // Adjust for centering
+                toast.style.backgroundColor = 'green'; // Darker background for better visibility
+                toast.style.color = '#fff';
+                toast.style.padding = '15px 30px'; // Increase padding for a larger appearance
+                toast.style.borderRadius = '8px'; // Larger border radius for a smoother appearance
+                toast.style.zIndex = '1000';
+                toast.style.fontSize = '30px'; // Increase font size
+                toast.style.fontWeight= "bold"
+                toast.style.maxWidth = '80%'; // Limit width to 80% of the screen width
+                toast.style.textAlign = 'center';
+                
+
+                // Append the toast to the body
+                document.body.appendChild(toast);
+
+                // Remove the toast after 3 seconds
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                    window.location.reload()
+                }, 1000);
+            }
+        })
+    </script>
 
     <!-- Footer -->
     <%- include('../partials/user/footer') %>

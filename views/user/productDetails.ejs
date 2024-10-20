@@ -51,10 +51,10 @@
                     <h1><%= productData.name %></h1>
                     <h4><%= productData.price %></h4>
                     <form action="/productDetails/addCart">
-                        <select name="index" required id="product-size">
+                        <select name="size" required id="product-size">
                                 <option value="" selected disabled >Select The size</option>
                                 <% for(let i=0;i<productData.varient.length;i++){ %>
-                                    <option value="<%= i %>"><%= productData.varient[i].size  %></option>
+                                    <option value="<%= productData.varient[i].size %>"><%= productData.varient[i].size  %></option>
                                 <% } %>
                         </select>
                         <input type="number" style="width: 70px;" name="quantity" value="1" min="1" max="" id="quantity-input">
@@ -180,7 +180,7 @@
             toast.style.bottom = '200px'; // You can change this to position it higher or lower
             toast.style.left = '50%'; // Center horizontally
             toast.style.transform = 'translateX(-50%)'; // Adjust for centering
-            toast.style.backgroundColor = 'red'; // Darker background for better visibility
+            toast.style.backgroundColor = 'green'; // Darker background for better visibility
             toast.style.color = '#fff';
             toast.style.padding = '15px 30px'; // Increase padding for a larger appearance
             toast.style.borderRadius = '8px'; // Larger border radius for a smoother appearance
@@ -209,7 +209,7 @@
             const productId='<%= productData._id %>'
             console.log("inside product size event listner")
             try {
-                const response=await fetch(`/api/product/stock?id=${productId}&index=${selectVal}`)
+                const response=await fetch(`/api/product/stock?id=${productId}&size=${selectVal}`)
 
                 const quantityField=document.getElementById("quantity-input")
                 const emptyStock=document.getElementById('empty-stock')
