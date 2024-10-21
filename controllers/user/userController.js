@@ -39,7 +39,12 @@ const loadHomepage = async (req, res) => {
         .exec()
         if(req.session.passport){
             
+            const gUser=await user.find({_id:req.session.passport.user},{isActive:1})
+            const active=gUser[0].isActive
+            console.log(active)
             req.session.user_id=req.session.passport.user
+            req.session.isActive=active
+
             
         }
         let userName=await isUser.isUser(req)
@@ -241,12 +246,12 @@ const login = async (req, res) => {
                 if (passwordMatch) {
                     if (userData.role === "admin") {
                         req.session.admin_id=userData._id
-                        req.session.role=userData.role
+                        
                         
                         return res.redirect("/admin")
                     }
                     req.session.user_id=userData._id
-                    req.session.role=userData.role
+                    req.session.isActive=userData.isActive
                     
                     return  res.redirect("/")
                 }else{

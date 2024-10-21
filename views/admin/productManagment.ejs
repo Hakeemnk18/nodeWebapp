@@ -502,15 +502,7 @@
           }
         }
 
-        function colorValidation(){
-          if(color.value.trim()=== ""){
-            error7.innerHTML="please enter a color"
-            return false
-          }else{
-            error7.innerHTML=""
-            return true
-          }
-        }
+        
         function stockValidation(){
           stockVal=stock.value
           if(stockVal === "" || parseInt(stockVal) <0){
@@ -553,7 +545,11 @@
           if (!namePattern.test(nameVal)) {
             error1.innerHTML = "name only contain caracters"
             return false
-          } else {
+          }else if(nameVal.trim() === ''){
+            error1.innerHTML = "please enter a name"
+            return false
+          }
+          else {
             error1.innerHTML = "";
             return true;
           }
@@ -567,7 +563,11 @@
           if (descrptionVal.length > 60) {
             error2.innerHTML = "discription only allowed 60 caracters"
             return false
-          } else {
+          }else if(descrptionVal.trim() === ''){
+            error2.innerHTML = "please enter a discription"
+            return false
+          } 
+          else {
             error2.innerHTML = ""
             return true
           }
@@ -575,16 +575,26 @@
 
         function priceValidation() {
 
-          const priceVal = parseFloat(productPrice.value)
+          let priceVal = productPrice.value.trim(); // Get and trim the value
 
-          console.log(typeof priceVal)
-          if (priceVal < 1) {
-            error3.innerHTML = "enter a valid price"
-            return false
-          } else {
-            error3.innerHTML = '';
-            return true;
-          }
+          // Check if the field is empty
+          if (priceVal === '') {
+              error3.innerHTML = "Enter a valid price";
+              return false;
+          } 
+
+          // Parse the value into a float for numeric comparison
+          priceVal = parseFloat(priceVal);
+
+          // Check if the parsed value is a valid number and greater than or equal to 1
+          if (isNaN(priceVal) || priceVal < 1) {
+              error3.innerHTML = "Enter a valid price";
+              return false;
+          } 
+
+          // Clear error message if the price is valid
+          error3.innerHTML = '';
+          return true;
         }
 
 

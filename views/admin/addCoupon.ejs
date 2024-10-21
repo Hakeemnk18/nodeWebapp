@@ -1,0 +1,186 @@
+<%- include('../partials/admin/header') %>
+
+    <div id="page-wrapper">
+        <div class="header">
+            <h1 class="page-header">
+                Add New Coupon
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Coupon</a></li>
+                <li class="active">Add Coupon</li>
+            </ol>
+
+        </div>
+
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <form id="couponForm" class="col s12" action="#" method="post"
+                                >
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="Coupen Code" id="Coupon-Code" type="text" class="validate"
+                                            name="couponCode">
+                                        <div id="error1"></div>    
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="Discount Value" id="discound-value" type="number" class="validate"
+                                            name="discoundValue">
+                                        <div id="error2"></div>    
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="Minimum Amount" id="min-value" type="number" class="validate"
+                                            name="minValue">
+                                        <div id="error3"></div>    
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="Expiry Date" id="expiry-date" type="date" class="validate"
+                                            name="expiryDate">
+                                        <div id="error4"></div>    
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div>
+                                        <button type="submit" class="btn btn-success" >add coupon</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="clearBoth"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- /.panel-body -->
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const couponCode = document.getElementById("Coupon-Code");
+                const discountValue = document.getElementById('discound-value');
+                const minValue = document.getElementById('min-value');
+                const expiryDate = document.getElementById('expiry-date');
+                
+                const error1 = document.getElementById('error1');
+                const error2 = document.getElementById('error2');
+                const error3 = document.getElementById('error3');
+                const error4 = document.getElementById('error4');
+                
+                const couponForm = document.getElementById('couponForm');
+            
+                // Coupon Code validation function
+                function couponCodeValidation() {
+                    const couponValue = couponCode.value.trim();
+                    if (couponValue === '') {
+                        error1.innerHTML = "<span style='color:red;'>Coupon Code is required.</span>";
+                        return false;
+                    } else {
+                        error1.innerHTML = ''; // Clear error
+                        return true;
+                    }
+                }
+            
+                // Discount Value validation function
+                function discountValueValidation() {
+                    const discountValueNum = Number(discountValue.value.trim());
+                    if (isNaN(discountValueNum) || discountValueNum <= 0) {
+                        error2.innerHTML = "<span style='color:red;'>Valid Discount Value is required.</span>";
+                        return false;
+                    } else {
+                        error2.innerHTML = ''; // Clear error
+                        return true;
+                    }
+                }
+            
+                // Minimum Amount validation function
+                function minValueValidation() {
+                    const minValueNum = Number(minValue.value.trim());
+                    if (isNaN(minValueNum) || minValueNum <= 0) {
+                        error3.innerHTML = "<span style='color:red;'>Valid Minimum Amount is required.</span>";
+                        return false;
+                    } else {
+                        error3.innerHTML = ''; // Clear error
+                        return true;
+                    }
+                }
+            
+                // Expiry Date validation function
+                function expiryDateValidation() {
+                    const expiryDateValue = expiryDate.value.trim();
+                    
+                    // Check if expiry date is a valid date and in the future
+                    const selectedDate = new Date(expiryDateValue);
+                    const currentDate = new Date(); // Get current date
+                    
+                    if (expiryDateValue === '' || isNaN(selectedDate.getTime()) || selectedDate <= currentDate) {
+                        error4.innerHTML = "<span style='color:red;'>Please enter a valid future date.</span>";
+                        return false;
+                    } else {
+                        error4.innerHTML = ''; // Clear error
+                        return true;
+                    }
+                }
+            
+                // Form submission handler with validation and coupon uniqueness check
+                couponForm.addEventListener('submit', async function (e) {
+                    e.preventDefault(); // Prevent the form submission initially
+                    
+                    const isValidCouponCode = couponCodeValidation();
+                    const isValidDiscountValue = discountValueValidation();
+                    const isValidMinValue = minValueValidation();
+                    const isValidExpiryDate = expiryDateValidation();
+        
+                    let isUniqueCouponCode = false;
+        
+                    // Perform coupon code uniqueness check
+                    if (isValidCouponCode) {
+                        try {
+                            const response = await fetch('/admin/coupon/addCoupon/checkCode', {
+                                method: "POST",
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ code: couponCode.value.trim() }),
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.isValid) {
+                                error1.innerHTML = ''; // Clear the error if valid
+                                isUniqueCouponCode = true;
+                            } else {
+                                error1.innerHTML = "<span style='color:red;'>Coupon is already exist.</span>";
+                            }
+                        } catch (error) {
+                            console.log("Error in coupon code check fetch: " + error);
+                            error1.innerHTML = "<span style='color:red;'>Error checking coupon code. Please try again later.</span>";
+                        }
+                    }
+                    
+                    // If all validations are successful, submit the form
+                    if (isValidCouponCode && isUniqueCouponCode && isValidDiscountValue && isValidMinValue && isValidExpiryDate) {
+                        couponForm.submit(); // Submit the form programmatically
+                    }
+                });
+            });
+        </script>
+        
+        
+        
+
+        <%- include("../partials/admin/footer.ejs")%>
+

@@ -70,7 +70,7 @@
 
 
             function nameValidation(){
-                const nameValue=categoryName.value
+                const nameValue=categoryName.value.trim()
                 const namePattern=/^[A-Za-z\s&]+$/
                 
                 
@@ -84,11 +84,15 @@
                 }
             }
             function descriptionValidation(){
-                const descrptionVal=description.value 
+                const descrptionVal=description.value.trim()
                 if(descrptionVal.length>60){
                     error2.innerHTML="discription only allowed 60 caracters"
                     return false
-                }else{
+                }else if(descrptionVal === ''){
+                    error2.innerHTML="discription is required"
+                    return false
+                }
+                else{
                     error2.innerHTML=""
                     return true
                 }

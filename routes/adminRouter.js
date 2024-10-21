@@ -8,6 +8,7 @@ const costumerController=require('../controllers/admin/customerController')
 const categoryController=require('../controllers/admin/categoryController')
 const ordersController=require('../controllers/admin/ordersController')
 const loginController=require('../controllers/admin/loginController')
+const couponController=require("../controllers/admin/coupenController")
 
 
 
@@ -50,6 +51,18 @@ router.get('/orders/changeStatus/cancel',auth.isLogin,ordersController.orderCanc
 router.get('/orders/orderDetails',auth.isLogin,ordersController.orderDetails)
 router.get('/orders/changeStatus/rejectReq',auth.isLogin,ordersController.orderReqRej)
 router.get('/orders/changeStatus/acceptReturn',auth.isLogin,ordersController.returnAccept)
+
+//coupen
+router.get('/coupon',couponController.coupon)
+router.get('/coupon/addCoupon',couponController.addCoupon)
+router.post('/coupon/addCoupon',couponController.addNewCoupon)
+router.post('/coupon/addCoupon/checkCode',couponController.checkUnique)
+router.get('/coupon/addCoupon/block',couponController.blockCoupon)
+router.get('/coupon/addCoupon/unBlock',couponController.unblockCoupon)
+router.get('/coupon/addCoupon/editCoupon',couponController.editCoupon)
+router.post('/coupon/addCoupon/editCoupon',couponController.editCouponUpdate)
+router.post('/coupon/addCoupon/edit/checkCode',couponController.checkEditUnique)
+
 
 
 module.exports=router;

@@ -224,7 +224,7 @@
     }
 
         function nameValidation(){
-          const nameVal=productName.value
+          const nameVal=productName.value.trim()
           const namePattern=/^[A-Za-z\s&]+$/
           console.log("inside name validation "+nameVal)
           
@@ -240,30 +240,45 @@
         }
 
         function descriptionValidation(){
-                const descrptionVal=productDiscription.value 
+                const descrptionVal=productDiscription.value.trim()
                 
                 if(descrptionVal.length>60){
                     error2.innerHTML="discription only allowed 60 caracters"
                     return false
-                }else{
+                }else if(descrptionVal === ''){
+                    error2.innerHTML="discription is required"
+                    return false
+                }
+                else{
                     error2.innerHTML=""
                     return true
                 }
         }
          
-        function priceValidation(){
+        function priceValidation() {
 
-          const priceVal=parseFloat(productPrice.value) 
+          let priceVal = productPrice.value.trim(); // Get and trim the value
 
-          console.log(typeof priceVal)
-          if(priceVal<1){
-            error3.innerHTML="enter a valid price"
-            return false
-          }else{
-            error3.innerHTML='';
-            return true;
-          }
+          // Check if the field is empty
+          if (priceVal === '') {
+              error3.innerHTML = "Enter a valid price";
+              return false;
+          } 
+
+          // Parse the value into a float for numeric comparison
+          priceVal = parseFloat(priceVal);
+
+          // Check if the parsed value is a valid number and greater than or equal to 1
+          if (isNaN(priceVal) || priceVal < 1) {
+              error3.innerHTML = "Enter a valid price";
+              return false;
+          } 
+
+          // Clear error message if the price is valid
+          error3.innerHTML = '';
+          return true;
         }
+        
         function imageValidation(){
           const fileLength=productIimage.files.length
           const allowedFile=3
