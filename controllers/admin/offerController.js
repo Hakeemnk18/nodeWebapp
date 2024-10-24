@@ -3,6 +3,7 @@ const Product=require("../../models/productSchema")
 const Category=require('../../models/category')
 const { findById } = require("../../models/userSchema")
 const { query } = require("express")
+const Referral=require("../../models/referralSchema")
 
 const addOffer=async(req,res)=>{
     try {
@@ -77,8 +78,40 @@ const editOffer=async(req,res)=>{
     }
 }
 
+const referral=async(req,res)=>{
+    try {
+        const referral=await Referral.findOne()
+        // console.log(referral);
+        res.render("referral",{referral})
+    } catch (error) {
+        console.log("error in admin referral "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const updateReferral=async(req,res)=>{
+    try {
+        console.log("inside referel fetch")
+        console.log(req.body)
+        const {status,bonus}=req.body
+        await Referral.deleteOne()
+        const newReferral=new Referral({
+            bonus:bonus,
+            isActive:status
+        })
+        const dar=await newReferral.save()
+        console.log(dar)
+        return res.status(200).json({message:"referral added succesfully"})
+    } catch (error) {
+        console.log("error referral fetch "+error.message)
+        res.status(500)
+    }
+}
+
 module.exports={
     addOffer,
     addNewOffer,
-    editOffer
+    editOffer,
+    referral,
+    updateReferral
 }

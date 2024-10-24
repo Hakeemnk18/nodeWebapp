@@ -1,0 +1,129 @@
+<%- include('../partials/admin/header') %>
+
+    <style>
+        .input-label{
+            
+            color: black;
+            margin: 0%;
+            padding: 0%;
+        }
+    </style>
+    <div id="page-wrapper">
+        <div class="header">
+            <h1 class="page-header">
+                Add New Referral
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Coupon</a></li>
+                <li class="active">Add Coupon</li>
+            </ol>
+
+        </div>
+
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <form id="referralForm" class="col s12" action="" method=""
+                                >
+                                
+                                <label for="" class="input-label">Referral Bonus</label>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="Referral Bonus" id="referral-bonus" type="number" class="validate"
+                                            name="referralBonus" value="<%=referral.bonus %>" >
+                                        <div id="error1" class="text-danger"></div>    
+                                    </div>
+                                </div>
+
+                                <label for="" class="input-label">Status</label>
+                                
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <select name="status" id="status" style="display: inline-block;width: 100px;">
+                                            <option value="true" <%= referral.isActive === true ? 'selected' : '' %>>True</option>
+                                            <option value="false" <%= referral.isActive === false ? 'selected' : '' %>>False</option>
+                                        </select>   
+                                    </div>
+                                </div>
+                               
+                                <div class="row">
+                                    <div>
+                                        <button type="submit" class="btn btn-success" id="submit-button">add referral</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="clearBoth"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const referralForm=document.getElementById("referralForm")
+                const status=document.getElementById("status")
+                const referralBonus=document.getElementById("referral-bonus")
+                const error1=document.getElementById("error1")
+                const submitButton=document.getElementById("submit-button")
+
+                document.addEventListener("DOMContentLoaded",()=>{
+
+                    referralForm.addEventListener("submit",async function (e){
+                        e.preventDefault()
+                        const isBonus=bonusVlidation()
+                        if(!isBonus){
+                            fetchFormData();
+                        }
+
+                        try {
+                            console.log("inside fetch")
+                            const response=await fetch('/admin/referral',{
+                                method:"POST",
+                                headers:{
+                                    "Content-Type": "application/json"
+                                },
+                                body:JSON.stringify({status:status.value,bonus:referralBonus.value})
+                            })
+
+                            if(response.ok){
+
+                                console.log("inside fetch")
+                                const data=await response.json()
+                                alert(data.message);
+
+                                window.location.href = '/admin/referral';
+                            }else{
+                                alert('error occured');
+                            }
+
+
+                        } catch (error) {
+                            console.log("error in referral fetch "+error.message)
+                        }
+                    })
+
+                    
+                })
+
+                function bonusVlidation(){
+                    const bonus=referralBonus.value.trim()
+                    const bonusVal=parseFloat(bonus)
+
+                    if(bonus === ''){
+                        error1.innerHTML="eneter a amount"
+                        return false
+                    }else if(bonusVal < 0){
+                        error1.innerHTML="enter a valid number"
+                        return false
+                    }else{
+                        error1.innerHTML=""
+                        return true
+                    }
+                }
+            </script>
+
+            <%- include('../partials/admin/footer') %>

@@ -67,6 +67,8 @@ router.post('/coupon/addCoupon/edit/checkCode',auth.isLogin,couponController.che
 router.get("/addOffer",offerController.addOffer)
 router.post("/addOffer",offerController.addNewOffer)
 router.get("/editOffer",offerController.editOffer)
+router.get("/referral",offerController.referral)
+router.post("/referral",offerController.updateReferral)
 module.exports=router;
 
 
