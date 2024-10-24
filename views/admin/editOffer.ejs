@@ -1,0 +1,148 @@
+<%- include('../partials/admin/header') %>
+
+    <div id="page-wrapper">
+        <div class="header">
+            <h1 class="page-header">
+                Edit Offer
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">add Offer</a></li>
+                
+            </ol>
+
+        </div>
+
+        <div id="page-inner">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+
+                        <div class="card-content">
+                            <form id="offerForm" class="col s12" action="/admin/addOffer" method="post">
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <select name="productOffer" id="product-offer" style="display: inline-block;">
+                                            <option value="<%= data.offer.type %>"><%= data.offer.type %></option>
+                                            <option value="percentage">Percentage</option>
+                                            <option value="flat">Flat</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="Offer Value" id="offer-value" type="number" class="validate"
+                                            name="offerValue" value="<%= data.offer.value %>">
+                                        <div id="error10" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="" id="offer-satrt" type="date" class="validate"
+                                            name="offerStart" value="<%= new Date(data.offer.startDate).toISOString().slice(0, 10) %>">
+                                        <div id="error11" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input placeholder="" id="offer-end" type="date" class="validate"
+                                            name="offerEnd" value="<%= new Date(data.offer.endDate).toISOString().slice(0, 10) %>">
+                                        <div id="error12" class="text-danger"></div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="type"  value="<%= type %>">
+                                <input type="hidden" name="id" value="<%= id %>">
+                                <div class="row">
+                                    <div>
+                                        <button type="submit" class="btn btn-success">add Offer</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div class="clearBoth"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                const offerForm=document.getElementById("offerForm")
+                const productOffer=document.getElementById("product-offer")
+                const offerValue=document.getElementById("offer-value")
+                const offerStart=document.getElementById("offer-satrt")
+                const offerEnd=document.getElementById("offer-end")
+                const error10=document.getElementById("error10")
+                const error11=document.getElementById("error11")
+                const error12=document.getElementById("error12")
+
+                document.addEventListener("DOMContentLoaded",()=>{
+                    offerForm.addEventListener("submit",(e)=>{
+                        console.log("inside submit lister")
+                        const isOfferValue=offerValidation()
+                        const isOfferStart=offerStartValidation()
+                        const isOfferEnd=offerEndValidation()
+
+                        if( !isOfferValue || !isOfferStart || !isOfferEnd){
+                            e.preventDefault()
+                        }
+                    })
+                })
+
+
+                function offerValidation(){
+
+                    const priceOffer=offerValue.value.trim()
+                    const priceValue = parseFloat(offerValue.value);
+
+                    if(priceOffer === ''){
+                        error10.innerText = "Please enter valid price";
+                        return false;
+                    }
+                    else if (priceValue < 0) {
+                        error10.innerText = "Price cannot be negative.";
+                        return false;
+                    } else {
+                        error10.innerText = ""; 
+                        return true 
+                    }
+                }
+
+                function offerStartValidation() {
+                    const startDateVal = offerStart.value.trim(); // Fixed variable name to match the correct ID
+                    const startDate = new Date(startDateVal); // Use startDateVal instead of offerStart.value
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Set to midnight to only compare dates
+
+                    // Validate the start date
+                    if (startDateVal === '' || isNaN(startDate.getTime()) || startDate <= today) {
+                        error11.innerText = "Please enter a valid future date.";
+                        return false; // Return false if validation fails
+                    } else {
+                        error11.innerText = ""; // Clear error message
+                        return true; // Return true if validation passes
+                    }
+                }
+
+                function offerEndValidation() {
+                    const endDateVal = offerEnd.value.trim(); // Get the value from the end date input
+                    const startDateVal = offerStart.value.trim(); // Get the value from the start date input
+                    const endDate = new Date(endDateVal); // Create a date object from the end date value
+                    const startDate = new Date(startDateVal); // Create a date object from the start date value
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0); // Set to midnight to only compare dates
+
+                    // Validate the end date
+                    if (endDateVal === '' || isNaN(endDate.getTime()) || endDate < today) {
+                        error12.innerText = "Please enter a valid future date.";
+                        return false; // Return false if validation fails
+                    } else if (endDate < startDate) {
+                        error12.innerText = "End date cannot be earlier than start date.";
+                        return false; // Return false if end date is before start date
+                    } else {
+                        error12.innerText = ""; // Clear error message
+                        return true; // Return true if validation passes
+                    }
+                }
+
+            </script>
+            <%- include('../partials/admin/footer') %>

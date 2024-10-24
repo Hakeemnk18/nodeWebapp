@@ -52,6 +52,16 @@
                                         <div id="error4"></div>    
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <select name="discountType" id="dicound-type" style="display: inline-block;width: 25%;">
+                                            <option selected value="<%= data.discountType %>"><%= data.discountType %></option>
+                                            <option value="fixed">Fixed</option>
+                                            <option value="percentage">Percentage</option>
+                                        </select>
+                                        <div id="error5"></div>    
+                                    </div>
+                                </div>
                                 <input type="hidden" name="id" id="" value="<%= data._id %>">
                                 <div class="row">
                                     <div>
@@ -77,11 +87,13 @@
                 const discountValue = document.getElementById('discound-value');
                 const minValue = document.getElementById('min-value');
                 const expiryDate = document.getElementById('expiry-date');
+                const discoundType=document.getElementById("dicound-type")
                 
                 const error1 = document.getElementById('error1');
                 const error2 = document.getElementById('error2');
                 const error3 = document.getElementById('error3');
                 const error4 = document.getElementById('error4');
+                const error5 = document.getElementById("error5")
                 
                 const couponForm = document.getElementById('couponForm');
             
@@ -137,6 +149,18 @@
                         return true;
                     }
                 }
+
+                function typeValidation(){
+                    const typeVal=discoundType.value.trim()
+
+                    if(typeVal === ''){
+                        error5.innerHTML="select a size"
+                        return false
+                    }else{
+                        error5.innerHTML=''
+                        return true
+                    }
+                }
             
                 // Form submission handler with validation and coupon uniqueness check
                 couponForm.addEventListener('submit', async function (e) {
@@ -146,6 +170,7 @@
                     const isValidDiscountValue = discountValueValidation();
                     const isValidMinValue = minValueValidation();
                     const isValidExpiryDate = expiryDateValidation();
+                    const isValidType = typeValidation()
         
                     let isUniqueCouponCode = false;
         
@@ -177,7 +202,7 @@
                     }
                     
                     // If all validations are successful, submit the form
-                    if (isValidCouponCode && isUniqueCouponCode && isValidDiscountValue && isValidMinValue && isValidExpiryDate) {
+                    if (isValidCouponCode && isUniqueCouponCode && isValidDiscountValue && isValidMinValue && isValidExpiryDate && isValidType) {
                         console.log("all condition mached")
                         couponForm.submit(); // Submit the form programmatically
                     }else{

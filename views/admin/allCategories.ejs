@@ -40,7 +40,7 @@
                                 <th>Category name</th>
                                 <th></th>
                                 <th></th>
-                                
+                                <th>Offer</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,12 +50,19 @@
                                      <tr class="odd gradeX">
                                          <td><%= data[i].categoryName %></td>
                                          <td><a href="/admin/category/editCategory/<%= data[i]._id %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
+
                                          <% if(data[i].isActive === true) { %>
                                           <td><a href="/admin/category/deleteCategory/?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock"></i></a></td>
                                          <% } else {%>
                                           <td><a href="/admin/category/unblockCategory/?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock-open"></i></a></td>
                                           <% } %>
-                                         
+
+                                          <% if(data[i].offer.type){ %>
+                                             <td><a href="/admin/editOffer/?type=category&id=<%= data[i]._id %>" type="button">Edit Offer</a></td>
+                                          <% } else { %>
+                                             <td><a href="/admin/addOffer/?type=category&id=<%= data[i]._id %>" type="button">Add Offer</a></td>
+                                          <% } %>
+                                          
                                      </tr>
                                  <% } %>
                              <% } %>  

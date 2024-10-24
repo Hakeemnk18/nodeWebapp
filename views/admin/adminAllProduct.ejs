@@ -41,7 +41,7 @@
                                 <th>Price</th>
                                 <th></th>
                                 <th></th>
-                                
+                                <th>Offer</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,6 +59,11 @@
                                           <td><a href="/admin/product/deleteProduct?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock"></i></a></td>
                                          <% } else {%>
                                           <td><a href="/admin/product/unblockProduct/?id=<%= data[i]._id %>&page=<%= currentPage %>"><i class="fa-solid fa-lock-open"></i></a></td>
+                                          <% } %>
+                                          <% if(data[i].offer.type){ %>
+                                             <td><a href="/admin/editOffer/?type=product&id=<%= data[i]._id %>" type="button">Edit Offer</a></td>
+                                          <% } else { %>
+                                             <td><a href="/admin/addOffer/?type=product&id=<%= data[i]._id %>" type="button">Add Offer</a></td>
                                           <% } %>
                                          
                                      </tr>

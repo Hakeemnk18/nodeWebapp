@@ -35,7 +35,8 @@ const allProduct=async (req,res)=>{
         .skip(startIndex)
         .exec()
 
-        
+           
+
         const currentPage=page
         
 
@@ -170,7 +171,7 @@ const addProduct=async(req,res)=>{
         
 
 
-        console.log(productVariant)
+       
         
 
 

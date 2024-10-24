@@ -1,0 +1,101 @@
+<%- include("../partials/admin/header.ejs") %>
+<div id="page-wrapper">
+    <div class="header">
+       <h1 class="page-header">Offer Management</h1>
+       <ol class="breadcrumb">
+          <li><a href="/admin/">Dashboard</a></li>
+          <li class="active">Offer Management</li>
+       </ol>
+    </div>
+    <div id="page-inner">
+       <div class="row">
+          <div class="col-md-12">
+             <!-- Advanced Tables -->
+             <div class="card">
+                <div class="card-action">Offer List</div>
+                <div class="card-content">
+                   <div class="table-responsive">
+                      <div class="row">
+                         <div class="col-sm-6">
+                            <div id="dataTables-example_filte" class="dataTables_filter">
+                               <form action="#" method="get">
+                                  <label for="s">Search:</label>
+                                  <input
+                                     type="search"
+                                     class="form-control input-sm"
+                                     aria-controls="dataTables-example"
+                                     name="search"
+                                     id="search"
+                                  />
+                                  <input type="submit" value="Search">
+                               </form>
+                            </div>
+                         </div>
+                      </div>
+                      <table
+                         class="table table-striped table-bordered table-hover"
+                         id="dataTables-example"
+                      >
+                         <thead>
+                             <tr>
+                                 <th>Coupon Code</th>
+                                 <th>Discount</th>
+                                 <th>Minimum Amount</th>
+                                 <th>Coupon Type</th>
+                                 <th></th>
+                                 <th></th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                            <tr class="odd gradeX">
+                               <td>COUPON_CODE</td>
+                               <td>DISCOUNT_VALUE</td>
+                               <td>MINIMUM_CART_VALUE</td>
+                               <td>DISCOUNT_TYPE</td>
+                               <td><a href="/admin/coupon/addCoupon/editCoupon?id=COUPON_ID"><i class="fa-solid fa-pen-to-square"></i></a></td>
+                               <td><a href="/admin/coupon/addCoupon/block?id=COUPON_ID"><i class="fa-solid fa-lock"></i></a></td>
+                            </tr>
+                         </tbody>
+                      </table>
+                      <div class="col-8">
+                         <ul class="pagination">
+                            <li class="disabled"><span>Previous</span></li>
+                            <li class="active"><a href="#">1</a></li>
+                            <li><a href="#">2</a></li>
+                            <li><a href="#">3</a></li>
+                            <li><a href="#">Next</a></li>
+                         </ul>
+                      </div>
+                      <div style="margin-bottom: 20px;" class="col">
+                         <button class="btn btn-success"><a href="/admin/offer/addOffer" style="color: black;">Add Offer</a></button>
+                      </div>
+                   </div>
+                </div>
+             </div>
+             <!--End Advanced Tables -->
+          </div>
+       </div>
+    </div>
+ </div>
+ <%- include("../partials/admin/footer.ejs") %>
+
+ <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+       const element = document.getElementById('dataTables-example_filter');
+       const emptyElements = document.getElementsByClassName('dataTables_empty');
+       const removePginat = document.getElementById('dataTables-example_paginate');
+       const dataTablesLength = document.getElementById("dataTables-example_length");
+       const dataTablesInfo = document.getElementById("dataTables-example_info");
+       while (emptyElements.length > 0) {
+          emptyElements[0].remove();
+       }
+ 
+       if (element || removePginat || dataTablesLength || dataTablesInfo) {
+          element.remove();
+          removePginat.remove();
+          dataTablesLength.remove();
+          dataTablesInfo.remove();
+       }
+    });
+ </script>
+ 

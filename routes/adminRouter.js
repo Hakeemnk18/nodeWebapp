@@ -9,6 +9,7 @@ const categoryController=require('../controllers/admin/categoryController')
 const ordersController=require('../controllers/admin/ordersController')
 const loginController=require('../controllers/admin/loginController')
 const couponController=require("../controllers/admin/coupenController")
+const offerController=require("../controllers/admin/offerController")
 
 
 
@@ -53,18 +54,19 @@ router.get('/orders/changeStatus/rejectReq',auth.isLogin,ordersController.orderR
 router.get('/orders/changeStatus/acceptReturn',auth.isLogin,ordersController.returnAccept)
 
 //coupen
-router.get('/coupon',couponController.coupon)
-router.get('/coupon/addCoupon',couponController.addCoupon)
-router.post('/coupon/addCoupon',couponController.addNewCoupon)
-router.post('/coupon/addCoupon/checkCode',couponController.checkUnique)
-router.get('/coupon/addCoupon/block',couponController.blockCoupon)
-router.get('/coupon/addCoupon/unBlock',couponController.unblockCoupon)
-router.get('/coupon/addCoupon/editCoupon',couponController.editCoupon)
-router.post('/coupon/addCoupon/editCoupon',couponController.editCouponUpdate)
-router.post('/coupon/addCoupon/edit/checkCode',couponController.checkEditUnique)
+router.get('/coupon',auth.isLogin,couponController.coupon)
+router.get('/coupon/addCoupon',auth.isLogin,couponController.addCoupon)
+router.post('/coupon/addCoupon',auth.isLogin,couponController.addNewCoupon)
+router.post('/coupon/addCoupon/checkCode',auth.isLogin,couponController.checkUnique)
+router.get('/coupon/addCoupon/block',auth.isLogin,couponController.blockCoupon)
+router.get('/coupon/addCoupon/unBlock',auth.isLogin,couponController.unblockCoupon)
+router.get('/coupon/addCoupon/editCoupon',auth.isLogin,couponController.editCoupon)
+router.post('/coupon/addCoupon/editCoupon',auth.isLogin,couponController.editCouponUpdate)
+router.post('/coupon/addCoupon/edit/checkCode',auth.isLogin,couponController.checkEditUnique)
 
-
-
+router.get("/addOffer",offerController.addOffer)
+router.post("/addOffer",offerController.addNewOffer)
+router.get("/editOffer",offerController.editOffer)
 module.exports=router;
 
 

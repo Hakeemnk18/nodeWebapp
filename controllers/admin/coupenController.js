@@ -23,13 +23,15 @@ const addCoupon=async(req,res)=>{
 
 const addNewCoupon=async(req,res)=>{
     try {
+        
         console.log(req.body)
-        const {couponCode,discoundValue,minValue,expiryDate}=req.body
+        const {couponCode,discoundValue,minValue,expiryDate,discountType}=req.body
         const newCoupon=new Coupon({
             code:couponCode,
             discoundValue:discoundValue,
             minCartValue:minValue,
-            expiresAt:expiryDate
+            expiresAt:expiryDate,
+            discountType:discountType
         })
         const data=await newCoupon.save()
         
@@ -43,8 +45,7 @@ const addNewCoupon=async(req,res)=>{
 
 const checkUnique=async(req,res)=>{
     try {
-        console.log("inside code unique fetch")
-        console.log(req.body)
+        
         const {code}=req.body
         
         const data=await Coupon.findOne({code:{ $regex: new RegExp(`^${code}$`, "i") }})
@@ -66,7 +67,7 @@ const checkEditUnique=async(req,res)=>{
         const {code,id}=req.body
         const currentData=await Coupon.findById(id)
         if(currentData.code === code){
-            console.log("same code ")
+            
             return res.status(200).json({isValid:true})
         }else{
             const data=await Coupon.findOne({code:{ $regex: new RegExp(`^${code}$`, "i") }})
@@ -111,11 +112,11 @@ const unblockCoupon=async(req,res)=>{
 
 const editCoupon=async(req,res)=>{
     try {
-        console.log(req.query)
+        
         const {id}=req.query
         const data=await Coupon.findById(id)
-        console.log(data)
-        console.log(new Date(data.expiresAt).toISOString().slice(0, 10))
+        
+        
         res.render("editCoupon",{data})
     } catch (error) {
         console.log("error in admin coupon edit "+error.message)
@@ -124,17 +125,20 @@ const editCoupon=async(req,res)=>{
 }
 const editCouponUpdate=async(req,res)=>{
     try {
+        
+        console.log("inside edit doupon")
         console.log(req.body)
-        const {couponCode,discoundValue,minValue,expiryDate,id}=req.body
+        const {couponCode,discoundValue,minValue,expiryDate,id,discountType}=req.body
         const updated=await Coupon.findByIdAndUpdate(id,
             {
                 code:couponCode,
                 discoundValue:discoundValue,
                 minCartValue:minValue,
-                expiresAt:expiryDate
+                expiresAt:expiryDate,
+                discountType:discountType
             }
         ) 
-        console.log(updated)
+        
         res.redirect("/admin/coupon")
     } catch (error) {
         console.log("error in admin coupon edit updated "+error.message)

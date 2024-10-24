@@ -41,6 +41,7 @@
                                 <th>Coupon Code</th>
                                 <th>Discount</th>
                                 <th>Minimum Amount</th>
+                                <th>Coupon Type</th>
                                 <th></th>
                                 <th></th>
                             </tr>
@@ -52,6 +53,7 @@
                                     <td><%= allCoupon[i].code %></td>
                                     <td><%= allCoupon[i].discoundValue %></td>
                                     <td><%= allCoupon[i].minCartValue %></td>
+                                    <td><%= allCoupon[i].discountType %></td>
                                     <td><a href="/admin/coupon/addCoupon/editCoupon?id=<%= allCoupon[i]._id %>"><i class="fa-solid fa-pen-to-square"></i></a></td>
                                     
                                     <% if(allCoupon[i].isActive === true){ %>

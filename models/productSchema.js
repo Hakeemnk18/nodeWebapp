@@ -34,6 +34,12 @@ const productSchema=new Schema({
             }
         }
     ],
+    offer: {
+        type: { type: String, enum: ['percentage', 'flat'], required: false }, 
+        value: { type: Number, default: 0 }, 
+        startDate: Date,
+        endDate: Date,
+    },
     
     croppedImage:[String],
     
