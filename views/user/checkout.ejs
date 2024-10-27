@@ -6,6 +6,11 @@
         justify-content: space-between;
         align-items: center;
     }
+    .disabled-link {
+    pointer-events: none;
+    color: grey; /* Optional: Change color to indicate it's disabled */
+    text-decoration: none;
+  }
 </style>
 
 <link rel="stylesheet" href="/css/checkout.css">
@@ -112,7 +117,7 @@
                 <% } %>
                 
                 <% let tax=35; let deliveryCharge=50 %>
-                <li class="tax">Tax </span><span><%= tax %></span></li>
+                <li class="tax">Tax </span><span ><%= tax %></span></li>
                 <li>Delivery charge <span><%= deliveryCharge %></span></li>
                 <li class="">Total <span id="total-price"><%= total+tax+deliveryCharge %></span></li>
                 
@@ -122,7 +127,7 @@
                 
                     <li class="" id="coupon-apply-name">Coupon Not Appleyed  <span id="coupon-saved"> </span></li>
                
-                <li class="" id="wallet-balence-heade">Wallet Balance :3500<span id="wallet-balence"><a href="">Useit</a></span></li>
+                <li class="" id="wallet-balence-heade">Wallet Balance :<%= walletBalance.balance %> <span id="wallet-balence"><a id="wallet-use" href="">Useit</a></span></li>
                 <li class="total">Amount Payable<span id="total-payable-amount"><%= total+tax+deliveryCharge %></span></li>
                 <% total = tax+deliveryCharge+total %>
                 <input type="hidden" id="total-amount" name="totalAmount" value="<%= total %>">
@@ -150,15 +155,15 @@
             const walletBallence=document.getElementById("wallet-balence")
             const wallet=document.getElementById("wallet-balence-heade")
             const applyedCouponContainer=document.getElementById("applyed-coupon-container")
+            const walletUse=document.getElementById("wallet-use")
             
 
             const Originaltotal=parseInt(totalAmount.value)
-            console.log(Originaltotal)
+           
 
             couponCode.addEventListener("change",async function(e){
                 e.preventDefault()
-                console.log("inside event listener")
-                console.log(couponSaved.textContent)
+                
 
                 try {
                     const response=await fetch("/checkout/applyCoupon",{
@@ -179,12 +184,12 @@
                         console.log(data)
                         const updateTotal=data.updatedTotal  
                         
-                        applyedCouponName.innerHTML = `Coupon Applied: ${data.couponName} <span id="coupon-saved">Saved ${data.savedAmount}</span>` ;
+                        applyedCouponName.innerHTML = `Coupon Applied: ${data.couponName} <span style="color: rgb(18, 172, 18);" id="coupon-saved">Saved ${data.savedAmount}</span>` ;
 
                         
                         payablePrice.textContent=updateTotal
                         totalAmount.value=updateTotal
-                        console.log(couponSaved.textContent)
+                        
                         
                     }else{
                         console.log("coupon fetch failed");
@@ -196,12 +201,24 @@
 
             removeCoupon.addEventListener("click",(e)=>{
                 e.preventDefault()
-                console.log("remove copen")
+                
 
                 couponCode.selectedIndex=0
                 applyedCouponName.innerHTML =  `Coupon Not Appleyed  <span id="coupon-saved"> </span></li>`;
                 payablePrice.textContent=Originaltotal
                 totalAmount.value=Originaltotal
+            })
+
+            walletUse.addEventListener("click",(e)=>{
+                e.preventDefault()
+                const currentPayableAmount=parseFloat(payablePrice.textContent) 
+                const walletBalance= "<%= walletBalance.balance %>"
+                
+                const afterWalletAmount=Math.max(currentPayableAmount-walletBalance,0 )
+                payablePrice.textContent=afterWalletAmount
+                walletUse.remove()
+                couponCode. disabled=true;
+                removeCoupon.classList.add("disabled-link");
             })
         })
     </script>

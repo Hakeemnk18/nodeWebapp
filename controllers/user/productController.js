@@ -10,6 +10,7 @@ const statusTime=require('../../helpers/orderStatusTime')
 const Wishlist=require('../../models/wishlistSchema')
 const wishlist = require('../../models/wishlistSchema')
 const Coupon=require('../../models/couponSchema')
+const Wallet = require('../../models/walletSchema')
 
 
 // find stock according to the size
@@ -354,7 +355,7 @@ const checkout=async(req,res)=>{
         console.log("inside checkout")
         const{total}=req.query
         const percentageOfTotal = total * 0.8;
-        console.log(percentageOfTotal)
+        
         const availableCoupon = await Coupon.find({
             minCartValue: { $lt: total },
             isActive: true,
@@ -366,27 +367,28 @@ const checkout=async(req,res)=>{
                 ]
             }
         });
-        console.log(availableCoupon)
-        console.log(req.query)
+        
         let userName=await isUser.isUser(req)
         const userId=req.session.user_id
         const user=await User.findById(userId).populate({path:'address',match:{isActive:true}}).exec()
         const cartProduct=await Cart.find({userId:userId}).populate('productId')
+        const walletBalance=await Wallet.findOne({userId:userId})
 
-        console.log("inside checkout")
-        console.log(cartProduct)
+        console.log(walletBalance)
+
+        
 
         
         if(cartProduct.length === 0){
             return res.redirect('/products')
         }
-        res.render('checkout',{userName,cartProduct,addresses:user.address,availableCoupon})
+        res.render('checkout',{userName,cartProduct,addresses:user.address,availableCoupon,walletBalance})
     } catch (error) {
         console.log("error in checkout "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
-//////////////////////////////////////////////////////////////////////////
+
 const couponApply=async(req,res)=>{
     try {
         console.log("inside fetch coupon")
