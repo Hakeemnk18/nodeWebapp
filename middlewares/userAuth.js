@@ -6,7 +6,7 @@ const isLogin=async(req,res,next)=>{
         console.log("inside user login")
         if(req.session.user_id ){
             const isActive=await User.findById(req.session.user_id)
-            console.log(isActive)
+            
             if(isActive.isActive){
 
             }else{

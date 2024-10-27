@@ -36,6 +36,8 @@ router.get('/productDetails/cart/checkout/success',userAuth.isLogin,productContr
 router.get('/api/product/stock',userAuth.isLogin,productController.stockDetails)
 router.post('/wishlist/remove',userAuth.isLogin,productController.removeWishlist)
 
+router.post("/checkout/applyCoupon",productController.couponApply)
+
 //my account
 router.get("/myAccount",userAuth.isLogin,profileController.myAccount)
 router.get('/myAccount/address',userAuth.isLogin,profileController.addressManegment)
@@ -53,6 +55,12 @@ router.post('/myAccount/resetPassword',userAuth.isLogin,profileController.addNew
 router.get('/myAccount/orders/trackOrder',userAuth.isLogin,profileController.trackOrder)
 router.get('/myAccount/orders/cancelOrder',userAuth.isLogin,profileController.orderCancel)
 router.get('/myAccount/orders/returnOrder',userAuth.isLogin,profileController.returnOrder)
+
+
+
+router.post('/couponApply',profileController.referralApply)
+router.get('/myAccount/wallet',profileController.wallet)
+
 
 
 

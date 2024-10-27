@@ -53,6 +53,13 @@ const userSchema=new Schema({
         type: String, 
        
     },
+    referral:{
+        type:String
+    },
+    referralClimed:{
+        type:Boolean,
+        
+    }
     
 },{
     timestamps:true

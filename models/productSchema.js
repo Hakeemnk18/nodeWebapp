@@ -67,6 +67,9 @@ const productSchema=new Schema({
     isActive:{
         type:Boolean,
         default:true
+    },
+    offerPrice:{
+        type:Number
     }
 },{timestamps:true})
 

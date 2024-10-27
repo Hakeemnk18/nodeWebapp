@@ -2,6 +2,7 @@ const Order=require('../../models/ordersSchema')
 const orderStatus=require('../../helpers/orderStatusTime')
 const { pageNotfound } = require('../user/userController')
 const Product=require('../../models/productSchema')
+const Wallet=require("../../models/walletSchema")
 
 const orders=async(req,res)=>{
     try {
@@ -83,9 +84,12 @@ const returnAccept=async(req,res)=>{
             { new: true }
           );
           
+        
           // Get the updated cart item
         const updatedCartItem = updatedOrder.cartItems[index];
-        const ppp=await Product.findById(updatedCartItem.product)
+        
+
+        
         await Product.updateOne(
             {
                 _id:updatedCartItem.product,
@@ -97,8 +101,25 @@ const returnAccept=async(req,res)=>{
                 }
             }
         ) 
-        const pp=await Product.findById(updatedCartItem.product)
-
+        
+        const obj = { 
+            amount: updatedCartItem.price, 
+            type: "deposit", 
+            date: new Date()
+        };
+        
+        await Wallet.findOneAndUpdate(
+            { userId: updatedOrder.user },
+            {
+                $inc: {
+                    refunds: updatedCartItem.price,
+                    balance: updatedCartItem.price,
+                },
+                $push: {
+                    transactions: obj 
+                }
+            }
+        );
 
         res.redirect(`/admin/orders/orderDetails?id=${id}`)
     } catch (error) {

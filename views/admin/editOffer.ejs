@@ -101,7 +101,11 @@
                     else if (priceValue < 0) {
                         error10.innerText = "Price cannot be negative.";
                         return false;
-                    } else {
+                    }else if( productOffer.value.trim()==="percentage" && priceValue > 80){
+                        error10.innerText = "Price cannot be greterthan 80% ";
+                        return false;
+                    }
+                     else {
                         error10.innerText = ""; 
                         return true 
                     }

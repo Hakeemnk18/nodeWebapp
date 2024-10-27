@@ -1,0 +1,272 @@
+
+<%- include('../partials/user/header') %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+         .wallet-main-containner{
+            font-family: 'Arial', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .wallet-container {
+            max-width: 900px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow: hidden;
+        }
+
+        .wallet-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .wallet-header i {
+            font-size: 80px;
+            color: #4CAF50;
+        }
+
+        .wallet-header h1 {
+            font-size: 36px;
+            margin: 0;
+            color: #333;
+        }
+
+        .wallet-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .wallet-details:last-child {
+            border-bottom: none;
+        }
+
+        .wallet-details div {
+            flex-basis: 33%;
+            text-align: center;
+        }
+
+        .wallet-details div h3 {
+            margin: 0;
+            color: #555;
+        }
+
+        .wallet-details div p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-top: 8px;
+        }
+
+        .wallet-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .wallet-summary-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f7f7f7;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .wallet-summary-item h3 {
+            color: #333;
+            margin-bottom: 5px; /* Reduce spacing to prevent text overflow */
+            font-size: 16px; /* Make heading size consistent for alignment */
+            white-space: nowrap;
+        }
+
+        .wallet-summary-item p {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin: 0;
+            margin-top: 5px;
+        }
+
+        .wallet-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .wallet-actions button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .wallet-actions button:hover {
+            background-color: #45a049;
+            
+        }
+
+        .transaction-history {
+            margin-top: 40px;
+        }
+
+        .transaction-history h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .transaction {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 18px;
+        }
+
+        .transaction:last-child {
+            border-bottom: none;
+        }
+
+        .transaction .date, 
+        .transaction .type, 
+        .transaction .amount {
+            flex-basis: 33%;
+            text-align: center;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .wallet-header i {
+                font-size: 60px;
+            }
+
+            .wallet-header h1 {
+                font-size: 28px;
+            }
+
+            .wallet-details div p {
+                font-size: 20px;
+            }
+
+            .wallet-summary-item p {
+                font-size: 18px;
+            }
+
+            .transaction {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .transaction .date, 
+            .transaction .type, 
+            .transaction .amount {
+                text-align: left;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wallet-details {
+                flex-direction: column;
+            }
+
+            .wallet-summary {
+                flex-direction: column;
+            }
+
+            .wallet-summary-item {
+                margin: 10px 0;
+            }
+
+            .transaction {
+                flex-direction: column;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="wallet-main-containner">
+    <div class="wallet-container">
+        <!-- Wallet Header -->
+        <div class="wallet-header">
+            <div class="wallet-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="wallet-title">
+                <h1>My Wallet</h1>
+            </div>
+        </div>
+    
+        <!-- Wallet Summary -->
+         <% if(typeof wallet !== 'undefined'){ %>
+            <div class="wallet-summary">
+                <div class="wallet-summary-item">
+                    <h3>Total Amount</h3>
+                    <p><%= wallet.balance %></p> <!-- Total wallet balance -->
+                </div>
+                <div class="wallet-summary-item">
+                    <h3>Erned Bonus</h3>
+                    <p><%= wallet.referralBonus %></p>
+                </div>
+                <div class="wallet-summary-item">
+                    <h3>Refunds </h3>
+                    <p><%= wallet.refunds %></p>
+                </div>
+                <div class="wallet-summary-item">
+                    <h3>Total Transactions</h3>
+                    <p><%= wallet.transactions.length %></p>
+                </div>
+            </div>
+
+            <div class="transaction-history">
+                <h3>Last  Transactions</h3>
+
+                <% wallet.transactions.slice(-5).forEach((transaction) => { %>
+                    <div class="transaction">
+                        <div class="date"><%= transaction.date.toLocaleDateString() %></div>
+                        <div class="type"><%= transaction.type %></div>
+                        <div class="amount">$<%= transaction.amount %></div>
+                    </div>
+                <% }) %>
+                <% if (wallet.transactions.length === 0){ %>
+                    <div style="text-align: center; color: #333;">
+                        <p>No transaction</p>
+                    </div>
+                    
+                <% } %>
+            </div>
+            
+         <% } %>
+        
+    
+        <!-- Last Five Transactions -->
+        
+    
+        <!-- <div class="wallet-actions" style="text-align: end;">
+            <button id="add-funds-btn">Add More Funds</button>
+        </div> -->
+    </div>
+</div>
+<%- include('../partials/user/footer') %>
+

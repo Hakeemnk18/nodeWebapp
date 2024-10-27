@@ -9,28 +9,83 @@ const isUser=require('../../helpers/isUserlogin')
 const statusTime=require('../../helpers/orderStatusTime')
 const Wishlist=require('../../models/wishlistSchema')
 const wishlist = require('../../models/wishlistSchema')
+const Coupon=require('../../models/couponSchema')
 
 
 // find stock according to the size
 async function findStock(id,size){
     try {
-        console.log("inside find stock")
+       
         const product=await Product.findOne({_id:id},{varient:1,_id:0})
-        console.log(product)
+        
         const variant=product.varient.find(v => v.size === size)
-        console.log(variant)
-        console.log(variant.stock)
+        
         return variant.stock
     } catch (error) {
         console.log("error in find stock"+error.message)
     }
 }
 
+function findOfferPrice(pOffer, cOffer, price) {
+    let pOfferVal = price;
+    let cOfferVal = price;
+    let offerPrice = price;
+
+    if (pOffer.value !== 0 
+        && pOffer.startDate !== undefined 
+        && pOffer.endDate !== undefined 
+        && pOffer.startDate <= Date.now() 
+        && pOffer.endDate >= Date.now()) {
+        
+            
+        if (pOffer.type === "percentage") {
+           
+            pOfferVal = Math.floor(price * (1 - pOffer.value / 100)) 
+        } else if (pOffer.type === "flat") {
+            
+            if (pOffer.value >= 0.8 * price) {
+                
+                pOfferVal = price; 
+            } else {
+              
+                pOfferVal = price - pOffer.value; 
+            }
+        }
+    }
+
+    if (cOffer.value !== 0 
+        && cOffer.startDate !== undefined 
+        && cOffer.endDate !== undefined 
+        && cOffer.startDate <= Date.now() 
+        && cOffer.endDate >= Date.now()) {
+         
+        if (cOffer.type === "percentage") {
+            cOfferVal = Math.floor(price * (1 - cOffer.value / 100)) 
+        } else if (cOffer.type === "flat") {
+            if (cOffer.value >= 0.8 * price) {
+                cOfferVal = price; 
+            } else {
+                cOfferVal = price - cOffer.value; 
+            }
+        }
+    }
+
+    
+
+    // If both offers are applicable, take the lower of the two values
+    if (pOfferVal < price || cOfferVal < price) {
+        offerPrice = Math.min(pOfferVal, cOfferVal);
+    }
+
+    console.log("offerPrice:", offerPrice);
+    return offerPrice;
+}
 
 
 const productDetails=async (req,res)=>{
     try {
         
+        console.log("inside product details")
         const {id}=req.query
         let message;
         if (req.query.message) {
@@ -38,13 +93,16 @@ const productDetails=async (req,res)=>{
         }
         
         let userName=await isUser.isUser(req)
-        const productData=await Product.findOne({_id:id})
-        const relatedProduct=await Product.find({category:productData.category})
+        const productDat=await Product.findOne({_id:id})
+        const relatedProduct=await Product.find({category:productDat.category})
+
+        const categoryData=await Category.findById(productDat.category)
         
         
+        const offerPrice=findOfferPrice(productDat.offer,categoryData.offer,productDat.price)
+        console.log("offer price in side product details :"+offerPrice)
+        const productData=await Product.findByIdAndUpdate(id,{$set:{offerPrice:offerPrice}},{new:true})
         
-        
-    
         res.render('productDetails',{productData,relatedProduct,userName,message})
     } catch (error) {
        console.log("error in product details page "+error.message) 
@@ -71,7 +129,7 @@ const stockDetails=async(req,res)=>{
 const addCart=async(req,res)=>{
     try {
         
-        let logout;
+     
         
         console.log(req.query)
         
@@ -123,11 +181,11 @@ const addCart=async(req,res)=>{
         }
         
         
-        const pppp=await Product.findById(id)
+        
         
         await Product.updateOne({_id:id,"varient.size":size},{$inc:{"varient.$.stock":-quantity}})
         
-        const ppp=await Product.findById(id)
+        
         
 
         res.redirect('/productDetails/cart')
@@ -292,23 +350,77 @@ const allProduct=async (req,res)=>{
 
 const checkout=async(req,res)=>{
     try {
+
+        console.log("inside checkout")
+        const{total}=req.query
+        const percentageOfTotal = total * 0.8;
+        console.log(percentageOfTotal)
+        const availableCoupon = await Coupon.find({
+            minCartValue: { $lt: total },
+            isActive: true,
+            expiresAt: { $gt: Date.now() },
+            $expr: {
+                $or: [
+                    { $ne: ["$discountType", "fixed"] }, 
+                    { $lt: ["$discoundValue", percentageOfTotal] } 
+                ]
+            }
+        });
+        console.log(availableCoupon)
+        console.log(req.query)
         let userName=await isUser.isUser(req)
         const userId=req.session.user_id
         const user=await User.findById(userId).populate({path:'address',match:{isActive:true}}).exec()
         const cartProduct=await Cart.find({userId:userId}).populate('productId')
 
+        console.log("inside checkout")
         console.log(cartProduct)
 
         
         if(cartProduct.length === 0){
             return res.redirect('/products')
         }
-        res.render('checkout',{userName,cartProduct,addresses:user.address})
+        res.render('checkout',{userName,cartProduct,addresses:user.address,availableCoupon})
     } catch (error) {
         console.log("error in checkout "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
+//////////////////////////////////////////////////////////////////////////
+const couponApply=async(req,res)=>{
+    try {
+        console.log("inside fetch coupon")
+        console.log(req.body)
+        const {coupon,total}=req.body
+        const couponData=await Coupon.findById(coupon)
+        console.log(couponData)
+        let updatedTotal;
+        let savedAmount;
+        let couponName=couponData.code
+        if (couponData.discountType === 'percentage') {
+
+            const discountAmount = (couponData.discoundValue / 100) * total;
+            savedAmount=discountAmount
+            console.log("saved amount "+savedAmount)
+            updatedTotal = total - discountAmount; 
+        } else if (couponData.discountType === 'fixed') {
+            
+            updatedTotal = Math.max(total - couponData.discoundValue, 0); 
+            savedAmount=couponData.discoundValue
+            console.log("saved amount "+savedAmount)
+        } else {
+            
+            updatedTotal = total;
+        }
+        console.log("Updated Total:", updatedTotal);
+
+        res.status(200).json({updatedTotal,savedAmount,couponName})
+    } catch (error) {
+        console.log("error in coupon apply "+error.message)
+        res.status(500)
+    }
+}
+
 
     function generateUniqueOrderId() {
         const prefix = 'ORD'; 
@@ -442,7 +554,8 @@ module.exports={
     updateCartQty,
     addWishlist,
     renderWishlist,
-    removeWishlist
+    removeWishlist,
+    couponApply
 }
 
 

@@ -42,9 +42,33 @@
                             <label>phoneNumber</label>
                             <p><%= userData.phoneNumber %></p>
                         </div>
+                        <div class="info-group">
+                            <label>Referral code</label>
+                            <p><%= userData.referral %></p>
+                        </div>
                     <% } %>
                     
                 </div>
+                <% if(typeof referalStatus !== 'undefined'){ %>
+
+                        <% if(referalStatus.isActive === true  && userData.referralClimed === true){ %>
+                            <div id="referral-containner">
+                                <form action="" id="referralForm">
+                                    
+                                    <input type="text" placeholder="Apply Referral Code" id="referralCode">
+                                    <span id="error1"></span>
+                                    <button class="btn btn-success" type="submit" id="referralSubmit">Apply</button>
+                                    <input type="hidden" value="<%= userData.referral %>" id="currentReferral">
+                                    <input type="hidden" value="<%= userData._id %>" id="hiddenId">
+                                </form>
+                            </div>
+                        <% }else if(referalStatus.isActive === false  && userData.referralClimed === true) { %>
+                            <div>
+                                <p style="color: rgb(236, 66, 66);">NO REFERRAL <br>OFFER RUNNING</p>
+                            </div>
+                        <% } %>
+                <% } %>
+                
             </div>
 
             <!-- Divider -->
@@ -58,6 +82,7 @@
                     <li><a href="/myAccount/address">Addresses</a></li>
                     <li><a href="/myAccount/orders">Orders</a></li>
                     <li><a href="/productDetails/wishlist">Wishlist</a></li>
+                    <li><a href="/myAccount/wallet">Wallet</a></li>
                 </ul>
             </div>
             
@@ -72,11 +97,84 @@
     <% } %>
     
     <script>
-        
+        const referralForm=document.getElementById("referralForm")
+        const submitButton=document.getElementById("referralSubmit")
+        const hiddenCode=document.getElementById("currentReferral")
+        const referralCode=document.getElementById("referralCode")
+        const hiddenId=document.getElementById("hiddenId")
+        const referralContainer=document.getElementById("referral-containner")
+        const error1=document.getElementById("error1")
 
-        document.getElementById('changePhotoBtn').addEventListener('click', function() {
-            alert('Change photo functionality would go here');
-        });
+
+        document.addEventListener("DOMContentLoaded",()=>{
+            referralForm.addEventListener("submit",async(e)=>{
+                e.preventDefault()
+                
+                if(referralCode.value.trim() === ''){
+                    error1.innerHTML="enter a text"
+                    error1.style.color='red'
+                    return;
+                }
+                try {
+                    const response=await fetch('/couponApply',{
+                        method:"POST",
+                        headers:{
+                            'Content-Type': 'application/json',
+                        },
+                        body:JSON.stringify({
+                            id:hiddenId.value,
+                            currentCode:hiddenCode.value,
+                            referralCode:referralCode.value
+                        })
+                    })
+
+                    const data=await response.json()
+
+                    if(data.isValid){
+                        console.log("offer applied")
+                        showToast(data.message,1)
+
+                        referralContainer.remove()
+                    }else{
+                        console.log("offer not applyed")
+                        showToast(data.message,0)
+                    }
+                } catch (error) {
+                    console.log("error in fetch "+error)
+                }
+            })
+
+            function showToast(message,isSuccess) {
+            
+                const toast = document.createElement('div');
+                toast.innerText = message;
+
+                
+                toast.style.position = 'fixed';
+                toast.style.bottom = '200px'; 
+                toast.style.left = '50%'; 
+                toast.style.transform = 'translateX(-50%)';
+                toast.style.backgroundColor = isSuccess ? 'green' : 'red';
+                
+                toast.style.color = '#fff';
+                toast.style.padding = '15px 30px'; 
+                toast.style.borderRadius = '8px'; 
+                toast.style.zIndex = '1000';
+                toast.style.fontSize = '30px'; 
+                toast.style.fontWeight= "bold"
+                toast.style.maxWidth = '80%'; 
+                toast.style.textAlign = 'center';
+                
+
+                
+                document.body.appendChild(toast);
+
+                
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 3000);
+            }
+        })
     </script>
 
 

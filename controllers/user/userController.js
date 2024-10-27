@@ -5,6 +5,7 @@ const { CommandSucceededEvent } = require('mongodb');
 const nodemail=require('nodemailer')
 const env=require("dotenv").config();
 const isUser=require('../../helpers/isUserlogin')
+const Wallet=require("../../models/walletSchema")
 
 
 const securePassword = async (password) => {
@@ -25,6 +26,14 @@ const pageNotfound = async (req, res) => {
         console.log("err in pagenot found")
         res.redirect("/pageNotfound")
     }
+}
+function generateReferralCode(length = 8) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let referralCode = '';
+    for (let i = 0; i < length; i++) {
+        referralCode += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return referralCode;
 }
 
 
@@ -164,16 +173,27 @@ const otpverification=async (req,res)=>{
             console.log(" otp verification succesful : "+otp+" with session otp "+req.session.otp)
             const User=req.session.userData;
             const passwordHash=await securePassword(User.password)
+            const referralCode=generateReferralCode()
+            
             const newUser=new user({
                 username:User.username,
                 password:passwordHash,
                 email:User.email,
-                phoneNumber:User.phone
+                phoneNumber:User.phone,
+                referral:referralCode,
+                referralClimed:true
             })
 
             const userData= await newUser.save()
             req.session.user_id=userData._id
             req.session.role=userData.role
+
+            const newWallet=new Wallet({
+                userId:userData._id
+            })
+            const userWallet=await newWallet.save()
+
+            
             //console.log(userData)
             //console.log(req.session.user_id)
 
@@ -213,8 +233,9 @@ const resendOtp=async (req,res)=>{
         
 
     } catch (error) {
-        return res.status(400).json({success:false,message:"an error occured"})
         console.log("error in resend otp "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+       
     }
 }
 

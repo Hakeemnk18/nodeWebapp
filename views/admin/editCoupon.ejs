@@ -115,7 +115,11 @@
                     if (isNaN(discountValueNum) || discountValueNum <= 0) {
                         error2.innerHTML = "<span style='color:red;'>Valid Discount Value is required.</span>";
                         return false;
-                    } else {
+                    }else if(discountValueNum>80 && discoundType.value.trim() === "percentage"){
+                        error2.innerHTML = "<span style='color:red;'>Discount value should be lesthan 80%</span>";
+                        return false;
+                    }
+                     else {
                         error2.innerHTML = ''; // Clear error
                         return true;
                     }

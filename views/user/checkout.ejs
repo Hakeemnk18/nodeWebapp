@@ -87,7 +87,7 @@
                         <li>
                             <%= cartProduct[i].productId.name %>
                             
-                            <span>Size : <%=cartProduct[i].size %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; QTY : <%= cartProduct[i].quantity %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= cartProduct[i].productId.price*cartProduct[i].quantity %></span>
+                            <span>Size : <%=cartProduct[i].size %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; QTY : <%= cartProduct[i].quantity %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= cartProduct[i].productId.offerPrice*cartProduct[i].quantity %></span>
                             <!-- Include a hidden input for each product's ID and price -->
                             
                             <input type="hidden" name="productIds[]" value="<%= cartProduct[i].productId._id %>">
@@ -96,16 +96,38 @@
                             <input type="hidden" name="productPrice[]" value="<%= cartProduct[i].productId.price %>">
                             <input type="hidden" name="productSize[]" value="<%= cartProduct[i].size %>">
                         </li>
-                        <% total += cartProduct[i].productId.price*cartProduct[i].quantity %>
+                        <% total += cartProduct[i].productId.offerPrice*cartProduct[i].quantity %>
                     <% } %>
                 <% } %>
+                <label style="margin-top: 20px;" for="">Apply coupon code</label>
+                <a href="" id="remove-coupon">remove</a>
+                <% if(availableCoupon !== 'undefined'){ %>
+                    <select name="" id="coupon-code">
+                        <% for(let i=0;i<availableCoupon.length;i++){ %>
+                            <option value="<%= availableCoupon[i]._id %>"><%= availableCoupon[i].code %></option>
+                            
+                        <% } %>
+                        
+                    </select>
+                <% } %>
+                
                 <% let tax=35; let deliveryCharge=50 %>
                 <li class="tax">Tax </span><span><%= tax %></span></li>
                 <li>Delivery charge <span><%= deliveryCharge %></span></li>
-                <li class="total">Total <span><%= total+tax+deliveryCharge %></span></li>
-                <% total = tax+deliveryCharge+total %>
+                <li class="">Total <span id="total-price"><%= total+tax+deliveryCharge %></span></li>
+                
+                
                 <!-- Include a hidden input for the total amount -->
-                <input type="hidden" name="totalAmount" value="<%= total %>">
+                
+                
+                    <li class="" id="coupon-apply-name">Coupon Not Appleyed  <span id="coupon-saved"> </span></li>
+               
+                <li class="" id="wallet-balence-heade">Wallet Balance :3500<span id="wallet-balence"><a href="">Useit</a></span></li>
+                <li class="total">Amount Payable<span id="total-payable-amount"><%= total+tax+deliveryCharge %></span></li>
+                <% total = tax+deliveryCharge+total %>
+                <input type="hidden" id="total-amount" name="totalAmount" value="<%= total %>">
+
+
             </ul>
         </div>
 
@@ -116,6 +138,73 @@
 
     </form>
 </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded",()=>{
+            const couponCode=document.getElementById("coupon-code")
+            const payablePrice=document.getElementById("total-payable-amount")
+            const totalAmount=document.getElementById("total-amount")
+            const removeCoupon=document.getElementById("remove-coupon")
+            const applyedCouponName=document.getElementById("coupon-apply-name")
+            const couponSaved = document.getElementById("coupon-saved");
+            const walletBallence=document.getElementById("wallet-balence")
+            const wallet=document.getElementById("wallet-balence-heade")
+            const applyedCouponContainer=document.getElementById("applyed-coupon-container")
+            
+
+            const Originaltotal=parseInt(totalAmount.value)
+            console.log(Originaltotal)
+
+            couponCode.addEventListener("change",async function(e){
+                e.preventDefault()
+                console.log("inside event listener")
+                console.log(couponSaved.textContent)
+
+                try {
+                    const response=await fetch("/checkout/applyCoupon",{
+                        method:"POST",
+                        headers:{
+                            "Content-Type": "application/json"
+                        },
+                        body:JSON.stringify({
+                            coupon:couponCode.value,
+                            total:Originaltotal
+                        })
+                    })
+
+                    if(response.ok){
+                        console.log("coupon fetch succes");
+
+                        const data=await response.json()
+                        console.log(data)
+                        const updateTotal=data.updatedTotal  
+                        
+                        applyedCouponName.innerHTML = `Coupon Applied: ${data.couponName} <span id="coupon-saved">Saved ${data.savedAmount}</span>` ;
+
+                        
+                        payablePrice.textContent=updateTotal
+                        totalAmount.value=updateTotal
+                        console.log(couponSaved.textContent)
+                        
+                    }else{
+                        console.log("coupon fetch failed");
+                    }
+                } catch (error) {
+                    console.log("error in coupon fetch "+error)
+                }
+            })
+
+            removeCoupon.addEventListener("click",(e)=>{
+                e.preventDefault()
+                console.log("remove copen")
+
+                couponCode.selectedIndex=0
+                applyedCouponName.innerHTML =  `Coupon Not Appleyed  <span id="coupon-saved"> </span></li>`;
+                payablePrice.textContent=Originaltotal
+                totalAmount.value=Originaltotal
+            })
+        })
+    </script>
 
 <script>
     // Function to toggle payment method sections

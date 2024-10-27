@@ -97,7 +97,7 @@
                             <img src="/uploads/<%= cartData[i].productId.croppedImage[0] %>">
                             <div>
                                 <p><%= cartData[i].productId.name %></p>
-                                <small><%= cartData[i].productId.price %></small>
+                                <small><%= cartData[i].productId.offerPrice %></small>
                                 <p>Size : <%= cartData[i].size %></p>
                                 <br>
                                 <a href="/productDetails/addCart/sub?qty=<%= cartData[i].quantity  %>&id=<%= cartData[i]._id %>&size=<%=cartData[i].size %>&productId=<%= cartData[i].productId._id %>">Remove</a>
@@ -131,8 +131,8 @@
                         </div>
                         </div>
                     </td>
-                    <td><%= cartData[i].productId.price*cartData[i].quantity %></td>
-                    <% Subtotal += cartData[i].productId.price*cartData[i].quantity %>
+                    <td><%= cartData[i].productId.offerPrice*cartData[i].quantity %></td>
+                    <% Subtotal += cartData[i].productId.offerPrice*cartData[i].quantity %>
                 </tr>
             <% } %>
 
@@ -154,7 +154,7 @@
                     <td><%= tax+Subtotal %></td>
                 </tr>
                 <td></td>
-                <td><button class="buy-now"><a href="/productDetails/cart/checkout" style="color: #fff; font-weight: bold; font-size: 20px;">Buy now</a></button></td>
+                <td><button class="buy-now"><a href="/productDetails/cart/checkout?total=<%= Subtotal %>" style="color: #fff; font-weight: bold; font-size: 20px;">Buy now</a></button></td>
             </table>
         </div>
         <% } else{ %>

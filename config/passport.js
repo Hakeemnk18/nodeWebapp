@@ -2,7 +2,17 @@ const passport=require('passport');
 const googleStrategy=require('passport-google-oauth20').Strategy
 const User=require("../models/userSchema")
 const env=require('dotenv').config();
+const Wallet=require("../models/walletSchema")
 
+
+function generateReferralCode(length = 8) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let referralCode = '';
+    for (let i = 0; i < length; i++) {
+        referralCode += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return referralCode;
+}
 
 passport.use(new googleStrategy({
     clientID:process.env.GOOGLE_CLIENT_ID,
@@ -21,13 +31,23 @@ async(accessToken,refreshToken,profile,done)=>{
             return done(null,user);
         }else{
 
+            const referralCode=generateReferralCode()
             user=new User({
                 username:profile.displayName,
                 email:profile.emails[0].value,
-                googleId:profile.id
+                googleId:profile.id,
+                referral:referralCode,
+                referralClimed:true
             })
 
-            await user.save()
+            
+
+            const goog=await user.save()
+            const newWallet=new Wallet({
+                userId:goog._id
+            })
+            const userWallet=await newWallet.save()
+            
             
             return done(null,user)
         }

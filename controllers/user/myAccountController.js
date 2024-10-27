@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const moment=require('moment')
 const isUser=require('../../helpers/isUserlogin');
 const product = require('../../models/productSchema');
+const Referral =require('../../models/referralSchema')
+const Wallet=require('../../models/walletSchema')
 
 
 const myAccount=async (req,res)=>{
@@ -13,9 +15,9 @@ const myAccount=async (req,res)=>{
         let userName=await isUser.isUser(req)
         const userData=await User.findOne({_id:req.session.user_id})
         const {message}=req.query
-
+        const referalStatus=await Referral.findOne({},{isActive:1})
         
-        res.render("userProfile",{userName,userData,message})
+        res.render("userProfile",{userName,userData,message,referalStatus})
 
         
     } catch (error) {
@@ -323,11 +325,10 @@ const trackOrder=async(req,res)=>{
 
 const orderCancel=async(req,res)=>{
     try {
-        // console.log("inside ")
-        // console.log(req.query)
+        
         const {id}=req.query
         const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})
-        // console.log(data)
+       
         res.redirect('/myAccount/orders')
 
     } catch (error) {
@@ -339,17 +340,84 @@ const orderCancel=async(req,res)=>{
 const returnOrder=async(req,res)=>{
     try {
 
-        console.log(req.query)
+        
         const {id,index}=req.query
         const orderData=await Order.findById(id)
-        console.log(orderData)
-        console.log("befor updation")
+        
+        
         await Order.updateOne({_id:id},{$set:{[`cartItems.${index}.isReturn`]:true}})
         const orderDat=await Order.findById(id)
         
         res.redirect('/myAccount/orders')
     } catch (error) {
         console.log("error in order return order : "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const referralApply=async(req,res)=>{
+    try {
+        
+        const {currentCode,referralCode,id}=req.body
+        if(currentCode === referralCode){
+            return res.status(200).json({isValid:false,message:"no referral code mached"})
+        }
+        const isReferral=await User.findOne({referral:referralCode})
+        
+        if(isReferral){
+
+            
+            const referral=await Referral.findOne()
+            const wallet=await Wallet.findOne({userId:isReferral._id})
+            
+           
+            
+            const obj = { 
+                amount: referral.bonus, 
+                type: "deposit", 
+                date: new Date()
+            };
+            
+            await Wallet.findOneAndUpdate(
+                { userId: isReferral._id },
+                {
+                    $inc: {
+                        referralBonus: referral.bonus,
+                        balance: referral.bonus,
+                    },
+                    $push: {
+                        transactions: obj 
+                    }
+                }
+            );
+
+            await User.findByIdAndUpdate(id,{$set:{referralClimed:false}})
+            return res.status(200).json({isValid:true,message:"referral code applyed"})
+        }else{
+            return res.status(200).json({isValid:false,message:"no referral code mached"})
+        }
+        
+    } catch (error) {
+        console.log("error in referral code apply "+error.message)
+        res.status(500).json({message:"feth failed"})
+    }
+}
+
+
+const wallet=async(req,res)=>{
+    try {
+        let userId;
+        if(req.session.user_id){
+            
+            userId=req.session.user_id
+        }
+        let userName=await isUser.isUser(req)
+
+        const wallet=await Wallet.findOne({userId})
+        
+        res.render("wallet",{userName,wallet})
+    } catch (error) {
+        console.log("error in wallet rendaring : "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
@@ -370,6 +438,8 @@ module.exports={
     addNewPassword,
     trackOrder,
     orderCancel,
-    returnOrder
+    returnOrder,
+    referralApply,
+    wallet
     
 }
