@@ -42,6 +42,12 @@ const ordersSchema=new Schema({
             },
             productStatusTimeStamp:{
                returnedAt:{type:Date}
+            },
+            offerPrice:{
+                type:Number
+            },
+            walletAmount:{
+                type:Number
             }
         }
     ],
@@ -50,9 +56,14 @@ const ordersSchema=new Schema({
         ref:'address',
         required:true
     },
-    payment:{
+    paymentMethod:{
         type:String,
-        default:"cash on delivery"
+        enum:["COD","Razorpay"],
+        default:"COD"
+    },
+    paymentStatus:{
+        type:String,
+        enum:['Pending','Success','Failed']
     },
     orderStatus: {
         type: String,
@@ -89,6 +100,22 @@ const ordersSchema=new Schema({
         type:String,
         enum:['accept','reject'],
         default:'accept'
+    },
+    walletUsed:{
+        type:Boolean,
+        default:false
+    },
+    couponAmount:{
+        type:Number
+    },
+    walletAmount:{
+        type:Number
+    },
+    offerPrice:{
+        type:Number
+    },
+    payedAmount:{
+        type:Number
     }
 
 })

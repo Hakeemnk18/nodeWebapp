@@ -11,6 +11,7 @@ const Wishlist=require('../../models/wishlistSchema')
 const wishlist = require('../../models/wishlistSchema')
 const Coupon=require('../../models/couponSchema')
 const Wallet = require('../../models/walletSchema')
+const razorpayInstance = require('../../config/razorpayConfig');
 
 
 // find stock according to the size
@@ -435,38 +436,198 @@ const couponApply=async(req,res)=>{
 
 
 
-const orderSubmission=async(req,res)=>{
+// controllers/paymentController.js
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// {
+//     address: '671b9fa26fc27f3bb6a04d7f',
+//     paymentMethod: 'Cod',
+//     productIds: [ '66e956628a593fe9acf42af1' ],
+//     productQty: [ '1' ],
+//     cartIds: [ '671e867b0fc0fb8e0fd46994' ],
+//     productPrice: [ '5000' ],
+//     productSize: [ 'M' ],
+//     totalAmount: '3585'
+//   }
+
+
+
+const orderSubmission = async (req, res) => {
     try {
 
+        console.log("inside order submission")
+        console.log(req.body)
+
+        const { productIds, productQty, productPrice, address, totalAmount, cartIds, productSize, paymentMethod,isWalletUsed ,walletUsedAmount,
+            productOfferPrice,couponSaved,
+        } = req.body;
+
         
-        const {productIds,productQty,productPrice,address,totalAmount,cartIds,productSize}=req.body
-        
-        const productDetails=[]
-        for(let i=0;i<productIds.length;i++){
-            productDetails.push({product:productIds[i],quantity:productQty[i],price:productPrice[i],cartId:cartIds[i],size:productSize[i]})
+
+        const productDetails = [];
+        for (let i = 0; i < productIds.length; i++) {
+            productDetails.push({
+                product: productIds[i],
+                quantity: productQty[i],
+                price: productPrice[i],
+                cartId: cartIds[i],
+                size: productSize[i],
+                offerPrice:productOfferPrice[i]
+
+            });
         }
-        const orderId=generateUniqueOrderId()
-       
-        const user_id=req.session.user_id
-        const order=new Order({
-            user:user_id,
-            cartItems:productDetails,
-            address:address,
-            totalPrice:totalAmount,
-            orderId:orderId
-        })
-        const orderData=await order.save()
-        
-        await statusTime.statusTime(orderData.orderStatus,orderData._id)
-        
-        await Cart.deleteMany({userId:user_id})
-        res.redirect('/productDetails/cart/checkout/success')
+
+        const orderId = generateUniqueOrderId();
+        const user_id = req.session.user_id;
+
+        if (paymentMethod === "Cod"  || totalAmount === '0') {
+            
+            const order = new Order({
+                user: user_id,
+                cartItems: productDetails,
+                address: address,
+                totalPrice: totalAmount,
+                orderId: orderId,
+                paymentMethod: "COD",
+                paymentStatus: "Success",
+                walletAmount:walletUsedAmount  
+            });
+            const orderData = await order.save();
+
+            if(isWalletUsed === 'true' ){
+
+                
+                const obj = { 
+                    amount: walletUsedAmount, 
+                    type: "withdrawal", 
+                    date: new Date()
+                };
+                console.log("amount minus in wallet "+walletUsedAmount)
+                const neworderdata=await Order.findOneAndUpdate({_id:orderData._id},{$set:{walletUsed:true}},{new:true})
+                console.log(neworderdata)
+                const newWalletData=await Wallet.findOneAndUpdate(
+                    {userId:neworderdata.user},
+
+                    {
+                        $inc:{
+                             balance:-walletUsedAmount
+                        },
+                        $push:{
+                            transactions: obj 
+                        }
+                     }
+                )
+
+                console.log(newWalletData)
+                
+            }
+           
+            // await Cart.deleteMany({ userId: user_id });
+            return res.status(200).json({
+                success: true,
+                
+            });
+
+        } else if (paymentMethod === "Razorpay") {
+            
+            console.log("inside else if")
+            const options = {
+                amount: totalAmount * 100, 
+                currency: "INR",
+                receipt: orderId,
+                payment_capture: 1  
+            };
+            console.log("inside else if")
+            const razorpayOrder = await razorpayInstance.orders.create(options);
+
+            
+            const order = new Order({
+                user: user_id,
+                cartItems: productDetails,
+                address: address,
+                totalPrice: totalAmount,
+                orderId: orderId,
+                razorpayOrderId: razorpayOrder.id,
+                paymentMethod: "Razorpay",
+                paymentStatus: "Pending",
+                orderStatus:'Processing',
+                walletAmount:walletUsedAmount 
+            });
+            console.log("order created")
+            const orderData = await order.save();
+            if(isWalletUsed === 'true' ){
+                await Order.findOneAndUpdate({_id:orderData._id},{$set:{walletUsed:true}})
+            }
+            console.log(orderData)
+            
+
+            
+            res.status(200).json({
+                success: true,
+                orderId: razorpayOrder.id,
+                amount: totalAmount,
+                currency: "INR",
+                orderData
+            });
+            console.log("status sended")
+        } else {
+            console.log("")
+            return res.status(400).json({ success: false, message: "Invalid payment method" });
+        }
 
     } catch (error) {
-        console.log("error in order submition "+error.message)
-        return res.status(400).json({success:false,message:"an error occured"})
+        console.log("Error in order submission: " + error.message);
+        return res.status(400).json({ success: false, message: "An error occurred" });
+    }
+};
+
+const orderVarification=async(req,res)=>{
+    try {
+        console.log("inside fetch for order verification")
+        console.log(req.body)
+        const {orderId}=req.body
+        const orderData = await Order.findOneAndUpdate(
+            { _id: orderId }, 
+            { $set: { paymentStatus: "Success", orderStatus: "Pending" } }, 
+            { new: true } 
+        );
+        console.log(orderData)
+
+        // if(orderData.walletUsed === 'true' ){
+
+                
+        //     const obj = { 
+        //         amount: walletUsedAmount, 
+        //         type: "withdrawal", 
+        //         date: new Date()
+        //     };
+        //     console.log("amount minus in wallet "+walletUsedAmount)
+        //     const neworderdata=await Order.findOneAndUpdate({_id:orderData._id},{$set:{walletUsed:true}},{new:true})
+        //     console.log(neworderdata)
+        //     const newWalletData=await Wallet.findOneAndUpdate(
+        //         {userId:neworderdata.user},
+
+        //         {
+        //             $inc:{
+        //                  balance:-walletUsedAmount
+        //             },
+        //             $push:{
+        //                 transactions: obj 
+        //             }
+        //          }
+        //     )
+
+        //     console.log(newWalletData)
+            
+        // }
+
+        await Cart.deleteMany({ userId: orderData.user });
+        return res.status(200).json({success:true})
+    } catch (error) {
+        console.log("Error in order verification: " + error.message);
+        return res.status(400).json({ success: false, message: "An error occurred" });
     }
 }
+
 
 const orderSuccess=async(req,res)=>{
     try {
@@ -557,7 +718,8 @@ module.exports={
     addWishlist,
     renderWishlist,
     removeWishlist,
-    couponApply
+    couponApply,
+    orderVarification
 }
 
 

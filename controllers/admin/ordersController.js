@@ -29,7 +29,7 @@ const orders=async(req,res)=>{
         .exec()
 
 
-       
+       console.log(totalOrders)
 
 
         res.render('allOrders',{

@@ -406,6 +406,7 @@ const referralApply=async(req,res)=>{
 
 const wallet=async(req,res)=>{
     try {
+        
         let userId;
         if(req.session.user_id){
             
@@ -413,7 +414,9 @@ const wallet=async(req,res)=>{
         }
         let userName=await isUser.isUser(req)
 
-        const wallet=await Wallet.findOne({userId})
+        
+        const wallet=await Wallet.findOne({userId:userId})
+        console.log(wallet)
         
         res.render("wallet",{userName,wallet})
     } catch (error) {

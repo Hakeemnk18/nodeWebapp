@@ -31,7 +31,10 @@ router.get('/productDetails/wishlist',userAuth.isLogin,productController.renderW
 router.get("/productDetails/addCart/sub",userAuth.isLogin,productController.removeCart)
 router.get("/productDetails/addCart/addQty",productController.updateCartQty)
 router.get("/productDetails/cart/checkout",userAuth.isLogin,productController.checkout)
+
 router.post('/productDetails/cart/checkout',userAuth.isLogin,productController.orderSubmission)
+router.post("/productDetails/cart/checkout/verification",productController.orderVarification)
+
 router.get('/productDetails/cart/checkout/success',userAuth.isLogin,productController.orderSuccess)
 router.get('/api/product/stock',userAuth.isLogin,productController.stockDetails)
 router.post('/wishlist/remove',userAuth.isLogin,productController.removeWishlist)

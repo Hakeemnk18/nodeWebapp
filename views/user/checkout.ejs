@@ -1,257 +1,373 @@
 <%- include('../partials/user/header') %>
 
-<style>
-    .address-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .disabled-link {
-    pointer-events: none;
-    color: grey; /* Optional: Change color to indicate it's disabled */
-    text-decoration: none;
-  }
-</style>
+    <style>
+        .address-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-<link rel="stylesheet" href="/css/checkout.css">
+        .disabled-link {
+            pointer-events: none;
+            color: grey;
+            /* Optional: Change color to indicate it's disabled */
+            text-decoration: none;
+        }
+    </style>
 
-<div class="checkout-container">
-    <h1>Checkout</h1>
+    <link rel="stylesheet" href="/css/checkout.css">
 
-    <!-- Checkout Form -->
-    <form id="checkout-form" action="/productDetails/cart/checkout" method="post">
+    <div class="checkout-container">
+        <h1>Checkout</h1>
 
-        <!-- Address Selection Section -->
-        <div class="address-selection">
-            <div class="address-header">
-                <h2>Select Address</h2>
-                <p><a href="/myAccount/address/addAddress?from=cart">Add new address</a></p>
-            </div>
-            
-            <div class="address-dropdown">
-                <select id="address-dropdown" name="address" onchange="updateAddressDetails()" required>
-                    <% if(typeof addresses !== 'undefined'){ %>
-                        <% for(let i=0;i<addresses.length;i++){ %>
-                            <option value="<%= addresses[i]._id %>">
-                                <%= addresses[i].street + ', ' + addresses[i].city + ', ' + addresses[i].pincode %>
-                            </option>
-                        <% } %>
-                    <% } %>
-                </select>
-            </div>
-            <div id="selected-address-box" class="address-box">
-                <!-- Selected address details will appear here -->
-            </div>
-        </div>
+        <!-- Checkout Form -->
+        <form id="checkout-form" action="/productDetails/cart/checkout" method="post">
 
-        <!-- Payment Information Section -->
-        <div class="payment-info">
-            <h2>Payment Information</h2>
+            <!-- Address Selection Section -->
+            <div class="address-selection">
+                <div class="address-header">
+                    <h2>Select Address</h2>
+                    <p><a href="/myAccount/address/addAddress?from=cart">Add new address</a></p>
+                </div>
 
-            <label for="payment-method">Choose Payment Method:</label>
-            <select id="payment-method" name="payment-method" onchange="togglePaymentMethod()" required>
-                <option value="Cod">Cash on Delivery</option>
-                <option value="credit-card">Credit / Debit Card</option>
-                <option value="paypal">PayPal</option>
-                <option value="google-pay">Google Pay</option>
-            </select>
-
-            <!-- Credit Card Section -->
-            <div id="credit-card-section" class="payment-section" style="display: none;">
-                <label for="card-name">Name on Card:</label>
-                <input type="text" id="card-name" name="card-name">
-
-                <label for="card-number">Card Number:</label>
-                <input type="text" id="card-number" name="card-number">
-
-                <label for="expiry-date">Expiry Date:</label>
-                <input type="text" id="expiry-date" name="expiry-date" placeholder="MM/YY">
-
-                <label for="cvv">CVV:</label>
-                <input type="text" id="cvv" name="cvv">
-            </div>
-
-            <!-- PayPal Section -->
-            <div id="paypal-section" class="payment-section" style="display: none;">
-                <p>You'll be redirected to PayPal to complete your purchase.</p>
-            </div>
-
-            <!-- Google Pay Section -->
-            <div id="google-pay-section" class="payment-section" style="display: none;">
-                <p>You'll be redirected to Google Pay to complete your purchase.</p>
-            </div>
-        </div>
-
-        <!-- Order Summary Section -->
-        <div class="order-summary">
-            <h2>Order Summary</h2>
-            <ul>
-                <% let total = 0 %>
-                <% if (typeof cartProduct !== 'undefined') { %>
-                    <% for (let i = 0; i < cartProduct.length; i++) { %>
-                        <li>
-                            <%= cartProduct[i].productId.name %>
-                            
-                            <span>Size : <%=cartProduct[i].size %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; QTY : <%= cartProduct[i].quantity %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= cartProduct[i].productId.offerPrice*cartProduct[i].quantity %></span>
-                            <!-- Include a hidden input for each product's ID and price -->
-                            
-                            <input type="hidden" name="productIds[]" value="<%= cartProduct[i].productId._id %>">
-                            <input type="hidden" name="productQty[]" value="<%= cartProduct[i].quantity %>">
-                            <input type="hidden" name="cartIds[]" value="<%= cartProduct[i]._id %>">
-                            <input type="hidden" name="productPrice[]" value="<%= cartProduct[i].productId.price %>">
-                            <input type="hidden" name="productSize[]" value="<%= cartProduct[i].size %>">
-                        </li>
-                        <% total += cartProduct[i].productId.offerPrice*cartProduct[i].quantity %>
-                    <% } %>
-                <% } %>
-                <label style="margin-top: 20px;" for="">Apply coupon code</label>
-                <a href="" id="remove-coupon">remove</a>
-                <% if(availableCoupon !== 'undefined'){ %>
-                    <select name="" id="coupon-code">
-                        <% for(let i=0;i<availableCoupon.length;i++){ %>
-                            <option value="<%= availableCoupon[i]._id %>"><%= availableCoupon[i].code %></option>
-                            
-                        <% } %>
-                        
+                <div class="address-dropdown">
+                    <select id="address-dropdown" name="address" onchange="updateAddressDetails()" required>
+                        <% if(typeof addresses !=='undefined' ){ %>
+                            <% for(let i=0;i<addresses.length;i++){ %>
+                                <option value="<%= addresses[i]._id %>">
+                                    <%= addresses[i].street + ', ' + addresses[i].city + ', ' + addresses[i].pincode %>
+                                </option>
+                                <% } %>
+                                    <% } %>
                     </select>
-                <% } %>
-                
-                <% let tax=35; let deliveryCharge=50 %>
-                <li class="tax">Tax </span><span ><%= tax %></span></li>
-                <li>Delivery charge <span><%= deliveryCharge %></span></li>
-                <li class="">Total <span id="total-price"><%= total+tax+deliveryCharge %></span></li>
-                
-                
-                <!-- Include a hidden input for the total amount -->
-                
-                
-                    <li class="" id="coupon-apply-name">Coupon Not Appleyed  <span id="coupon-saved"> </span></li>
-               
-                <li class="" id="wallet-balence-heade">Wallet Balance :<%= walletBalance.balance %> <span id="wallet-balence"><a id="wallet-use" href="">Useit</a></span></li>
-                <li class="total">Amount Payable<span id="total-payable-amount"><%= total+tax+deliveryCharge %></span></li>
-                <% total = tax+deliveryCharge+total %>
-                <input type="hidden" id="total-amount" name="totalAmount" value="<%= total %>">
+                </div>
+                <div id="selected-address-box" class="address-box">
+                    <!-- Selected address details will appear here -->
+                </div>
+            </div>
+
+            <!-- Payment Information Section -->
+            <div class="payment-info">
+                <h2>Payment Information</h2>
+
+                <label for="payment-method">Choose Payment Method:</label>
+                <select id="payment-method" name="paymentMethod" onchange="togglePaymentMethod()" required>
+                    <option value="Cod">Cash on Delivery</option>
+
+                    <option value="Razorpay">RazorPay</option>
+
+                </select>
+
+                <!-- Credit Card Section -->
+
+            </div>
+
+            <!-- Order Summary Section -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <ul>
+                    <% let total=0 %>
+                        <% if (typeof cartProduct !=='undefined' ) { %>
+                            <% for (let i=0; i < cartProduct.length; i++) { %>
+                                <li>
+                                    <%= cartProduct[i].productId.name %>
+
+                                        <span>Size : <%=cartProduct[i].size %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; QTY :
+                                                <%= cartProduct[i].quantity %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%=
+                                                        cartProduct[i].productId.offerPrice*cartProduct[i].quantity %>
+                                        </span>
+                                        <!-- Include a hidden input for each product's ID and price -->
+
+                                        <input type="hidden" name="productIds[]"
+                                            value="<%= cartProduct[i].productId._id %>">
+                                        <input type="hidden" name="productQty[]" value="<%= cartProduct[i].quantity %>">
+                                        <input type="hidden" name="cartIds[]" value="<%= cartProduct[i]._id %>">
+                                        <input type="hidden" name="productPrice[]"
+                                            value="<%= cartProduct[i].productId.price %>">
+                                        <input type="hidden" name="productSize[]" value="<%= cartProduct[i].size %>">
+                                        <input type="hidden" name="offerPrice[]" value="<%= cartProduct[i].productId.offerPrice %>">
+                                </li>
+                                <% total +=cartProduct[i].productId.offerPrice*cartProduct[i].quantity %>
+                                    <% } %>
+                                        <% } %>
+                                            <label style="margin-top: 20px;" for="">Apply coupon code</label>
+                                            <a href="" id="remove-coupon">remove</a>
+                                            <% if(availableCoupon !=='undefined' ){ %>
+                                                <select name="" id="coupon-code">
+                                                    <% for(let i=0;i<availableCoupon.length;i++){ %>
+                                                        <option value="<%= availableCoupon[i]._id %>">
+                                                            <%= availableCoupon[i].code %>
+                                                        </option>
+
+                                                        <% } %>
+
+                                                </select>
+                                                <% } %>
+
+                                                    <% let tax=35; let deliveryCharge=50 %>
+                                                        <li class="tax">Tax </span><span>
+                                                                <%= tax %>
+                                                            </span></li>
+                                                        <li>Delivery charge <span>
+                                                                <%= deliveryCharge %>
+                                                            </span></li>
+                                                        <li class="">Total <span id="total-price">
+                                                                <%= total+tax+deliveryCharge %>
+                                                            </span></li>
 
 
-            </ul>
-        </div>
+                                                        <!-- Include a hidden input for the total amount -->
 
-        <!-- Checkout Button -->
-        <div class="checkout-btn">
-            <button type="submit">Place Order</button>
-        </div>
 
-    </form>
-</div>
+                                                        <li class="" id="coupon-apply-name">Coupon Not Appleyed <span
+                                                                id="coupon-saved"> </span></li>
+
+                                                        <li class="" id="wallet-balence-heade">Wallet Balance :<%=
+                                                                walletBalance.balance %> <span id="wallet-balence"><a
+                                                                        id="wallet-use" href="">Useit</a></span></li>
+                                                        <li class="total">Amount Payable<span id="total-payable-amount">
+                                                                <%= total+tax+deliveryCharge %>
+                                                            </span></li>
+                                                        <% total=tax+deliveryCharge+total %>
+                                                            <input type="hidden" id="total-amount" name="totalAmount"
+                                                                value="<%= total %>">
+
+
+                </ul>
+            </div>
+
+            <!-- Checkout Button -->
+            <div class="checkout-btn" id="checkout-btn">
+                <button type="submit">Place Order</button>
+            </div>
+
+        </form>
+    </div>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded",()=>{
-            const couponCode=document.getElementById("coupon-code")
-            const payablePrice=document.getElementById("total-payable-amount")
-            const totalAmount=document.getElementById("total-amount")
-            const removeCoupon=document.getElementById("remove-coupon")
-            const applyedCouponName=document.getElementById("coupon-apply-name")
+        document.addEventListener("DOMContentLoaded", () => {
+            const couponCode = document.getElementById("coupon-code")
+            const payablePrice = document.getElementById("total-payable-amount")
+            const totalAmount = document.getElementById("total-amount")
+            const removeCoupon = document.getElementById("remove-coupon")
+            const applyedCouponName = document.getElementById("coupon-apply-name")
             const couponSaved = document.getElementById("coupon-saved");
-            const walletBallence=document.getElementById("wallet-balence")
-            const wallet=document.getElementById("wallet-balence-heade")
-            const applyedCouponContainer=document.getElementById("applyed-coupon-container")
-            const walletUse=document.getElementById("wallet-use")
-            
+            const walletBallence = document.getElementById("wallet-balence")
+            const wallet = document.getElementById("wallet-balence-heade")
+            const applyedCouponContainer = document.getElementById("applyed-coupon-container")
+            const walletUse = document.getElementById("wallet-use")
+            const checkoutButton = document.getElementById("checkout-btn")
+            const paymentMethod = document.getElementById("payment-method")
+            let couponSavedAmount=0
+            let isWalletUsed="false"
+            let walletUsedAmount=0
 
-            const Originaltotal=parseInt(totalAmount.value)
-           
+            const Originaltotal = parseInt(totalAmount.value)
 
-            couponCode.addEventListener("change",async function(e){
+
+            couponCode.addEventListener("change", async function (e) {
                 e.preventDefault()
-                
+
 
                 try {
-                    const response=await fetch("/checkout/applyCoupon",{
-                        method:"POST",
-                        headers:{
+                    const response = await fetch("/checkout/applyCoupon", {
+                        method: "POST",
+                        headers: {
                             "Content-Type": "application/json"
                         },
-                        body:JSON.stringify({
-                            coupon:couponCode.value,
-                            total:Originaltotal
+                        body: JSON.stringify({
+                            coupon: couponCode.value,
+                            total: Originaltotal
                         })
                     })
 
-                    if(response.ok){
+                    if (response.ok) {
                         console.log("coupon fetch succes");
 
-                        const data=await response.json()
+                        const data = await response.json()
                         console.log(data)
-                        const updateTotal=data.updatedTotal  
-                        
-                        applyedCouponName.innerHTML = `Coupon Applied: ${data.couponName} <span style="color: rgb(18, 172, 18);" id="coupon-saved">Saved ${data.savedAmount}</span>` ;
+                        const updateTotal = data.updatedTotal
 
-                        
-                        payablePrice.textContent=updateTotal
-                        totalAmount.value=updateTotal
-                        
-                        
-                    }else{
+                        applyedCouponName.innerHTML = `Coupon Applied: ${data.couponName} <span style="color: rgb(18, 172, 18);" id="coupon-saved">Saved ${data.savedAmount}</span>`;
+                        couponSavedAmount=data.savedAmount
+
+
+                        payablePrice.textContent = updateTotal
+                        totalAmount.value = updateTotal
+
+
+                    } else {
                         console.log("coupon fetch failed");
                     }
                 } catch (error) {
-                    console.log("error in coupon fetch "+error)
+                    console.log("error in coupon fetch " + error)
                 }
             })
 
-            removeCoupon.addEventListener("click",(e)=>{
+            removeCoupon.addEventListener("click", (e) => {
                 e.preventDefault()
-                
 
-                couponCode.selectedIndex=0
-                applyedCouponName.innerHTML =  `Coupon Not Appleyed  <span id="coupon-saved"> </span></li>`;
-                payablePrice.textContent=Originaltotal
-                totalAmount.value=Originaltotal
+
+                couponCode.selectedIndex = 0
+                applyedCouponName.innerHTML = `Coupon Not Appleyed  <span id="coupon-saved"> </span></li>`;
+                payablePrice.textContent = Originaltotal
+                totalAmount.value = Originaltotal
             })
 
-            walletUse.addEventListener("click",(e)=>{
+            walletUse.addEventListener("click", (e) => {
                 e.preventDefault()
-                const currentPayableAmount=parseFloat(payablePrice.textContent) 
-                const walletBalance= "<%= walletBalance.balance %>"
-                
-                const afterWalletAmount=Math.max(currentPayableAmount-walletBalance,0 )
-                payablePrice.textContent=afterWalletAmount
+                console.log("inside useit remove")
+                const currentPayableAmount = parseFloat(payablePrice.textContent)
+                const walletBalance = "<%= walletBalance.balance %>"
+
+                const afterWalletAmount = Math.max(currentPayableAmount - walletBalance, 0)
+                walletUsedAmount=walletBalance < currentPayableAmount ? parseInt(walletBalance)  : parseInt(currentPayableAmount) 
+                payablePrice.textContent = afterWalletAmount
+                totalAmount.value = afterWalletAmount
                 walletUse.remove()
-                couponCode. disabled=true;
+                couponCode.disabled = true;
                 removeCoupon.classList.add("disabled-link");
+                isWalletUsed="true"
             })
+
+            //razorpay intagration
+
+            document.getElementById("checkout-form").addEventListener("submit", async function (e) {
+                e.preventDefault(); 
+
+                console.log("inside fetch for order submision")
+                const formData = new FormData(this);
+                const orderDetails = {
+                    productIds: formData.getAll('productIds[]'),
+                    productQty: formData.getAll('productQty[]'),
+                    productPrice: formData.getAll('productPrice[]'),
+                    address: formData.get('address'),
+                    totalAmount: formData.get('totalAmount'),
+                    cartIds: formData.getAll('cartIds[]'),
+                    productSize: formData.getAll('productSize[]'),
+                    productOfferPrice:formData.getAll("offerPrice[]"),
+                    paymentMethod: formData.get('paymentMethod'),
+                    couponSaved:couponSavedAmount,
+                    isWalletUsed:isWalletUsed,
+                    walletUsedAmount:walletUsedAmount
+                };
+
+                console.log(orderDetails)
+                try {
+                    // Fetch order submission
+                    const response = await fetch('/productDetails/cart/checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(orderDetails),
+                    });
+
+                    const data = await response.json();
+                    let customOrderId;
+                    if(orderDetails.paymentMethod === "Razorpay"){
+                        customOrderId = data.orderData._id;
+                    }
+                    
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Failed to create order');
+                    }
+
+                    if (orderDetails.paymentMethod === "Razorpay") {
+                        console.log("inside razorpay")
+                        console.log(data)
+                        const options = {
+                            key: 'rzp_test_4uxjS6fUMPYvzS',
+                            amount: data.amount * 100, 
+                            currency: data.currency,
+                            name: 'Your Store Name',
+                            order_id: data.orderId,
+                            custom_order_id: data.orderData._id,
+                            handler: async (response) => {
+                                
+                                try {
+                                        console.log("Payment Success", response);
+
+                                        // Make a POST request to confirm the payment on your server
+                                        const confirmResponse = await fetch('/productDetails/cart/checkout/verification', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                                paymentId: response.razorpay_payment_id,
+                                                orderId: customOrderId,
+                                            }),
+                                        });
+
+                                        const result = await confirmResponse.json();
+
+                                        if (result.success) {
+                                            
+                                            console.log("Payment confirmed:", result);
+                                            alert('Order placed successfully!'); 
+                                            window.location.href = '/productDetails/cart/checkout/success'; 
+                                        } else {
+                                            
+                                            console.error("Payment confirmation failed:", result.message);
+                                            alert("Payment confirmation failed. Please try again.");
+                                        }
+                                    } catch (error) {
+                                        console.error("Error during payment confirmation:", error);
+                                        alert("An error occurred while confirming your payment.");
+                                    }
+                                },
+                            theme: {
+                                color: '#F37254',
+                            },
+                        };
+                        console.log("after option");
+                        
+                        // Handle payment failure using a listener
+                       
+                        console.log("after option")
+                        const razorpay = new Razorpay(options);
+                        razorpay.open();
+
+                        razorpay.on('payment.failed', async (response) => {
+                            console.error("Payment Failed", response);
+                            alert("Payment failed. Please try again.");
+                        });
+                        
+                    } else if (orderDetails.paymentMethod === "Cod") {
+                        alert('Order placed successfully!'); 
+                        window.location.href = '/productDetails/cart/checkout/success'; 
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your order: ' + error.message);
+                }
+            });
+
         })
     </script>
 
-<script>
-    // Function to toggle payment method sections
-    function togglePaymentMethod() {
-        const paymentMethod = document.getElementById('payment-method').value;
-        document.getElementById('credit-card-section').style.display = 'none';
-        document.getElementById('paypal-section').style.display = 'none';
-        document.getElementById('google-pay-section').style.display = 'none';
 
-        if (paymentMethod === 'credit-card') {
-            document.getElementById('credit-card-section').style.display = 'block';
-        } else if (paymentMethod === 'paypal') {
-            document.getElementById('paypal-section').style.display = 'block';
-        } else if (paymentMethod === 'google-pay') {
-            document.getElementById('google-pay-section').style.display = 'block';
-        }
-    }
 
-    // Function to update the selected address details in the box
-    function updateAddressDetails() {
-        const addressDropdown = document.getElementById('address-dropdown');
-        const selectedAddress = addressDropdown.options[addressDropdown.selectedIndex].text;
-        document.getElementById('selected-address-box').innerHTML = `
+
+    <script>
+        // Function to toggle payment method sections
+
+
+        // Function to update the selected address details in the box
+        function updateAddressDetails() {
+            const addressDropdown = document.getElementById('address-dropdown');
+            const selectedAddress = addressDropdown.options[addressDropdown.selectedIndex].text;
+            document.getElementById('selected-address-box').innerHTML = `
             <p><strong>Selected Address:</strong></p>
             <p>${selectedAddress}</p>
         `;
-    }
+        }
 
-    // Set default selected address on page load
-    window.onload = updateAddressDetails;
-</script>
+        // Set default selected address on page load
+        window.onload = updateAddressDetails;
+    </script>
 
-<%- include('../partials/user/footer') %>
+    <%- include('../partials/user/footer') %>
