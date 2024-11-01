@@ -26,10 +26,11 @@ const orders=async(req,res)=>{
         .limit(limit)
         .sort({orderDate:-1})
         .populate('user')
+        .populate('cartItems.product','name')
         .exec()
 
 
-       console.log(totalOrders)
+       console.log(data[0])
 
 
         res.render('allOrders',{

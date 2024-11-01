@@ -86,7 +86,7 @@
                 <th>Subtotal</th>
             </tr>
          <% let Subtotal=0 %>
-         <% let tax=35 %>
+         
 
          
             
@@ -146,6 +146,7 @@
                     <td><%= Subtotal %></td>
                 </tr>
                 <tr>
+                    <% let tax=Subtotal*0.1 %>
                     <td>Tax</td>
                     <td><%= tax %></td>
                 </tr>

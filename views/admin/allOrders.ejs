@@ -31,11 +31,14 @@
                               <tr>
                                  <th>orderId</th>
                                  <th>userName</th>
+                                 <th>Product Name</th>
+                                 <th>Quantity</th>
                                  <th>status</th>
                                  <th>payment</th>
                                  <th>Amount</th>
                                  <th>Action</th>
-                                 <th></th>
+                                 <th>Cancel</th>
+                                 <th>Return</th>
                                  <th></th>
                               </tr>
                            </thead>
@@ -43,56 +46,96 @@
                            <tbody>
                               <% if (typeof data !=='undefined' ) { %>
                                  <% for (let i=0; i < data.length; i++) { %>
-                                    <tr class="odd gradeX">
-                                       <td>
-                                          <%= data[i].orderId %>
-                                       </td>
-                                       <td>
-                                          <%= data[i].user.username %>
-                                       </td>
-                                       <td id="order-status-<%= i %>">
-                                          <%= data[i].orderStatus %>
-                                       </td>
-                                       <td>
-                                          <%= data[i].payment %>
-                                       </td>
-                                       <td>
-                                          <%= data[i].totalPrice %>
-                                       </td>
-                                       <td>
-                                          <select name="" id="order-status-action-<%= i %>"
-                                             style="display: inline-block;" <%=data[i].orderStatus==='Delivered' ||
-                                             data[i].orderStatus==='Cancelled' ? 'disabled' : '' %>>
-                                             <option
-                                                value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Delivered"
-                                                >Delivered
-                                             </option>
-                                             <option
-                                                value="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"
-                                                >Canceled
-                                             </option>
-                                             <option
-                                                value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Shipped"
-                                                >Shipped</option>
-                                             <option
-                                                value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=outForDelivery"
-                                                >outForDelivery
-                                             </option>
-                                             <option
-                                                value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Pending"
-                                                >Pending</option>
-                                          </select>
-                                       </td>
-                                       <% if(data[i].isReturn === true && data[i].orderStatus !== 'Cancelled' && data[i].orderStatus !== 'Delivered'){ %>
-                                          <td><button><a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled">Accept</a></button>
-                                          <button><a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>">Reject</a></button></td>
-                                       <% } %>
-                                       
-                                       <td><Button><a href="/admin/orders/orderDetails?id=<%= data[i]._id %>">View
-                                                More</a></Button></td>
-                                    </tr>
-                                    <% } %>
-                                       <% } %>
+                                    <% for(let j=0;j<data[i].cartItems.length ; j++){ %>
+                                       <tr class="odd gradeX">
+                                          <td>
+                                             <%= data[i].orderId %>
+                                          </td>
+                                          <td>
+                                             <%= data[i].user.username %>
+                                          </td>
+                                          <td>
+                                             <%= data[i].cartItems[j].product.name %>
+                                          </td>
+                                          <td>
+                                             <%= data[i].cartItems[j].quantity %>
+                                          </td>
+                                          <td id="order-status-<%= i %>">
+                                             <%= data[i].cartItems[j].orderStatus %>
+                                          </td>
+                                          <td>
+                                             <%= data[i].paymentMethod %>
+                                          </td>
+                                          <td>
+                                             <%= data[i].cartItems[j].finalAmount %>
+                                          </td>
+                                          <td>
+                                             <select name="" id="order-status-action-<%= i %>"
+                                                style="display: inline-block;" <%=data[i].cartItems[j].orderStatus==='Delivered' ||
+                                                data[i].cartItems[j].orderStatus==='Cancelled' || data[i].cartItems[j].orderStatus==='Pending' ? 'disabled' : '' %>>
+                                                <option
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Delivered"
+                                                   >Delivered
+                                                </option>
+                                                <option
+                                                   value="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"
+                                                   >Canceled
+                                                </option>
+                                                <option
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Shipped"
+                                                   >Shipped</option>
+                                                <option
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=outForDelivery"
+                                                   >outForDelivery
+                                                </option>
+                                                <option
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Pending"
+                                                   >Pending
+                                                </option>
+                                                <option
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Pending"
+                                                   >Processing
+                                                </option>
+                                                
+                                             </select>
+                                           
+                                          </td>
+                                          <% if(data[i].cartItems[j].isCancel === true && data[i].cartItems[j].orderStatus !== 'Cancelled' && data[i].cartItems[j].orderStatus !== 'Delivered'){ %>
+
+                                             
+                                                <% if(data[i].cartItems[j].cancelAccept === "Accept"){ %>
+                                                   <td>Accept</td>
+                                                <% } else if(data[i].cartItems[j].cancelAccept === "Rejected"){ %>
+                                                   <td>Rejected</td>
+                                                <% } else { %>
+                                                   <td>
+                                                      <a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"><i class="fa-solid fa-circle-check fa-lg"></i></a>
+                                                      <a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>" style="margin-left: 10px;" ><i class="fa-solid fa-rectangle-xmark fa-lg"></i></a>
+                                                   </td>
+                                                <% } %>
+
+                                             
+                                          <% } else { %>
+                                                <td></td>
+                                          <% }%>
+                                          <% if(data[i].cartItems[j].isReturn === true && data[i].cartItems[j].orderStatus !== 'Cancelled' && data[i].cartItems[j].orderStatus !== 'Delivered'){ %>
+
+                                             
+                                             
+                                             <td><a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"><i class="fa-solid fa-circle-check fa-lg"></i></a>
+                                             <a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>" style="margin-left: 10px;" ><i class="fa-solid fa-rectangle-xmark fa-lg"></i></a></td>
+                                          <% } else { %>
+                                                <td></td>
+                                          <% }%>
+
+                                          
+                                          <td><a href="/admin/orders/orderDetails?id=<%= data[i]._id %>"><i class="fa-solid fa-arrow-right "></i>
+                                          </a></td>
+                                          
+                                       </tr>
+                                    <% } %> 
+                                 <% } %>
+                               <% } %>
                            </tbody>
                         </table>
                         <div class="col-8">

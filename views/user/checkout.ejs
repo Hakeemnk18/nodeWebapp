@@ -93,7 +93,7 @@
                                             <label style="margin-top: 20px;" for="">Apply coupon code</label>
                                             <a href="" id="remove-coupon">remove</a>
                                             <% if(availableCoupon !=='undefined' ){ %>
-                                                <select name="" id="coupon-code">
+                                                <select name="appliedCouponId" id="coupon-code">
                                                     <% for(let i=0;i<availableCoupon.length;i++){ %>
                                                         <option value="<%= availableCoupon[i]._id %>">
                                                             <%= availableCoupon[i].code %>
@@ -104,7 +104,7 @@
                                                 </select>
                                                 <% } %>
 
-                                                    <% let tax=35; let deliveryCharge=50 %>
+                                                    <% let tax= total*0.1; let deliveryCharge=total>1000?0:150 %>
                                                         <li class="tax">Tax </span><span>
                                                                 <%= tax %>
                                                             </span></li>
@@ -161,14 +161,16 @@
             const paymentMethod = document.getElementById("payment-method")
             let couponSavedAmount=0
             let isWalletUsed="false"
-            let walletUsedAmount=0
+            let walletUsedAmount=0;
+            let applyedCouponId
+
 
             const Originaltotal = parseInt(totalAmount.value)
 
 
             couponCode.addEventListener("change", async function (e) {
                 e.preventDefault()
-
+                applyedCouponId=couponCode.value
 
                 try {
                     const response = await fetch("/checkout/applyCoupon", {
@@ -208,7 +210,7 @@
             removeCoupon.addEventListener("click", (e) => {
                 e.preventDefault()
 
-
+                applyedCouponId='';
                 couponCode.selectedIndex = 0
                 applyedCouponName.innerHTML = `Coupon Not Appleyed  <span id="coupon-saved"> </span></li>`;
                 payablePrice.textContent = Originaltotal
@@ -235,7 +237,7 @@
 
             document.getElementById("checkout-form").addEventListener("submit", async function (e) {
                 e.preventDefault(); 
-
+                
                 console.log("inside fetch for order submision")
                 const formData = new FormData(this);
                 const orderDetails = {
@@ -248,9 +250,13 @@
                     productSize: formData.getAll('productSize[]'),
                     productOfferPrice:formData.getAll("offerPrice[]"),
                     paymentMethod: formData.get('paymentMethod'),
+                    appliedCouponId:applyedCouponId,
                     couponSaved:couponSavedAmount,
                     isWalletUsed:isWalletUsed,
-                    walletUsedAmount:walletUsedAmount
+                    walletUsedAmount:walletUsedAmount,
+                    tax:'<%= tax %>',
+                    deliveryCharge:"<%= deliveryCharge %>"
+
                 };
 
                 console.log(orderDetails)

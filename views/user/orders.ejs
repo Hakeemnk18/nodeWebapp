@@ -36,7 +36,7 @@
                             <div class="order-details">
                                 <h3><%= orderItems[i].orderId %></h3>
                                 <p><strong>Date:</strong> <%=dateField[i]  %> </p>
-                                <p><strong>Status:</strong><%= orderItems[i].orderStatus %></p>
+                                <p><strong>Status:</strong><%= orderItems[i].cartItems[j].orderStatus %></p>
                             </div>
                 
                             <div class="item-details">
@@ -50,29 +50,34 @@
                                         <p><strong>Size : </strong><%= orderItems[i].cartItems[j].size %></p>
                                     </li>
                                 </ul>
-                                <p><strong>Total:</strong><%= orderItems[i].cartItems[j].price * orderItems[i].cartItems[j].quantity %></p>
+                                <p><strong>Total:</strong><%= orderItems[i].cartItems[j].finalAmount %></p>
                             </div>
                         </div>
                 
                         <!-- Order Actions -->
                         <div class="order-actions">
                             <button class="track-btn"><a style="color: #fff;" href="/myAccount/orders/trackOrder?id=<%= orderItems[i]._id %>">Track Order</a></button>
-                            <% if(orderItems[i].orderStatus !== 'Delivered'){ %>
+                            <% if (orderItems[i].cartItems[j].orderStatus === 'Pending'){ %>
+                                <button class="order-cancel-btn">Complet Payment </button>
+                            <% } else{ %>
+                                <% if(orderItems[i].cartItems[j].orderStatus !== 'Delivered'){ %>
 
-                                <% if (orderItems[i].orderStatus === 'Cancelled' || orderItems[i].accept === 'reject') { %>
-                                    <button class="order-cancel-btn" disabled>Cancel Order</button>
-                                 <% } else { %>
-                                <button class="cancel-btn" <%= orderItems[i].orderStatus === 'Cancelled' ? 'disabled':'' %> ><a style="color: #fff;" href="/myAccount/orders/cancelOrder?id=<%= orderItems[i]._id %>">Cancel Order</a></button>
+                                    <% if (orderItems[i].cartItems[j].orderStatus !== 'Cancelled' && orderItems[i].cartItems[j].accept !== 'reject' && orderItems[i].cartItems[j].isCancel !== true ) { %>
+                                        <button class="cancel-btn" ><a style="color: #fff;" href="/myAccount/orders/cancelOrder?orderId=<%=orderItems[i]._id%>&cartItem=<%=orderItems[i].cartItems[j]._id%>">Cancel Order</a></button>
+                                     <% } else { %>
+                                    
+                                    <% } %>
+    
+                                <% }else{ %>
+                                    <% if(orderItems[i].cartItems[j].isReturn === false){ %>
+                                        <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?id=<%= orderItems[i]._id %>&index=<%= j %>">Return</a></button>
+                                    <% } else{ %>
+                                        <button class="order-cancel-btn" disabled>Return</button>
+                                    <% } %>
+                                    
                                 <% } %>
-
-                            <% }else{ %>
-                                <% if(orderItems[i].cartItems[j].isReturn === false){ %>
-                                    <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?id=<%= orderItems[i]._id %>&index=<%= j %>">Return</a></button>
-                                <% } else{ %>
-                                    <button class="order-cancel-btn" disabled>Return</button>
-                                <% } %>
-                                
                             <% } %>
+                            
                             
                         </div>
                     </div>

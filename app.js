@@ -7,7 +7,8 @@ const passport=require('./config/passport')
 const db=require('./config/db')
 const userRouter=require('./routes/userRouter')
 const adminRouter=require("./routes/adminRouter")
-const nocache=require('nocache')
+const nocache=require('nocache');
+const Order = require('./models/ordersSchema');
 db()
 
 app.use(express.json())

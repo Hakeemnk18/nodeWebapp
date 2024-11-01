@@ -32,9 +32,38 @@ const ordersSchema=new Schema({
                 type:Boolean,
                 default:false
             },
-            isAccept:{
-                type:Boolean,
+            returnAccept:{
+                type:String,
+                enum:["Pending","Accept","Rejected"]
                 
+            },
+            returnTimestamps: {
+                pendingAt: { type: Date },          
+                processingAt: { type: Date },       
+                shippedAt: { type: Date },          
+                outForDeliveryAt: { type: Date },  
+                deliveredAt: { type: Date },        
+                cancelledAt: { type: Date },       
+                returnedAt: { type: Date }          
+            },
+            isCancel:{
+                type:Boolean,
+                default:false
+            },
+            cancelAccept:{
+                type:String,
+                enum:["Pending","Accept","Rejected"],
+                default:"Pending"
+                
+            },
+            cancelTimestamps: {
+                pendingAt: { type: Date },          
+                processingAt: { type: Date },       
+                shippedAt: { type: Date },          
+                outForDeliveryAt: { type: Date },  
+                deliveredAt: { type: Date },        
+                cancelledAt: { type: Date },       
+                returnedAt: { type: Date }          
             },
             size:{
                 type:String,
@@ -46,8 +75,40 @@ const ordersSchema=new Schema({
             offerPrice:{
                 type:Number
             },
+            offerDiscount:{
+                type:Number,
+                default:0
+            },
+            couponDiscount:{
+                type:Number,
+                default:0
+            },
             walletAmount:{
-                type:Number
+                type:Number,
+                default:0
+
+            },
+            orderStatus: {
+                type: String,
+                enum: ['Pending', 'Processing', 'Shipped','outForDelivery', 'Delivered', 'Cancelled','Returned'],
+                default: 'Pending'
+            }, 
+            statusTimestamps: {
+                pendingAt: { type: Date },          
+                processingAt: { type: Date },       
+                shippedAt: { type: Date },          
+                outForDeliveryAt: { type: Date },  
+                deliveredAt: { type: Date },        
+                cancelledAt: { type: Date },       
+                returnedAt: { type: Date }          
+            },
+            tax:{
+                type:Number,
+                default:0
+            },
+            finalAmount:{
+                type:Number,
+
             }
         }
     ],
@@ -101,21 +162,35 @@ const ordersSchema=new Schema({
         enum:['accept','reject'],
         default:'accept'
     },
-    walletUsed:{
-        type:Boolean,
-        default:false
-    },
     couponAmount:{
         type:Number
     },
     walletAmount:{
-        type:Number
+        type:Number,
+        default:0
     },
     offerPrice:{
         type:Number
     },
     payedAmount:{
         type:Number
+    },
+    paymentId:{
+        type:String
+    },
+    tax:{
+        type:Number,
+        default:0
+    },
+    finalPrice:{
+        type:Number,
+        
+    },
+    deliveryCharge:{
+        type:Number
+    },
+    walletUsed:{
+        type:Boolean
     }
 
 })

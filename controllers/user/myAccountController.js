@@ -141,6 +141,7 @@ const updateAddress=async(req,res)=>{
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const orders=async(req,res)=>{
     try {
         let userName=await isUser.isUser(req)
@@ -156,7 +157,7 @@ const orders=async(req,res)=>{
         }
 
         
-        
+        console.log(orderItems[0])
         res.render('orders',{userName,orderItems,dateField})
     } catch (error) {
         console.log("error in orders  : "+error.message)
@@ -326,8 +327,16 @@ const trackOrder=async(req,res)=>{
 const orderCancel=async(req,res)=>{
     try {
         
-        const {id}=req.query
-        const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})
+        console.log("inside order cancel")
+        const {orderId,cartItem}=req.query
+        console.log(req.query)
+
+        
+       
+        const cart=await Order.findOneAndUpdate({_id:orderId,"cartItems._id":cartItem},{$set:{"cartItems.$.isCancel":true}},{new:true})
+        console.log("the cart item")
+        console.log(cart);
+        // const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})
        
         res.redirect('/myAccount/orders')
 
@@ -342,6 +351,7 @@ const returnOrder=async(req,res)=>{
 
         
         const {id,index}=req.query
+        console.log(req.query)
         const orderData=await Order.findById(id)
         
         
@@ -416,7 +426,7 @@ const wallet=async(req,res)=>{
 
         
         const wallet=await Wallet.findOne({userId:userId})
-        console.log(wallet)
+        
         
         res.render("wallet",{userName,wallet})
     } catch (error) {
