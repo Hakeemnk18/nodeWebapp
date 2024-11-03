@@ -30,7 +30,7 @@ const orders=async(req,res)=>{
         .exec()
 
 
-       console.log(data[0])
+       
 
 
         res.render('allOrders',{
@@ -65,9 +65,9 @@ const orderDetails=async(req,res)=>{
 const statusChange=async(req,res)=>{
     try {
         console.log(req.query)
-        const {id,status}=req.query
-        await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
-        await orderStatus.statusTime(status,id)
+        const {id,status,itemId}=req.query
+        await orderStatus.productStaus(status,id,itemId)
+        
         
         res.redirect('/admin/orders')
     } catch (error) {
@@ -75,54 +75,52 @@ const statusChange=async(req,res)=>{
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
+
+////////////////////////////////////////////////////////////////////////////////////
 const returnAccept=async(req,res)=>{
     try {
-        const {id,index}=req.query
-        const data=await Order.findById(id)
-        const updatedOrder = await Order.findOneAndUpdate(
-            { _id: id },
-            { $set: { [`cartItems.${index}.isAccept`]: true } },
-            { new: true }
-          );
-          
-        
-          // Get the updated cart item
-        const updatedCartItem = updatedOrder.cartItems[index];
-        
+        console.log("inside return accepet")
+        console.log(req.query)
+        const{status,id,itemId}=req.query
 
         
-        await Product.updateOne(
-            {
-                _id:updatedCartItem.product,
-                "varient.size":updatedCartItem.size
-            },
-            {
-                $inc:{
-                    "varient.$.stock":updatedCartItem.quantity
-                }
-            }
-        ) 
         
-        const obj = { 
-            amount: updatedCartItem.price, 
-            type: "deposit", 
+        const cartProduct=await Order.findOne({_id:id,"cartItems._id":itemId},{"cartItems.$":1,user:1})
+        
+        await orderStatus.productStaus(status,id,itemId)
+
+
+
+
+        await Order.findOneAndUpdate({_id:id,"cartItems._id":itemId},
+            {$set:{"cartItems.$.returnAccept":"Accept"}}
+        )
+
+        const obj = {
+            amount: cartProduct.cartItems[0].finalAmount,
+            type: 'deposit',
             date: new Date()
         };
-        
-        await Wallet.findOneAndUpdate(
-            { userId: updatedOrder.user },
-            {
-                $inc: {
-                    refunds: updatedCartItem.price,
-                    balance: updatedCartItem.price,
-                },
-                $push: {
-                    transactions: obj 
-                }
-            }
-        );
 
-        res.redirect(`/admin/orders/orderDetails?id=${id}`)
+        await Wallet.findOneAndUpdate(
+            {userId:cartProduct.user},
+            {
+                $inc:{balance:cartProduct.cartItems[0].finalAmount},
+                $push:{transactions: obj}
+            }
+            
+        )
+
+        await Product.findOneAndUpdate(
+            {_id:cartProduct.cartItems[0].product,"varient.size":cartProduct.cartItems[0].size},
+            {$inc:{"varient.$.stock":cartProduct.cartItems[0].quantity}})
+
+
+        
+
+        
+
+        return res.redirect('/admin/orders')
     } catch (error) {
         console.log("error in admin return accept "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
@@ -132,29 +130,94 @@ const returnAccept=async(req,res)=>{
 const orderCancel=async (req,res)=>{
     try {
         
-        const {id,status}=req.query
-        await Order.findByIdAndUpdate(id,{$set:{orderStatus:status}})
-        await orderStatus.statusTime(status,id)
+        console.log("inside order cancel")
+        console.log(req.query)
+        const {id,status,itemId}=req.query
+        await orderStatus.productStaus(status,id,itemId)
+
         const orderData=await Order.findById(id)
-        
-        for(let i=0;i<orderData.cartItems.length;i++){
-            await Product.updateOne({_id:orderData.cartItems[i].product,"varient.size":orderData.cartItems[i].size},{$inc:{"varient.$.stock":orderData.cartItems[i].quantity}})
-            const product=await Product.findById(orderData.cartItems[i].product)
-            
+        console.log(orderData)
+        const cartProduct=await Order.findOne({_id:id,"cartItems._id":itemId},{"cartItems.$":1,user:1})
+        console.log(cartProduct)
+
+        if(orderData.paymentMethod === 'COD'){
+            if(cartProduct.cartItems[0].walletAmount > 0){
+
+                console.log("inside wallet deduction")
+                const obj = {
+                    amount: cartProduct.cartItems[0].walletAmount,
+                    type: 'deposit',
+                    date: new Date()
+                };
+                await Wallet.findOneAndUpdate(
+                    {userId:cartProduct.user},
+                    {
+                        $inc:{balance:cartProduct.cartItems[0].walletAmount},
+                        $push:{transactions: obj}
+                    
+                    }
+                    
+                )
+            }
+        }else if (orderData.paymentMethod === "Razorpay"){
+            console.log("inside razorpay")
+            const obj = {
+                amount: cartProduct.cartItems[0].finalAmount,
+                type: 'deposit',
+                date: new Date()
+            };
+            await Wallet.findOneAndUpdate(
+                {userId:cartProduct.user},
+                {
+                    $inc:{balance:cartProduct.cartItems[0].finalAmount},
+                    $push:{transactions: obj}
+                }
+                
+            )
         }
+       
+        await Product.findOneAndUpdate(
+            {_id:cartProduct.cartItems[0].product,"varient.size":cartProduct.cartItems[0].size},
+            {$inc:{"varient.$.stock":cartProduct.cartItems[0].quantity}})
+        
+        if(req.query.accept){
+            console.log("inside accept")
+            await Order.findOneAndUpdate({_id:id,"cartItems._id":itemId},
+                {$set:{"cartItems.$.cancelAccept":"Accept"}}
+            )
+        }else{
+            console.log("no request")
+        }
+        
         
         res.redirect('/admin/orders')
     } catch (error) {
-        console.log("error in admin order cancel"+error.message)
+        console.log("error in admin order cancel "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
+
 const orderReqRej=async(req,res)=>{
     try {
-        const {id}=req.query
-        const data=await Order.findByIdAndUpdate(id,{$set:{accept:'reject'}},{new:true})
-        console.log(data)
+        console.log("rejected")
+        const {id,itemId}=req.query
+        console.log(req.query)
+        if(req.query.return){
+
+            console.log("return rejected")
+
+            await Order.findOneAndUpdate({_id:id,"cartItems._id":itemId},{$set:{"cartItems.$.returnAccept":"Rejected"}})
+            const order=await Order.findById(id)
+            console.log(order)
+        }else{
+
+            console.log("cancel rejected")
+            await Order.findOneAndUpdate({_id:id,"cartItems._id":itemId},{$set:{"cartItems.$.cancelAccept":"Rejected"}})
+            const order=await Order.findById(id)
+            console.log(order)
+        }
+        
         res.redirect('/admin/orders')
     } catch (error) {
         console.log("error in admin order req rejected"+error.message)

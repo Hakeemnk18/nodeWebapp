@@ -60,7 +60,7 @@
                                           <td>
                                              <%= data[i].cartItems[j].quantity %>
                                           </td>
-                                          <td id="order-status-<%= i %>">
+                                          <td id="order-status-<%= j %>">
                                              <%= data[i].cartItems[j].orderStatus %>
                                           </td>
                                           <td>
@@ -70,33 +70,24 @@
                                              <%= data[i].cartItems[j].finalAmount %>
                                           </td>
                                           <td>
-                                             <select name="" id="order-status-action-<%= i %>"
+                                             <select name="" id="order-status-action-<%= j %>"
                                                 style="display: inline-block;" <%=data[i].cartItems[j].orderStatus==='Delivered' ||
-                                                data[i].cartItems[j].orderStatus==='Cancelled' || data[i].cartItems[j].orderStatus==='Pending' ? 'disabled' : '' %>>
+                                                data[i].cartItems[j].orderStatus==='Cancelled' || data[i].cartItems[j].orderStatus==='Pending' || data[i].cartItems[j].orderStatus==='Returned' ? 'disabled' : '' %>>
                                                 <option
-                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Delivered"
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id%>&itemId=<%=data[i].cartItems[j]._id%>&status=Delivered"
                                                    >Delivered
                                                 </option>
                                                 <option
-                                                   value="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"
+                                                   value="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&status=Cancelled"
                                                    >Canceled
                                                 </option>
                                                 <option
-                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Shipped"
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&status=Shipped"
                                                    >Shipped</option>
                                                 <option
-                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=outForDelivery"
+                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&status=outForDelivery"
                                                    >outForDelivery
                                                 </option>
-                                                <option
-                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Pending"
-                                                   >Pending
-                                                </option>
-                                                <option
-                                                   value="/admin/orders/changeStatus?id=<%=data[i]._id %>&status=Pending"
-                                                   >Processing
-                                                </option>
-                                                
                                              </select>
                                            
                                           </td>
@@ -109,8 +100,8 @@
                                                    <td>Rejected</td>
                                                 <% } else { %>
                                                    <td>
-                                                      <a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"><i class="fa-solid fa-circle-check fa-lg"></i></a>
-                                                      <a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>" style="margin-left: 10px;" ><i class="fa-solid fa-rectangle-xmark fa-lg"></i></a>
+                                                      <a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&status=Cancelled&accept='true"><i class="fa-solid fa-circle-check fa-lg"></i></a>
+                                                      <a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>" style="margin-left: 10px;" ><i class="fa-solid fa-rectangle-xmark fa-lg"></i></a>
                                                    </td>
                                                 <% } %>
 
@@ -118,12 +109,18 @@
                                           <% } else { %>
                                                 <td></td>
                                           <% }%>
-                                          <% if(data[i].cartItems[j].isReturn === true && data[i].cartItems[j].orderStatus !== 'Cancelled' && data[i].cartItems[j].orderStatus !== 'Delivered'){ %>
+                                          <% if(data[i].cartItems[j].isReturn === true  && data[i].cartItems[j].orderStatus === 'Delivered' ){ %>
 
+                                             <% if(data[i].cartItems[j].returnAccept === "Accept"){ %>
+                                                <td>Accept</td>
+                                             <% } else if(data[i].cartItems[j].returnAccept === "Rejected"){ %>
+                                                <td>Rejected</td>
+                                             <% } else{ %>
+                                                <td><a href="/admin/orders/changeStatus/acceptReturn?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&status=Returned"><i class="fa-solid fa-circle-check fa-lg"></i></a>
+                                                <a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&return=true" style="margin-left: 10px;" ><i class="fa-solid fa-rectangle-xmark fa-lg"></i></a></td>
+                                             <% } %>
                                              
                                              
-                                             <td><a href="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&status=Cancelled"><i class="fa-solid fa-circle-check fa-lg"></i></a>
-                                             <a href="/admin/orders/changeStatus/rejectReq?id=<%=data[i]._id %>" style="margin-left: 10px;" ><i class="fa-solid fa-rectangle-xmark fa-lg"></i></a></td>
                                           <% } else { %>
                                                 <td></td>
                                           <% }%>
@@ -205,22 +202,17 @@
                            option.selected=false
                         }
                         
-                        if(currentStatus === 'Shipped' ){
-                           if(option.textContent === 'Pending'){
-                              option.disabled =true
-                           }else{
-                              option.disabled=false
-                           }
-                        }else if(currentStatus === 'outForDelivery'){
-                           if(option.textContent === 'Pending' || option.textContent === 'Shipped'){
+                        if(currentStatus === 'outForDelivery'){
+                           if( option.textContent === 'Shipped'){
                               option.disabled =true
                            }else{
                               option.disabled=false
                            }
                         }
                      })
-                  })
-               })
+                })
+            })
+                
 
 
             </script>
@@ -247,6 +239,10 @@
 
       </div>
    </div>
+
+   <script>
+      
+   </script>
 
 
 

@@ -60,19 +60,25 @@
                             <% if (orderItems[i].cartItems[j].orderStatus === 'Pending'){ %>
                                 <button class="order-cancel-btn">Complet Payment </button>
                             <% } else{ %>
-                                <% if(orderItems[i].cartItems[j].orderStatus !== 'Delivered'){ %>
+                                <% if(orderItems[i].cartItems[j].orderStatus !== 'Delivered' && orderItems[i].cartItems[j].orderStatus !== 'Returned' ){ %>
 
-                                    <% if (orderItems[i].cartItems[j].orderStatus !== 'Cancelled' && orderItems[i].cartItems[j].accept !== 'reject' && orderItems[i].cartItems[j].isCancel !== true ) { %>
+                                    <% if (orderItems[i].cartItems[j].orderStatus !== 'Cancelled' && orderItems[i].cartItems[j].cancelAccept!== 'reject' && orderItems[i].cartItems[j].isCancel !== true ) { %>
                                         <button class="cancel-btn" ><a style="color: #fff;" href="/myAccount/orders/cancelOrder?orderId=<%=orderItems[i]._id%>&cartItem=<%=orderItems[i].cartItems[j]._id%>">Cancel Order</a></button>
-                                     <% } else { %>
-                                    
+                                     <% } else if(orderItems[i].cartItems[j].cancelAccept === "Accept"){ %>
+                                        <p>Cancelled</p>
+                                    <% }else if(orderItems[i].cartItems[j].cancelAccept === "Rejected"){ %>
+                                        <p>Rejected</p>
                                     <% } %>
-    
+                                        
                                 <% }else{ %>
                                     <% if(orderItems[i].cartItems[j].isReturn === false){ %>
-                                        <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?id=<%= orderItems[i]._id %>&index=<%= j %>">Return</a></button>
+                                        <button class="cancel-btn"><a style="color: #fff;" href="/myAccount/orders/returnOrder?orderId=<%=orderItems[i]._id%>&cartItem=<%=orderItems[i].cartItems[j]._id%>">Return</a></button>
                                     <% } else{ %>
-                                        <button class="order-cancel-btn" disabled>Return</button>
+                                            <% if(orderItems[i].cartItems[j].returnAccept === "Accept"){ %>
+                                                <P>Returned</P>
+                                            <% } else if(orderItems[i].cartItems[j].returnAccept === "Rejected"){%>
+                                                <P>ReJected</P>
+                                            <% } %>
                                     <% } %>
                                     
                                 <% } %>

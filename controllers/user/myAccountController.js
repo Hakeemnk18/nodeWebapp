@@ -157,7 +157,7 @@ const orders=async(req,res)=>{
         }
 
         
-        console.log(orderItems[0])
+        
         res.render('orders',{userName,orderItems,dateField})
     } catch (error) {
         console.log("error in orders  : "+error.message)
@@ -329,15 +329,7 @@ const orderCancel=async(req,res)=>{
         
         console.log("inside order cancel")
         const {orderId,cartItem}=req.query
-        console.log(req.query)
-
-        
-       
         const cart=await Order.findOneAndUpdate({_id:orderId,"cartItems._id":cartItem},{$set:{"cartItems.$.isCancel":true}},{new:true})
-        console.log("the cart item")
-        console.log(cart);
-        // const data=await Order.findByIdAndUpdate(id,{$set:{isReturn:true}},{new:true})
-       
         res.redirect('/myAccount/orders')
 
     } catch (error) {
@@ -348,16 +340,9 @@ const orderCancel=async(req,res)=>{
 
 const returnOrder=async(req,res)=>{
     try {
-
-        
-        const {id,index}=req.query
+        const {orderId,cartItem}=req.query
         console.log(req.query)
-        const orderData=await Order.findById(id)
-        
-        
-        await Order.updateOne({_id:id},{$set:{[`cartItems.${index}.isReturn`]:true}})
-        const orderDat=await Order.findById(id)
-        
+        await Order.findOneAndUpdate({_id:orderId,"cartItems._id":cartItem},{$set:{"cartItems.$.isReturn":true}})
         res.redirect('/myAccount/orders')
     } catch (error) {
         console.log("error in order return order : "+error.message)

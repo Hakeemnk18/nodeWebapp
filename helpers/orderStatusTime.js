@@ -57,6 +57,7 @@ const statusTime=async(status,id)=>{
                         "cartItems.$[].statusTimestamps.returnedAt":new Date()
                     } } )
                 break;
+                
             default:
                 console.log("no status matched")
         }
@@ -65,32 +66,80 @@ const statusTime=async(status,id)=>{
     }
 }
 
-const productStaus=async(status,id)=>{
+const productStaus=async(status,id,cartId)=>{
     try {
         
         switch (status){
             case 'Delivered':
-                console.log("inside switch delivered ")
-                await Order.findByIdAndUpdate(
-                    id,
+                
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
                     {$set:{
-                        'cartItems.$[].status':'Delivered',
-                        'cartItems.$[].productStatusTimeStamp.deliveredAt':new Date()
-                    }},
-                    
+                        "cartItems.$.orderStatus":'Delivered',
+                        "cartItems.$.statusTimestamps.deliveredAt":new Date()
+                    }}   
                 )
                 break;
             case 'Returned':
-                console.log("inside switch delivered")
-                await Order.findByIdAndUpdate(
-                    id,
+                
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
                     {$set:{
-                        'cartItems.$[].status':'Returned',
-                        'cartItems.$[].productStatusTimeStamp.returnedAt':new Date()
-                    }},
-                    
+                        "cartItems.$.orderStatus":'Returned',
+                        "cartItems.$.statusTimestamps.returnedAt":new Date()
+                    }}   
                 )
                 break;
+            case 'Cancelled':
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
+                    {$set:{
+                        "cartItems.$.orderStatus":'Cancelled',
+                        "cartItems.$.statusTimestamps.cancelledAt":new Date()
+                    }}   
+                )
+                break;
+            case  'outForDelivery' :
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
+                    {$set:{
+                        "cartItems.$.orderStatus":'outForDelivery',
+                        "cartItems.$.statusTimestamps.outForDeliveryAt":new Date()
+                    }}   
+                )
+                break;
+            case 'Shipped':
+                console.log("inside shipped")
+                console.log("status "+status)
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
+                    {$set:{
+                        "cartItems.$.orderStatus":'Shipped',
+                        "cartItems.$.statusTimestamps.shippedAt":new Date()
+                    }}   
+                )
+                break;
+            case 'Pending' :
+                console.log("inside pending")
+                console.log("status "+status)
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
+                    {$set:{
+                        "cartItems.$.orderStatus":'Pending',
+                        "cartItems.$.statusTimestamps.pendingAt":new Date()
+                    }}   
+                )
+                break;
+            case 'Processing' :
+
+                await Order.findOneAndUpdate(
+                    {_id:id,"cartItems._id":cartId},
+                    {$set:{
+                        "cartItems.$.orderStatus":'Processing',
+                        "cartItems.$.statusTimestamps.processingAt":new Date()
+                    }}   
+                )
+                break;         
             default:
                 console.log("no status matche for cart items")
         }
