@@ -31,12 +31,36 @@
                     <div class="order-card">
                         <div class="order-image">
                             <img src="/uploads/<%= orderItems[i].cartItems[j].product.croppedImage[0] %>" alt="Product Image">
+                            
                         </div>
+                       
                         <div class="order-info">
                             <div class="order-details">
                                 <h3><%= orderItems[i].orderId %></h3>
                                 <p><strong>Date:</strong> <%=dateField[i]  %> </p>
                                 <p><strong>Status:</strong><%= orderItems[i].cartItems[j].orderStatus %></p>
+                                <% if(orderItems[i].cartItems[j].orderStatus === 'Delivered'){ %>
+                                <button 
+                                    class="downloadInvoice"
+                                    data-product-orderId="<%= orderItems[i].orderId %>"
+                                    data-product-name="<%= orderItems[i].cartItems[j].product.name %>"
+                                    data-product-price="<%= orderItems[i].cartItems[j].price %>"
+                                    data-product-quantity="<%= orderItems[i].cartItems[j].quantity %>"
+                                    data-product-size="<%= orderItems[i].cartItems[j].size %>"
+                                    data-product-discount="<%= 
+                                        (
+                                            ((orderItems[i].cartItems[j].price - 
+                                            orderItems[i].cartItems[j].offerPrice) *
+                                            orderItems[i].cartItems[j].quantity) -
+                                            orderItems[i].cartItems[j].couponDiscount
+                                        ).toFixed(2)  
+                                    %>"
+                                    data-product-total="<%= orderItems[i].cartItems[j].finalAmount %>"
+                                    data-user-address="<%= JSON.stringify(orderItems[i].address)  %>"
+                                    >DOWNLOAD INVOICE
+                                </button>
+                                <%}%>
+                                
                             </div>
                 
                             <div class="item-details">
@@ -53,12 +77,77 @@
                                 <p><strong>Total:</strong><%= orderItems[i].cartItems[j].finalAmount %></p>
                             </div>
                         </div>
+                        
+                        <div id="invoicePDF" style="display: none;">
+                            <!-- Header section for company logo and details -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px;">
+                                <!-- Company Logo -->
+                                <div>
+                                    <img src="/images/logo.png" alt="Company Logo" style="height: 50px;">
+                                </div>
+                                <!-- Company Details -->
+                                <div style="text-align: right;">
+                                    <p id="companyName"><strong>Company Name</strong></p>
+                                    <p id="companyAddress">123 Business Rd.</p>
+                                    <p id="companyCity">City, State, Zip</p>
+                                    <p id="companyEmail">Email: contact@company.com</p>
+                                    <p id="companyPhone">Phone: (123) 456-7890</p>
+                                </div>
+                            </div>
+                        
+                            <!-- Divider Line -->
+                            <hr style="border-top: 1px solid #000; margin: 20px 0;">
+                        
+                            <!-- Order and Customer Details -->
+                            <div id="orderDetails" style="margin-bottom: 20px;">
+                                <p><strong>Order ID:</strong> <span id="pdfOrderID"></span></p>
+                                <p><strong>Date:</strong> <span id="pdfOrderDate"></span></p>
+                                <p><strong>Customer Name:</strong> <span id="pdfCustomerName"></span></p>
+                            </div>
+                        
+                            <!-- Shipping Address (added below the divider) -->
+                            <div style="text-align: right; margin-bottom: 20px;">
+                                <p><strong>Shipping Address:</strong></p>
+                                <p id="pdfShippingAddress">
+                                </p>
+                            </div>
+                        
+                            <!-- Product Details -->
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th id="productHeader">Product</th>
+                                        <th id="quantityHeader">Quantity</th>
+                                        <th id="sizeHeader">Size</th>
+                                        <th id="priceHeader">Price</th>
+                                        <th id="discountHeader">Discount</th>
+                                        <th id="totalHeader">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="pdfProductName"></td>
+                                        <td id="pdfProductQuantity"></td>
+                                        <td id="pdfProductSize"></td>
+                                        <td id="pdfProductPrice"></td>
+                                        <td id="pdfProductDiscount"></td>
+                                        <td id="pdfProductTotal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        
+                            <!-- Total Amount -->
+                            <div id="totalAmountSection" style="text-align: right; margin-top: 20px;">
+                                <p><strong>Total Amount: <span id="pdfTotalAmount"></span></strong></p>
+                            </div>
+                        </div>
+                        
                 
                         <!-- Order Actions -->
                         <div class="order-actions">
                             <button class="track-btn"><a style="color: #fff;" href="/myAccount/orders/trackOrder?id=<%= orderItems[i]._id %>">Track Order</a></button>
                             <% if (orderItems[i].cartItems[j].orderStatus === 'Pending'){ %>
-                                <button class="order-cancel-btn">Complet Payment </button>
+                                <button class="complete-payment-btn" id="complete-payment-btn"  data-order-id="<%= orderItems[i]._id %>" >Complet Payment </button>
                             <% } else{ %>
                                 <% if(orderItems[i].cartItems[j].orderStatus !== 'Delivered' && orderItems[i].cartItems[j].orderStatus !== 'Returned' ){ %>
 
@@ -96,6 +185,203 @@
     
         <!-- Repeat for more orders -->
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+        const invoiceButton=document.querySelectorAll(".downloadInvoice")
+        invoiceButton.forEach((button)=>{
+            button.addEventListener("click",function(){
+
+                const orderDetails={
+                    orderID: this.getAttribute("data-product-orderId"),
+                    orderDate: '2024-11-04',
+                    customerName: 'John Doe',
+                    product: {
+                        name: this.getAttribute("data-product-name"),
+                        quantity: this.getAttribute("data-product-quantity"),
+                        size:this.getAttribute("data-product-size"),
+                        discount:this.getAttribute("data-product-discount"),
+                        price: this.getAttribute("data-product-price")
+                    },
+                    totalAmount: this.getAttribute("data-product-total")
+                }
+                const addressData = JSON.parse(this.getAttribute("data-user-address"));
+                // const address={
+
+                // }
+
+                console.log(orderDetails)
+                console.log(addressData)
+
+                function populatePDFInvoice(details) {
+                    document.getElementById('pdfOrderID').textContent = details.orderID;
+                    document.getElementById('pdfOrderDate').textContent = details.orderDate;
+                    document.getElementById('pdfCustomerName').textContent = details.customerName;
+                    document.getElementById('pdfProductName').textContent = details.product.name;
+                    document.getElementById('pdfProductQuantity').textContent = details.product.quantity;
+                    document.getElementById("pdfProductSize").textContent=details.product.size
+                    document.getElementById('pdfProductPrice').textContent = details.product.price;
+                    document.getElementById("pdfProductDiscount").textContent= details.product.discount;
+                    document.getElementById('pdfProductTotal').textContent = details.totalAmount;
+                    document.getElementById('pdfTotalAmount').textContent = details.totalAmount;
+                    document.getElementById("pdfShippingAddress").innerHTML = `
+                        ${addressData.street}, ${addressData.village}<br>
+                        ${addressData.pincode}, ${addressData.city}
+                    `;
+                }
+
+                populatePDFInvoice(orderDetails);
+
+                const invoice = document.getElementById("invoicePDF");
+                invoice.style.display = "block"; 
+                const options = {
+                    margin: 0.5,
+                    filename: 'invoice.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().from(invoice).set(options).save();
+
+
+            })
+        })
+    </script>
+
+
+    <!-- <script>
+        document.getElementById("downloadInvoice").addEventListener("click",function(){
+
+            console.log("inside click")
+            const orderDetails = {
+                orderID: '12345',
+                orderDate: '2024-11-04',
+                customerName: 'John Doe',
+                product: {
+                    name: 'Space Helmet',
+                    quantity: 1,
+                    price: 250
+                },
+                totalAmount: 250
+            };
+
+            function populatePDFInvoice(details) {
+                document.getElementById('pdfOrderID').textContent = details.orderID;
+                document.getElementById('pdfOrderDate').textContent = details.orderDate;
+                document.getElementById('pdfCustomerName').textContent = details.customerName;
+                document.getElementById('pdfProductName').textContent = details.product.name;
+                document.getElementById('pdfProductQuantity').textContent = details.product.quantity;
+                document.getElementById('pdfProductPrice').textContent = `$${details.product.price}`;
+                document.getElementById('pdfProductTotal').textContent = `$${details.product.price * details.product.quantity}`;
+                document.getElementById('pdfTotalAmount').textContent = details.totalAmount;
+            }
+            
+            
+            populatePDFInvoice(orderDetails);
+
+            
+
+            const invoice = document.getElementById("invoicePDF");
+            invoice.style.display = "block"; 
+
+            const options = {
+                margin: 0.5,
+                filename: 'invoice.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(invoice).set(options).save();
+    
+        })
+    </script> -->
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Select all buttons with the class 'complete-payment-btn'
+            const paymentButtons = document.querySelectorAll(".complete-payment-btn");
+    
+            paymentButtons.forEach((button) => {
+                button.addEventListener("click", async function() {
+                    const orderId = this.getAttribute("data-order-id");
+                    console.log("inside click for order ID:", orderId); // Added context to the log
+                    try {
+                        // Fetch payment data from the server
+                        const response = await fetch("/myAccount/orders/repayment", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ orderId }),
+                        });
+    
+                        const data = await response.json();
+    
+                        if (!data.success) {
+                            console.log("Payment initiation failed: data not successful"); // More descriptive log
+                            throw new Error(data.message);
+                        }
+    
+                       
+                        const options = {
+                            key: 'rzp_test_4uxjS6fUMPYvzS', 
+                            amount: data.amount * 100, 
+                            currency: data.currency,
+                            name: 'Your Store Name',
+                            order_id: data.orderId, 
+                            handler: async (response) => {
+                                try {
+                                    
+                                    const confirmResponse = await fetch('/productDetails/cart/checkout/verification', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({
+                                            paymentId: response.razorpay_payment_id,
+                                            orderId: orderId,
+                                        }),
+                                    });
+    
+                                    const result = await confirmResponse.json();
+    
+                                    if (result.success) {
+                                        alert('Payment confirmed! Your order has been placed successfully.');
+                                        window.location.href = '/productDetails/cart/checkout/success';
+                                    } else {
+                                        alert('Payment confirmation failed. Please try again.');
+                                    }
+                                } catch (error) {
+                                    console.error("Error during payment confirmation:", error);
+                                    alert("An error occurred while confirming your payment.");
+                                }
+                            },
+                            theme: {
+                                color: '#F37254', // Custom theme color
+                            },
+                        };
+    
+                        // Initialize Razorpay and open the payment modal
+                        const razorpay = new Razorpay(options);
+                        razorpay.open();
+                        razorpay.on('payment.failed', async (response) => {
+                            console.error("Payment Failed", response);
+                            alert("Payment failed. Please try again.");
+                            window.location.href='/myAccount/orders'
+                        });
+                    } catch (error) {
+                        console.error("Payment initiation failed:", error);
+                        alert("Failed to initiate payment. Please try again.");
+                    }
+                });
+            });
+        });
+    </script>
+
+    
+    
 
     <!-- <ul class="pagination">
         <li class="page-item">prev</li>

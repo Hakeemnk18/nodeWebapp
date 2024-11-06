@@ -202,20 +202,20 @@ const orderReqRej=async(req,res)=>{
     try {
         console.log("rejected")
         const {id,itemId}=req.query
-        console.log(req.query)
+       
         if(req.query.return){
 
             console.log("return rejected")
 
             await Order.findOneAndUpdate({_id:id,"cartItems._id":itemId},{$set:{"cartItems.$.returnAccept":"Rejected"}})
-            const order=await Order.findById(id)
-            console.log(order)
+           
+            
         }else{
 
             console.log("cancel rejected")
             await Order.findOneAndUpdate({_id:id,"cartItems._id":itemId},{$set:{"cartItems.$.cancelAccept":"Rejected"}})
-            const order=await Order.findById(id)
-            console.log(order)
+           
+            
         }
         
         res.redirect('/admin/orders')

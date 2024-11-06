@@ -191,6 +191,9 @@ const ordersSchema=new Schema({
     },
     walletUsed:{
         type:Boolean
+    },
+    payableAmount:{
+        type:Number
     }
 
 })

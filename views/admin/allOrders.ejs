@@ -73,10 +73,12 @@
                                              <select name="" id="order-status-action-<%= j %>"
                                                 style="display: inline-block;" <%=data[i].cartItems[j].orderStatus==='Delivered' ||
                                                 data[i].cartItems[j].orderStatus==='Cancelled' || data[i].cartItems[j].orderStatus==='Pending' || data[i].cartItems[j].orderStatus==='Returned' ? 'disabled' : '' %>>
+                                                
                                                 <option
                                                    value="/admin/orders/changeStatus?id=<%=data[i]._id%>&itemId=<%=data[i].cartItems[j]._id%>&status=Delivered"
                                                    >Delivered
                                                 </option>
+                                                <option value="" selected>Select</option>
                                                 <option
                                                    value="/admin/orders/changeStatus/cancel?id=<%=data[i]._id %>&itemId=<%=data[i].cartItems[j]._id%>&status=Cancelled"
                                                    >Canceled

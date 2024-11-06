@@ -150,13 +150,17 @@ const orders=async(req,res)=>{
         const userId=req.session.user_id
         const userOrder=await Order.find({user:userId})
         
-        const orderItems=await Order.find({user:userId}).populate('cartItems.product').exec()
+        const orderItems=await Order.find({user:userId})
+        .populate('cartItems.product')
+        .populate("address")
+        .exec()
+        
 
         for(let i=0;i<orderItems.length;i++){
             dateField.push(moment(orderItems[i].orderDate).format('DD/MM/YYYY'))
         }
 
-        
+        console.log(orderItems[0])
         
         res.render('orders',{userName,orderItems,dateField})
     } catch (error) {

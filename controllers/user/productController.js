@@ -451,7 +451,7 @@ const orderSubmission = async (req, res) => {
         console.log("inside order submission")
 
 
-
+       
         const { productIds, productQty, productPrice, address, totalAmount, cartIds, productSize, paymentMethod, walletUsedAmount,
             productOfferPrice, couponSaved, tax,
         } = req.body;
@@ -463,7 +463,7 @@ const orderSubmission = async (req, res) => {
             totalOfferPrice += parseInt(productOfferPrice[i]) * parseInt(productQty[i])
         }
 
-        // console.log(totalOfferPrice)
+        //console.log(totalOfferPrice)
 
         for (let i = 0; i < productOfferPrice.length; i++) {
 
@@ -472,6 +472,14 @@ const orderSubmission = async (req, res) => {
             eachWallet.push(Math.ceil((parseInt(productOfferPrice[i]) * parseInt(productQty[i]) / totalOfferPrice) * walletUsedAmount))
 
         }
+
+        
+        console.log(totalOfferPrice)
+
+        const payableAmount=Math.ceil((totalOfferPrice * 1.1)-couponSaved-walletUsedAmount)    
+        console.log(payableAmount)
+        console.log(totalAmount)
+        
 
        
 
@@ -502,12 +510,13 @@ const orderSubmission = async (req, res) => {
                 user: user_id,
                 cartItems: productDetails,
                 address: address,
-                totalPrice: totalAmount,
+                totalPrice: payableAmount+walletUsedAmount,
                 orderId: orderId,
                 paymentMethod: "COD",
                 paymentStatus: "Success",
                 walletAmount: walletUsedAmount,
-                tax: tax
+                tax: tax,
+                payableAmount:payableAmount
             });
             const orderData = await order.save();
 
@@ -517,6 +526,7 @@ const orderSubmission = async (req, res) => {
 
             const orderDat = await Order.findOne({ _id: orderData._id })
 
+            console.log(orderDat)
 
             if (walletUsedAmount) {
                 console.log("inside wallet deduction cod")
@@ -546,17 +556,19 @@ const orderSubmission = async (req, res) => {
 
             }
 
+            
             await Cart.deleteMany({ userId: user_id });
+
             return res.status(200).json({
                 success: true,
 
             });
-
+        
         } else if (paymentMethod === "Razorpay") {
 
             console.log("inside else if")
             const options = {
-                amount: totalAmount * 100,
+                amount: payableAmount * 100,
                 currency: "INR",
                 receipt: orderId,
                 payment_capture: 1
@@ -569,14 +581,15 @@ const orderSubmission = async (req, res) => {
                 user: user_id,
                 cartItems: productDetails,
                 address: address,
-                totalPrice: totalAmount,
+                totalPrice: payableAmount+walletUsedAmount,
                 orderId: orderId,
                 razorpayOrderId: razorpayOrder.id,
                 paymentMethod: "Razorpay",
                 paymentStatus: "Pending",
                 orderStatus: 'Processing',
                 walletAmount: walletUsedAmount,
-                tax: tax
+                tax: tax,
+                payableAmount:payableAmount
             });
             console.log("order created")
             const orderData = await order.save();
@@ -584,7 +597,7 @@ const orderSubmission = async (req, res) => {
             await statusTime.statusTime('Pending', orderData._id)
 
 
-
+            await Cart.deleteMany({ userId: user_id });
 
             res.status(200).json({
                 success: true,
@@ -646,10 +659,44 @@ const orderVarification = async (req, res) => {
 
         }
 
-        //await Cart.deleteMany({ userId: orderData.user });
+        // await Cart.deleteMany({ userId: orderData.user });
         return res.status(200).json({ success: true })
     } catch (error) {
         console.log("Error in order verification: " + error.message);
+        return res.status(400).json({ success: false, message: "An error occurred" });
+    }
+}
+
+const razorpayRepayment=async(req,res)=>{
+    try {
+        console.log("inside repayment ")
+        console.log(req.body)
+        const {orderId}=req.body
+        const order = await Order.findById(orderId);
+        console.log(order)
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+       console.log("before option")
+        const options = {
+            amount:order. payableAmount * 100,
+            currency: "INR",
+            receipt: orderId,
+            payment_capture: 1
+        };
+        console.log("after option")
+        const razorpayOrder = await razorpayInstance.orders.create(options);
+
+        console.log("instance create")
+        res.json({
+            success: true,
+            orderId: razorpayOrder.id,
+            amount: order.payableAmount,
+            currency: "INR",
+        });
+    } catch (error) {
+        console.log( error);
         return res.status(400).json({ success: false, message: "An error occurred" });
     }
 }
@@ -745,7 +792,8 @@ module.exports = {
     renderWishlist,
     removeWishlist,
     couponApply,
-    orderVarification
+    orderVarification,
+    razorpayRepayment
 }
 
 

@@ -10,7 +10,7 @@ const ordersController=require('../controllers/admin/ordersController')
 const loginController=require('../controllers/admin/loginController')
 const couponController=require("../controllers/admin/coupenController")
 const offerController=require("../controllers/admin/offerController")
-
+const dashBoardController=require('../controllers/admin/dashBoardController')
 
 
 
@@ -19,7 +19,10 @@ const offerController=require("../controllers/admin/offerController")
 // router.post('/login',loginController.veryfing)
 
 //dashboard
-router.get('/',auth.isLogin,adminController.dashBoard)
+router.get('/',auth.isLogin,dashBoardController.dashBoard)
+router.get('/dashboard/graph',dashBoardController.graphData)
+router.get("/dashboard/slaesReport",dashBoardController.salesReport)
+router.get("/sales/fetch-orders",dashBoardController.fetchSales)
 
 //add product
 router.get('/product',auth.isLogin,adminController.allProduct)

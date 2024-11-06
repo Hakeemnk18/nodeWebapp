@@ -60,6 +60,7 @@ router.get('/myAccount/orders/trackOrder',userAuth.isLogin,profileController.tra
 router.get('/myAccount/orders/cancelOrder',userAuth.isLogin,profileController.orderCancel)
 
 router.get('/myAccount/orders/returnOrder',userAuth.isLogin,profileController.returnOrder)
+router.post('/myAccount/orders/repayment',productController.razorpayRepayment)
 
 
 

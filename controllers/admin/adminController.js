@@ -9,13 +9,7 @@ const fs=require('fs')
 
 
 //admin dashboard
-const dashBoard=async(req,res)=>{
-    try {
-        res.render('adminDashboard')
-    } catch (error) {
-        console.log("error in dashboard "+error.message)
-    }
-}
+
 
 //all product
 const allProduct=async (req,res)=>{
@@ -350,7 +344,6 @@ const editProduct=async(req,res)=>{
 module.exports={
     productManagment,
     addProduct,
-    dashBoard,
     allProduct,
     deleteProduct,
     loadEditProduct,
