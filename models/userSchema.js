@@ -59,7 +59,13 @@ const userSchema=new Schema({
     referralClimed:{
         type:Boolean,
         
-    }
+    },
+    resetPasswordToken:{
+        type:String
+    },
+    resetPasswordExpires:{
+        type:Date
+    } 
     
 },{
     timestamps:true

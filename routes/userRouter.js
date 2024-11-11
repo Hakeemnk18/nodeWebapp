@@ -15,8 +15,10 @@ router.post('/signup',userController.signup)
 router.post('/login',userController.login)
 router.post('/verify-otp',userController.otpverification)
 router.get('/resend-otp',userController.resendOtp)
-router.get('/forgotPassword',userController.forgotPassword)
-router.post('/forgotPassword',userController.forgotEmailVarification)
+router.get('/forgotPassword',adminAuth.isLogout,userAuth.isLogout,userController.forgotPassword)
+router.post('/forgotPassword',adminAuth.isLogout,userAuth.isLogout,userController.forgotEmailVarification)
+router.get("/reset-password/:token",adminAuth.isLogout,userAuth.isLogout,userController.resetPasswordForm)
+router.post("/reset-password/:token",adminAuth.isLogout,userAuth.isLogout,userController.resetPasswordSubmition)
 
 //logout
 router.get('/logout',userController.logout)

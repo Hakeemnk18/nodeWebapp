@@ -6,6 +6,8 @@ const nodemail=require('nodemailer')
 const env=require("dotenv").config();
 const isUser=require('../../helpers/isUserlogin')
 const Wallet=require("../../models/walletSchema")
+const crypto=require("crypto");
+const { fail } = require('assert');
 
 
 const securePassword = async (password) => {
@@ -336,22 +338,118 @@ const forgotPassword=async(req,res)=>{
     }
 }
 
+async function sendResetPasswordEmail(email,resetURL){
+
+    try {
+        console.log("inside reset pasword email send")
+        
+        const transport= nodemail.createTransport({
+
+            service:"gmail",
+            port:587,
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:process.env.NODEMAILER_EMAIL,
+                pass:process.env.NODEMAILER_PASSWORD
+            }
+        })
+        
+        const info= await transport.sendMail({
+            from:process.env.NODEMAILER_EMAIL,
+            to:email,
+            subject:'Password Reset Request',
+            text:`You requested a password reset. Please click the following link to reset your password: ${resetURL} \n\nIf you did not request this, please ignore this email.`
+            
+        })
+        
+        return info.accepted.length > 0
+        
+    } catch (error) {
+        
+        console.log("sending email reset password"+error)
+        return false
+    }
+
+}
+
 const forgotEmailVarification=async(req,res)=>{
     try {
         
+        console.log("iside forgot fetch")
         const {email}=req.body
+        
 
-        const data=await user.findOne({email:email})
-        if(data){
-            return res.send("mail varified")
+        const User=await user.findOne({email:email})
+        if(User){
+            console.log("inside if")
+            const resetToken = crypto.randomBytes(32).toString('hex');
+
+        
+            User.resetPasswordToken = resetToken
+            User.resetPasswordExpires = Date.now() + 3600000; 
+            await User.save()
+           
+            
+
+            const resetURL=`http://localhost:4000/reset-password/${resetToken}`
+           
+            await sendResetPasswordEmail(email,resetURL)
+            const Us=await user.findOne({email:email})
+            console.log(Us)
+            return res.status(200).json({success:true,message:"reset link send to email"})
         }else{
-            return res.redirect('/forgotPassword?message=no user found',)
+            return res.status(500).json({success:fail,message:"no user found",url:'/signup'})
         }
 
     } catch (error) {
         console.log("error forgot email varificatoin "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})
         
+    }
+}
+
+const resetPasswordForm=async(req,res)=>{
+    try {
+        const {token} =req.params
+        console.log("inside reset password")
+        console.log(token)
+        const User=await user.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+        if(!User){
+            console.log("no user found in reset form")
+            return res.status(400).send('Invalid or expired token');
+        }
+        
+
+        res.render("resetPasswordForm",{token})
+    } catch (error) {
+        console.log("error reset password form "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
+    }
+}
+
+const resetPasswordSubmition=async(req,res)=>{
+    try {
+        console.log("inside resetpassword submition")
+        const {token} =req.params
+        const {password}=req.body
+        console.log(token)
+        console.log(password)
+        const User=await user.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+        console.log(User)
+        if(!User){
+            console.log("no user found reset submission")
+            return res.status(400).json({ message: "Invalid or expired token" });
+        }
+        const passwordHash=await securePassword(password)
+        console.log(passwordHash)
+        User.password = passwordHash
+        await User.save()
+
+        return  res.status(200).json({ message: "Password reset successful!" });
+    } catch (error) {
+        console.log("error reset password form "+error.message)
+        return res.status(400).json({success:false,message:"an error occured"})
     }
 }
 
@@ -367,5 +465,7 @@ module.exports = {
     resendOtp,
     logout,
     forgotPassword,
-    forgotEmailVarification
+    forgotEmailVarification,
+    resetPasswordForm,
+    resetPasswordSubmition
 }
