@@ -215,9 +215,10 @@ const fetchSales=async(req,res)=>{
             data[5].offerAplyed += orders[i].cartItems.offerDiscount
 
         }
-        console.log(orders)
-        console.log(data)
-        return res.json(data)
+        
+        const allOrders=await Order.find({ orderDate: { $gte: startDate, $lt: endDate } }).populate("cartItems.product")
+        
+        return res.json(allOrders)
 
     } catch (error) {
         console.log("error in sales report data "+error.message)
