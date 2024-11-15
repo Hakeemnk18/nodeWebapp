@@ -31,7 +31,7 @@ app.set("view engine","ejs")
 app.set("views",[path.join(__dirname,'views/user'),path.join(__dirname,"/views/admin")])
 app.use(express.static(path.join(__dirname,"public")))
 
-
+// app.listen(port,(console.log("port running 4000")))
 
 
 app.use("/admin",adminRouter)
@@ -43,7 +43,9 @@ app.use(passport.session());
 
 const PORT=process.env.PORT
 
-app.listen(PORT,()=> console.log("server started"))
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server started on port ${PORT}`);
+});
 
 
 module.exports=app;
