@@ -24,7 +24,74 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"/>
 </head>
 
+<style>
+    #main-nav-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+        background: #fff;
+        color: rgb(14, 14, 14);
+        
+    }
+
+    .menu-items-wrapper {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+        margin: 0;
+        padding: 0;
+        margin-left: auto;
+    }
+
+    .menu-item-link {
+        text-decoration: none;
+        color: rgb(12, 12, 12);
+        font-size: 16px;
+    }
+
+    .menu-toggle-icon {
+        display: none;
+        flex-direction: column;
+        cursor: pointer;
+    }
+
+    .menu-toggle-icon span {
+        background: rgb(16, 16, 16);
+        height: 3px;
+        margin: 3px 0;
+        width: 25px;
+    }
+
+    @media (max-width: 768px) {
+        .menu-items-wrapper {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background-color: #faf8f8;
+            padding: 10px;
+            border-radius: 5px;
+           
+        }
+
+        .menu-items-wrapper.active {
+            display: flex;
+            
+        }
+
+        .menu-toggle-icon {
+            display: flex;
+            margin-left: auto;
+        }
+    }
+
+</style>
+
 <body>
+
     
 
 
@@ -35,40 +102,50 @@
             <div class="logo">
                 <a href="index.html"><img src="/images/logo.png" alt="logo" width="125px"></a>
             </div>
-            <nav>
-                <ul id="MenuItems">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="/products">Products</a></li>
-                    <li><a href="/productDetails/cart">Cart</a></li>
-                    <li><a href="">Contact</a></li>
-                    <li><a href="/myAccount">Account</a></li>
-                    <% if(typeof userName === 'undefined') { %>
-                        <li><a href="/login" >Login</a></li>
+            <nav id="main-nav-bar" class="main-nav-container">
+                <div id="nav-menu-toggle" class="menu-toggle-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <ul id="menu-items-list" class="menu-items-wrapper">
+                    <li><a href="/" class="menu-item-link">Home</a></li>
+                    <li><a href="/products" class="menu-item-link">Products</a></li>
+                    <li><a href="/productDetails/cart" class="menu-item-link">Cart</a></li>
+                    <li><a href="#" class="menu-item-link">Contact</a></li>
+                    <li><a href="/myAccount" class="menu-item-link">Account</a></li>
+                    <% if (typeof userName === 'undefined') { %>
+                        <li><a href="/login" id="login-menu-item" class="login-item-link">Login</a></li>
                     <% } else { %>
-                        <li><select name="" id="userActions" style="border: none; background-color: inherit;">
-                            <option value="" disabled selected><%=userName.username %> </option>
-                            <option value="/myAccount">Account</option>
-                            <option value="/logout">logout</option>
-                        </select>
-                            
+                        <li>
+                            <select id="account-options-select" class="account-menu-select">
+                                <option value="" disabled selected><%=userName.username %></option>
+                                <option value="/myAccount">Account</option>
+                                <option value="/logout">Logout</option>
+                            </select>
                         </li>
                     <% } %>
                 </ul>
-            </nav>
+            </nav>            
         </div>
     </div>
 </div>
 
 
-
 <script>
-    document.getElementById('userActions').addEventListener('change', function () {
+    const menuToggle = document.getElementById("nav-menu-toggle");
+    const menuItems = document.getElementById("menu-items-list");
+
+    menuToggle.addEventListener("click", () => {
+        menuItems.classList.toggle("active");
+    });
+
+</script>
+<script>
+    document.getElementById('account-options-select').addEventListener('change', function () {
         const selectedValue = this.value;
         if (selectedValue) {
             window.location.href = selectedValue;  // Redirect to the selected URL
         }
     });
 </script>
-
-
-

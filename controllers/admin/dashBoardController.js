@@ -1,10 +1,25 @@
 const Product=require("../../models/productSchema")
 const Order=require("../../models/ordersSchema")
-
+const User=require("../../models/userSchema")
 
 const dashBoard=async(req,res)=>{
     try {
-        res.render('adminDashboard')
+        const orders=await Order.find()
+        console.log(orders [0])
+        let revanue=0
+        let sales=0
+        const product=await Product.countDocuments()
+        const users=await User.countDocuments()
+        for(let i=0;i<orders.length;i++){
+            for(let j=0;j<orders[i].cartItems.length;j++){
+                console.log(orders[i].cartItems[j].quantity)
+                sales += orders[i].cartItems[j].quantity
+            }
+            revanue += orders[i].payableAmount
+        }
+        console.log("revanue "+revanue)
+        console.log("sales : "+sales)
+        res.render('adminDashboard',{sales,revanue,product,users})
     } catch (error) {
         console.log("error in dashboard "+error.message)
     }
