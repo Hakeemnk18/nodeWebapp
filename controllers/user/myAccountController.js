@@ -16,6 +16,7 @@ const myAccount=async (req,res)=>{
         const userData=await User.findOne({_id:req.session.user_id})
         const {message}=req.query
         const referalStatus=await Referral.findOne({},{isActive:1})
+        console.log(referalStatus)
         
         res.render("userProfile",{userName,userData,message,referalStatus})
 

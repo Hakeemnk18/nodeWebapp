@@ -17,7 +17,7 @@ function generateReferralCode(length = 8) {
 passport.use(new googleStrategy({
     clientID:process.env.GOOGLE_CLIENT_ID,
     clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL:'http://localhost:4000/google/callback',
+    callbackURL:'https://astronex.shop/google/callback',
 },
 
 async(accessToken,refreshToken,profile,done)=>{
