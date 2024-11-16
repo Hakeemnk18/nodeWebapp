@@ -43,7 +43,7 @@ const loadHomepage = async (req, res) => {
 
     try {
         
-        const product=await Product.find({isActive:true})
+        const product=await Product.find({isActive:true}).limit(4).exec()
         const latestProduct=await Product.find({})
         .sort({createdAt:-1})
         .limit(8)
