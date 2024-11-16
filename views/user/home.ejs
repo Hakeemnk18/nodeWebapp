@@ -26,7 +26,7 @@
     <div class="small-container">
         <h2 class="title">Featured Products</h2>
         <div class="row">
-            <% if (typeof product !== 'undefined'){ %>
+            <% if (typeof product !== 'undefined' && product.length >0){ %>
                 <% for (let i=0;i < 4 ; i++){ %>
                     <div class="col-4">
                         <a href="/productDetails?id=<%= product[i]._id %> "><img src="/uploads/<%= product[i].croppedImage[0] %>"></a>
@@ -45,7 +45,7 @@
         </div>
         <h2 class="title">Latest Products</h2>
         <div class="row">
-            <% if(typeof latestProduct !== 'undefined'){ %>
+            <% if(typeof latestProduct !== 'undefined' && latestProduct.length>0){ %>
 
                 <% for(let i=0;i<latestProduct.length;i++){ %>
                     <div class="col-4">
