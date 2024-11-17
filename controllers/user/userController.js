@@ -45,12 +45,12 @@ const loadHomepage = async (req, res) => {
         
         console.log("inside load home page")
         const product=await Product.find({isActive:true}).limit(4).exec()
-        console.log(product)
+        
         const latestProduct=await Product.find({})
         .sort({createdAt:-1})
         .limit(8)
         .exec()
-        console.log(latestProduct)
+        
         if(req.session.passport){
             
             const gUser=await user.find({_id:req.session.passport.user},{isActive:1})
