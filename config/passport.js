@@ -47,7 +47,7 @@ async(accessToken,refreshToken,profile,done)=>{
                 userId:goog._id
             })
             const userWallet=await newWallet.save()
-            
+            console.log("user created succesfully")
             
             return done(null,user)
         }

@@ -586,6 +586,7 @@ const orderSubmission = async (req, res) => {
                 razorpayOrderId: razorpayOrder.id,
                 paymentMethod: "Razorpay",
                 paymentStatus: "Pending",
+                
                 orderStatus: 'Processing',
                 walletAmount: walletUsedAmount,
                 tax: tax,
