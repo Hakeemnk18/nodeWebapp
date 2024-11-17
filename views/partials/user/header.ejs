@@ -32,6 +32,8 @@
         padding: 10px 20px;
         background: #fff;
         color: rgb(14, 14, 14);
+        position: relative; /* Ensure this creates a stacking context for the menu */
+        z-index: 10; /
         
     }
 
@@ -74,6 +76,7 @@
             background-color: #faf8f8;
             padding: 10px;
             border-radius: 5px;
+            z-index: 100;
            
         }
 

@@ -449,8 +449,12 @@ const orderSubmission = async (req, res) => {
     try {
 
         console.log("inside order submission")
-
-
+        const user_id = req.session.user_id;
+        const cartItems=await Cart.find({userId:user_id})
+        
+        if(cartItems.length === 0){
+            return res.status(400).json({ success: false, message: "cart is empty" });
+        }
        
         const { productIds, productQty, productPrice, address, totalAmount, cartIds, productSize, paymentMethod, walletUsedAmount,
             productOfferPrice, couponSaved, tax,
@@ -474,11 +478,11 @@ const orderSubmission = async (req, res) => {
         }
 
         
-        console.log(totalOfferPrice)
+        // console.log(totalOfferPrice)
 
         const payableAmount=Math.ceil((totalOfferPrice * 1.1)-couponSaved-walletUsedAmount)    
-        console.log(payableAmount)
-        console.log(totalAmount)
+        // console.log(payableAmount)
+        // console.log(totalAmount)
         
 
        
@@ -501,8 +505,9 @@ const orderSubmission = async (req, res) => {
             });
         }
 
+        //console.log(productDetails)
         const orderId = generateUniqueOrderId();
-        const user_id = req.session.user_id;
+        
 
         if (paymentMethod === "Cod" || totalAmount === '0') {
 
@@ -526,7 +531,7 @@ const orderSubmission = async (req, res) => {
 
             const orderDat = await Order.findOne({ _id: orderData._id })
 
-            console.log(orderDat)
+            //console.log(orderDat)
 
             if (walletUsedAmount) {
                 console.log("inside wallet deduction cod")
@@ -586,7 +591,7 @@ const orderSubmission = async (req, res) => {
                 razorpayOrderId: razorpayOrder.id,
                 paymentMethod: "Razorpay",
                 paymentStatus: "Pending",
-                
+
                 orderStatus: 'Processing',
                 walletAmount: walletUsedAmount,
                 tax: tax,
