@@ -34,7 +34,7 @@
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <input placeholder="Referral Bonus" id="referral-bonus" type="number" class="validate"
-                                            name="referralBonus" value="<%=referral.bonus %>" >
+                                            name="referralBonus" value="<%= referral?.bonus || '' %>" >
                                         <div id="error1" class="text-danger"></div>    
                                     </div>
                                 </div>
@@ -44,8 +44,8 @@
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <select name="status" id="status" style="display: inline-block;width: 100px;">
-                                            <option value="true" <%= referral.isActive === true ? 'selected' : '' %>>True</option>
-                                            <option value="false" <%= referral.isActive === false ? 'selected' : '' %>>False</option>
+                                            <option value="true" <%= referral?.isActive === true ? 'selected' : '' %>>True</option>
+                                            <option value="false" <%= referral?.isActive === false ? 'selected' : '' %>>False</option>
                                         </select>   
                                     </div>
                                 </div>

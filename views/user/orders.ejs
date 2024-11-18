@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         
-                        <div id="invoicePDF" style="display: none;">
+                        <div id="invoicePDF" style="display: none;" >
                             <!-- Header section for company logo and details -->
                             <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px;">
                                 <!-- Company Logo -->
@@ -212,8 +212,8 @@
 
                 // }
 
-                console.log(orderDetails)
-                console.log(addressData)
+                // console.log(orderDetails)
+                // console.log(addressData)
 
                 function populatePDFInvoice(details) {
                     document.getElementById('pdfOrderID').textContent = details.orderID;
@@ -232,10 +232,12 @@
                     `;
                 }
 
-                populatePDFInvoice(orderDetails);
+               
 
                 const invoice = document.getElementById("invoicePDF");
-                invoice.style.display = "block"; 
+                invoice.style.display="block";
+                populatePDFInvoice(orderDetails);
+                 
                 const options = {
                     margin: 0.5,
                     filename: 'invoice.pdf',
@@ -243,60 +245,17 @@
                     html2canvas: { scale: 2 },
                     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
                 };
-                html2pdf().from(invoice).set(options).save();
+                html2pdf().from(invoice).set(options).save().then(()=>{
+                    invoice.style.display = "none";
+                })
 
-
+                
             })
         })
     </script>
 
 
-    <!-- <script>
-        document.getElementById("downloadInvoice").addEventListener("click",function(){
-
-            console.log("inside click")
-            const orderDetails = {
-                orderID: '12345',
-                orderDate: '2024-11-04',
-                customerName: 'John Doe',
-                product: {
-                    name: 'Space Helmet',
-                    quantity: 1,
-                    price: 250
-                },
-                totalAmount: 250
-            };
-
-            function populatePDFInvoice(details) {
-                document.getElementById('pdfOrderID').textContent = details.orderID;
-                document.getElementById('pdfOrderDate').textContent = details.orderDate;
-                document.getElementById('pdfCustomerName').textContent = details.customerName;
-                document.getElementById('pdfProductName').textContent = details.product.name;
-                document.getElementById('pdfProductQuantity').textContent = details.product.quantity;
-                document.getElementById('pdfProductPrice').textContent = `$${details.product.price}`;
-                document.getElementById('pdfProductTotal').textContent = `$${details.product.price * details.product.quantity}`;
-                document.getElementById('pdfTotalAmount').textContent = details.totalAmount;
-            }
-            
-            
-            populatePDFInvoice(orderDetails);
-
-            
-
-            const invoice = document.getElementById("invoicePDF");
-            invoice.style.display = "block"; 
-
-            const options = {
-                margin: 0.5,
-                filename: 'invoice.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(invoice).set(options).save();
     
-        })
-    </script> -->
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
