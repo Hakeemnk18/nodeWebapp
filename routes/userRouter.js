@@ -41,7 +41,7 @@ router.get('/productDetails/cart/checkout/success',userAuth.isLogin,productContr
 router.get('/api/product/stock',userAuth.isLogin,productController.stockDetails)
 router.post('/wishlist/remove',userAuth.isLogin,productController.removeWishlist)
 
-router.post("/checkout/applyCoupon",productController.couponApply)
+router.post("/checkout/applyCoupon",userAuth.isLogin,productController.couponApply)
 
 //my account
 router.get("/myAccount",userAuth.isLogin,profileController.myAccount)
@@ -62,12 +62,12 @@ router.get('/myAccount/orders/trackOrder',userAuth.isLogin,profileController.tra
 router.get('/myAccount/orders/cancelOrder',userAuth.isLogin,profileController.orderCancel)
 
 router.get('/myAccount/orders/returnOrder',userAuth.isLogin,profileController.returnOrder)
-router.post('/myAccount/orders/repayment',productController.razorpayRepayment)
+router.post('/myAccount/orders/repayment',userAuth.isLogin,productController.razorpayRepayment)
 
 
 
-router.post('/couponApply',profileController.referralApply)
-router.get('/myAccount/wallet',profileController.wallet)
+router.post('/couponApply',userAuth.isLogin,profileController.referralApply)
+router.get('/myAccount/wallet',userAuth.isLogin,profileController.wallet)
 
 
 

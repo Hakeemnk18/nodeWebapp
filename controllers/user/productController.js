@@ -531,7 +531,7 @@ const orderSubmission = async (req, res) => {
 
             const orderDat = await Order.findOne({ _id: orderData._id })
 
-            //console.log(orderDat)
+            console.log(orderDat)
 
             if (walletUsedAmount) {
                 console.log("inside wallet deduction cod")

@@ -146,7 +146,7 @@ const updateAddress=async(req,res)=>{
 const orders=async(req,res)=>{
     try {
         let userName=await isUser.isUser(req)
-        
+        console.log("inside user orders ")
         let dateField=[]
         const userId=req.session.user_id
         const userOrder=await Order.find({user:userId})
@@ -162,6 +162,7 @@ const orders=async(req,res)=>{
         }
 
         console.log(orderItems[0])
+        
         
         res.render('orders',{userName,orderItems,dateField})
     } catch (error) {
@@ -317,12 +318,23 @@ const addNewPassword=async(req,res)=>{
 const trackOrder=async(req,res)=>{
     try {
         let userName=await isUser.isUser(req)
-        
+        let userId
+        if(req.session.user_id){
+            
+            userId=req.session.user_id
+        }
         const {id}=req.query
-        const orders=await Order.findById(id)
-        const date=moment(orders.orderDate).format('DD/MM/YYYY')
+        const orders=await Order.findOne({_id:id,user:userId})
+        console.log(orders)
+        let date
+        if(orders){
+             date=moment(orders.orderDate).format('DD/MM/YYYY')
+        }else{
+            return res.redirect('/myAccount/orders')
+        }
         
-        res.render('orderTracking',{userName,orders,date})
+        
+        return res.render('orderTracking',{userName,orders,date})
     } catch (error) {
         console.log("error in track order page : "+error.message)
         return res.status(400).json({success:false,message:"an error occured"})

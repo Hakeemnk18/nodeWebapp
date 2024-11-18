@@ -75,22 +75,29 @@
     
     
     function lastNameValidation(){
-        const lastVal=lastName.value
+        const lastVal=lastName.value.trim()
         const namePattern=/^[a-zA-Z\s'-]*$/
         if(! namePattern.test(lastVal)){
             error2.innerHTML="name only contain caracters"
             return false
-        }else{
+        }else if(lastName === ""){
+            error2.innerHTML="please enter name"
+            return false
+        }
+        else{
             error2.innerHTML=""
             return true
         }
 
     }
     function firstnameValidation(){
-        const firstVal=firstname.value 
+        const firstVal=firstname.value.trim() 
         const namePattern=/^[a-zA-Z\s'-]*$/
         if(!namePattern.test(firstVal)){
             error1.innerHTML="name only contain caracters"
+            return false
+        }else if(firstVal === ""){
+            error1.innerHTML="please enter a name"
             return false
         }
         else{
