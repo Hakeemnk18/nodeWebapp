@@ -15,6 +15,7 @@ const dashBoardController=require('../controllers/admin/dashBoardController')
 
 
 
+
 // router.get('/login',auth.isLogout,loginController.adminLoginLoading)
 // router.post('/login',loginController.veryfing)
 
@@ -72,6 +73,9 @@ router.post("/addOffer",offerController.addNewOffer)
 router.get("/editOffer",offerController.editOffer)
 router.get("/referral",offerController.referral)
 router.post("/referral",offerController.updateReferral)
+
+
+
 module.exports=router;
 
 

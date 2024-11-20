@@ -7,7 +7,7 @@ const userAuth=require('../middlewares/userAuth')
 const productController=require('../controllers/user/productController')
 const profileController=require('../controllers/user/myAccountController')
 
-router.get('/pagenotfound',userController.pageNotfound)
+
 router.get('/',userController.loadHomepage)
 router.get('/login',adminAuth.isLogout,userAuth.isLogout,userController.loadLogin)
 router.get('/signup',adminAuth.isLogout,userAuth.isLogout,userController.loadSignup)
@@ -76,6 +76,6 @@ router.get("/auth/google",passport.authenticate('google',{scope:['profile','emai
 router.get("/google/callback",passport.authenticate('google',{failureRedirect:'/signup'}),(req,res)=>{
     res.redirect('/')
 });
-
+router.get('*',userController.pageNotfound)
 
 module.exports = router
