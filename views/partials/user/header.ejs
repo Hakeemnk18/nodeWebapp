@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RedStore | Ecommerce Website Design</title>
+    <title>Astronex</title>
     <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
@@ -32,7 +32,7 @@
         padding: 10px 20px;
         background: #fff;
         color: rgb(14, 14, 14);
-        position: relative; /* Ensure this creates a stacking context for the menu */
+        position: relative; 
         z-index: 10; /
         
     }
@@ -121,7 +121,7 @@
                         <li><a href="/login" id="login-menu-item" class="login-item-link" style="color: rgb(12, 12, 12);">Login</a></li>
                     <% } else { %>
                         <li>
-                            <select id="account-options-select" class="account-menu-select">
+                            <select id="account-options-select" class="account-menu-select" style="border: none;">
                                 <option value="" disabled selected><%=userName.username %></option>
                                 <option value="/myAccount">Account</option>
                                 <option value="/logout">Logout</option>
